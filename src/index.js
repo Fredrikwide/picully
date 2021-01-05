@@ -1,13 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+import { ChakraProvider } from "@chakra-ui/react"
+import { AuthProvider } from './contexts/AuthContext';
+import { FirebaseProvider } from './contexts/FirebaseContext';
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <ChakraProvider>
+    <AuthProvider>
+      <FirebaseProvider>
+        <App />
+      </FirebaseProvider>
+    </AuthProvider>
+  </ChakraProvider>
+    ,
+
   document.getElementById('root')
 );
 
