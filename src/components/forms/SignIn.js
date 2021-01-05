@@ -1,4 +1,4 @@
-
+import {useNavigate} from 'react-router-dom'
 import {
   FormControl,
   FormLabel,
@@ -8,44 +8,111 @@ import {
   Button,
   Center,
   Container,
+  Box,
+  Flex, 
+  Spacer
 } from "@chakra-ui/react"
-import { useFormik } from 'formik';
+import { Field, Form, Formik } from 'formik';
+import * as Yup from 'yup';
+import { useAuth } from "../../contexts/AuthContext";
+
+
+const SignInSchema = Yup.object().shape({
+  //email validation rules
+  email: Yup.string()
+  .email('invalid email.')
+  .required('Please enter a valid email'),
+  //pw validation rules
+  password: Yup.string()
+  .required('A valid password is reuired')
+  // .min(8, 'password not valid')
+  // .matches(/(?=.*[0-9])/, "Password must contain a number.")
+})
+
 const SignIn = () => {
-
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: ''
-    },
-    onSubmit: values => {
-      console.log('values is ',values);
-    },
-
-  });
-
-  const handleClickSignUp = () => {
-    console.log('sign up')
-  }
+  const navigate = useNavigate()
+  const { logout, login, currentUser } = useAuth()
+  const handleSignOut = () => logout()
   return (
-    <Container maxW="xl" centerContent color="white">
-      <FormControl id="email" onSubmit={formik.handleSubmit} w="400px" mt="16px">
-        <FormLabel>Email address</FormLabel>
-        <Input 
-          type="email" 
-          onChange={formik.handleChange} 
-          value={formik.values.email} 
-        />
-        <FormLabel>Password</FormLabel>
-        <Input 
-          type="password" 
-          onChange={formik.handleChange} 
-          value={formik.values.password} 
-        />
-        <FormHelperText>We'll never share your email.</FormHelperText>
-        <Button type="submit">Sign In</Button>
-        <Button onClick={handleClickSignUp}>Sign Up</Button>
-      </FormControl>
-    </Container >
+  
+     
+        <Formik
+        initialValues={{
+          email: '',
+          password: '',
+        }}
+        validationSchema={SignInSchema}
+        onSubmit={async (values, { setSubmitting }) => {
+          try { 
+            await login(values.email, values.password)
+            setSubmitting(false)
+            navigate("/")
+
+        } catch (err) {
+            
+            console.log('error', err)
+        }
+        }}
+      >
+          {(props) => (
+            
+            <Form>
+              <Field name="email">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.email && form.touched.email}>
+                    <FormLabel htmlFor="email">email</FormLabel>
+                    <Input 
+                      {...field}
+                      value={props.values.email}
+                      id="email"
+                      type="email"
+                      placeholder="email" 
+                      onChange={props.handleChange} 
+                      onBlur={props.handleBlur} 
+                    />
+                    <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+              <Field name="password">
+                {({ field, form }) => (
+                  <FormControl isInvalid={form.errors.password && form.touched.password}>
+                    <FormLabel htmlFor="password">password</FormLabel>
+                    <Input  
+                      {...field}
+                      value={props.values.password}
+                      id="password" 
+                      type="password"
+                      placeholder="password" 
+                      onChange={props.handleChange} 
+                      onBlur={props.handleBlur} />
+                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
+              <Center>
+                {
+
+                  !currentUser ?
+                  <Button
+                  mt={4}
+                  colorScheme="teal"
+                  isLoading={props.isSubmitting}
+                  type="submit"
+                >
+                  Sign in
+                </Button>
+                :
+                <Button onClick={handleSignOut}>Sign Out</Button>
+
+                }
+             
+              </Center>
+            </Form>
+        
+          )}
+        </Formik>
+
   )
 }
 

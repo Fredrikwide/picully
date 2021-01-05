@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from "@chakra-ui/react"
 import { AuthProvider } from './contexts/AuthContext';
 import { FirebaseProvider } from './contexts/FirebaseContext';
+import './app.css'
 ReactDOM.render(
   <ChakraProvider>
     <AuthProvider>

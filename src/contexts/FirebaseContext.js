@@ -6,24 +6,40 @@ import "firebase/firestore";
 export const FirebaseContext = createContext()
 
 export const FirebaseProvider = ({ children }) => {
+  
 
   const db = firebase.firestore()
   const [collectionData, setCollectionData] = useState([])
 
   const firebaseFunctions = {
-
-    getCollection: async collection => await db.collection(collection).get().then((snapshot) => {
-      const data = []
+    GetCollection: async collection => await db.collection(collection).get().then((snapshot) => {
+      const restaurants = []
       snapshot.forEach((doc) => {
-        data.push({
+        restaurants.push({
           id: doc.id,
           name: doc.data().name,
-          description: doc.data().description
+          coordinates: {
+            latitude: doc.data().coordinates.latitude,
+            longitude: doc.data().coordinates.longitude
+          },
+          description: doc.data().description,
+          address: {
+            street: doc.data().adress.street,
+            city: doc.data().adress.city,
+            zip: doc.data().adress.zip,
+            full: `${doc.data().adress.street},${doc.data().adress.zip}, ${doc.data().adress.city}`
+          },
+          links: {
+            facebook: doc.data().links.facebook,
+            instagram: doc.data().links.instagram,
+            twitter: doc.data().links.twitter,
+            website: doc.data().links.website
+          }
         })
       });
-      console.log("restaurants after map", data)
-      setCollectionData([...data])
-      return data
+      console.log("restaurants after map", restaurants)
+      setCollectionData([...restaurants])
+      return restaurants
     }),
     getSingle: async (collection, id) => await db.collection(collection).doc(id).get()
 
