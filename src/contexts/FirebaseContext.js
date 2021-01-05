@@ -6,7 +6,7 @@ import "firebase/firestore";
 export const FirebaseContext = createContext()
 
 export const FirebaseProvider = ({ children }) => {
-  const ImageStorage = firebase.storage()
+
   const db = firebase.firestore()
   const [collectionData, setCollectionData] = useState([])
 
