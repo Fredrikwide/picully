@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
-
+import {
+  ThemeProvider,
+  theme,
+  ColorModeProvider,
+  CSSReset
+} from '@chakra-ui/core';
+import ThemeToggler from './components/ThemeToggler';
+import Home from './views/Home';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import AuthRoute from './components/AuthRoute';
+import SignIn from './components/forms/signin';
+import SignUp from './components/forms/SignUp';
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <ColorModeProvider>
+          <CSSReset />
+          <ThemeToggler />
+          <Routes>
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <AuthRoute path="/" element={<Home />} />
+          </Routes> 
+        </ColorModeProvider>
+      </ThemeProvider>
+    </Router>
+    </>
   );
 }
 
