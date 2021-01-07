@@ -9,4 +9,5 @@ import plants from '../../images/plants.jpg'
 import lost from '../../images/lost.gif'
 import lush from '../../images/lush-forest.jpg'
 
-export const imageUrls = [clouds, clock, mountains, space, table, forest, galaxy, plants, lost, lush ]
+export const imageUrls = [clouds, clock, table, galaxy, plants, lost, lush ]
+export const tallImages = [forest, mountains, space ]

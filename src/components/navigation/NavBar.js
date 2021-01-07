@@ -36,7 +36,7 @@ const handleSignOut = async () => {
           align="center"
           borderLeft="4px"
           borderColor="teal.500"
-
+          pl="7rem"
           >
         <UnorderedList
           display="flex" 
