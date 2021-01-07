@@ -1,33 +1,29 @@
-import { Flex, Heading, ListItem, Link, Spacer, UnorderedList, Box, useDisclosure, CloseButton, Button } from '@chakra-ui/react'
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-} from "@chakra-ui/react"
-import {Link as ReactLink} from 'react-router-dom'
-import React, { useRef } from 'react'
 import { HamburgerIcon } from '@chakra-ui/icons'
+import { Box, CloseButton, DrawerBody, Link, DrawerContent, DrawerHeader, DrawerOverlay, Flex, ListItem, UnorderedList, DrawerFooter, Drawer, useDisclosure, Button, Center } from '@chakra-ui/react'
+import React, { useRef } from 'react'
+import { Link as ReactLink } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-const NavMobile = () => {
+
+const NavMobileSignedIn = () => {
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const boxRef = useRef()
   const {logout} = useAuth()
   const handleSignOut = () => logout()
+
   return (
     <>
     <Flex justify="flex-end" align="center" minW="100vw">
-      <Box ref={boxRef} mt={["1rem", "md", "lg", "xl"]} mr={["2rem", "md", "lg", "xl"]} onClick={onOpen}>
-        {!isOpen && <HamburgerIcon w={[10, 12, 16]} h={[10, 12, 16]} />}
+      <Box ref={boxRef} mt="10px" mr="24px" onClick={onOpen}>
+        {!isOpen && <HamburgerIcon w={10} h={10} />}
       </Box>
       <Drawer
         isOpen={isOpen}
         placement="right"
         onClose={onClose}
         finalFocusRef={boxRef}
+        size={["full", "md", "lg", "0"]}
+
       >
         <DrawerOverlay>
           <DrawerContent>
@@ -45,16 +41,16 @@ const NavMobile = () => {
                 justify="space-around" 
                 align="center" 
                 flexDirection="column" 
-                ml="100px" 
-                mt="120px" 
+                ml="87px" 
+                mt="50px" 
                 fontSize="1.3rem"
               >
                 <ListItem>
-                  <Link as={ReactLink} to="/">Home</Link>
+                  <Link as={ReactLink} to="/">Console</Link>
                 </ListItem>
 
                 <ListItem mt="30px">
-                  <Link as={ReactLink} to="/" pr="5px">About</Link>
+                  <Link as={ReactLink} to="/" pr="5px">Albums</Link>
                 </ListItem>
 
                 <ListItem mt="30px">
@@ -73,15 +69,14 @@ const NavMobile = () => {
               justifyContent="center" 
               alignItems="center"
             >
-              <Button
+                <Button
                 mt={4}
                 mb={8}
                 background="teal.500"
                 color="white"
                 onClick={handleSignOut}
-              >
-                Sign out
-              </Button>          
+                
+                >Sign out</Button>          
             </DrawerFooter>
           </DrawerContent>
         </DrawerOverlay>
@@ -91,4 +86,4 @@ const NavMobile = () => {
   )
 }
 
-export default NavMobile
+export default NavMobileSignedIn

@@ -6,11 +6,14 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { AuthProvider } from './contexts/AuthContext';
 import { FirebaseProvider } from './contexts/FirebaseContext';
 import './app.css'
+import { UpdateProvider } from './contexts/UpdateContext';
 ReactDOM.render(
   <ChakraProvider>
     <AuthProvider>
       <FirebaseProvider>
-        <App />
+        <UpdateProvider>
+          <App />
+        </UpdateProvider>
       </FirebaseProvider>
     </AuthProvider>
   </ChakraProvider>

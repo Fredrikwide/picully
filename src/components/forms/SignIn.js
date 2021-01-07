@@ -16,6 +16,9 @@ import {
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
+import { useContext, useState } from 'react';
+import { UpdateContext } from '../../contexts/UpdateContext';
+
 
 //Yup Validation schema for signing in
 const SignInSchema = Yup.object().shape({
@@ -32,13 +35,22 @@ const SignInSchema = Yup.object().shape({
 
 const SignIn = () => {
   const navigate = useNavigate()
+  const {signupIsClicked, setSignUpIsClicked} = useContext(UpdateContext)
   const { logout, login, currentUser } = useAuth()
   const handleSignOut = () => logout();
-  const handleSignUp = () => navigate("/sign-up")
+  const handleSignUp = () => setSignUpIsClicked(!signupIsClicked)
   return (
   
+    
     //formik handling form state 
-    <Flex justify="center" align="center">
+    <Flex 
+    justify="center" 
+    align="center" 
+    border="5px" 
+    borderColor="white" 
+    minW={["sm", "md", "lg", "xl"]}
+    minH={["sm", "md", "lg", "xl"]}
+    >
         <Formik
         initialValues={{
           email: '',
@@ -58,38 +70,46 @@ const SignIn = () => {
       >
           {(props) => (
             
-            <Form w={[300, 400, 560]}>
+            <Form >
               <Field name="email">
                 {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.email && form.touched.email}>
-                    <FormLabel htmlFor="email">email</FormLabel>
-                    <Input 
-                      {...field}
-                      value={props.values.email}
-                      id="email"
-                      type="email"
-                      placeholder="email" 
-                      onChange={props.handleChange} 
-                      onBlur={props.handleBlur} 
-                    />
-                    <FormErrorMessage>{form.errors.email}</FormErrorMessage>
-                  </FormControl>
+                  <Box p={["sm", "md", "lg", "xl"]}>
+                    <FormControl isInvalid={form.errors.email && form.touched.email}>
+                      <FormLabel color="white" htmlFor="email" p={["sm", "md", "lg", "xl"]}>Email</FormLabel>
+                      <Input 
+                        {...field}
+                        focusBorderColor="white"
+                        value={props.values.email}
+                        id="email"
+                        color="white"
+                        type="email"
+                        placeholder="email" 
+                        onChange={props.handleChange} 
+                        onBlur={props.handleBlur} 
+                      />
+                      <FormErrorMessage>{form.errors.email}</FormErrorMessage>
+                    </FormControl>
+                  </Box>
                 )}
               </Field>
-              <Field name="password">
+              <Field name="password" >
                 {({ field, form }) => (
-                  <FormControl isInvalid={form.errors.password && form.touched.password}>
-                    <FormLabel htmlFor="password">password</FormLabel>
-                    <Input  
-                      {...field}
-                      value={props.values.password}
-                      id="password" 
-                      type="password"
-                      placeholder="password" 
-                      onChange={props.handleChange} 
-                      onBlur={props.handleBlur} />
-                    <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-                  </FormControl>
+                  <Box p={["sm", "md", "lg", "xl"]}>
+                    <FormControl isInvalid={form.errors.password && form.touched.password} >
+                      <FormLabel htmlFor="password" color="white" fontWeight="bold" mt="16px">Password</FormLabel>
+                      <Input  
+                        {...field}
+                        color="white"
+                        focusBorderColor="white"
+                        value={props.values.password}
+                        id="password" 
+                        type="password"
+                        placeholder="password" 
+                        onChange={props.handleChange} 
+                        onBlur={props.handleBlur} />
+                      <FormErrorMessage>{form.errors.password}</FormErrorMessage>
+                    </FormControl>
+                  </Box>
                 )}
               </Field>
            
@@ -97,9 +117,11 @@ const SignIn = () => {
 
                 !currentUser ?
                 <>
-                <Text p="10px">
-                  Not a member yet? Sign up today!
-                </Text>
+                <Container p="10px"  mt="14px">
+                  <Text as="i" color="white">
+                    Not a member yet? Sign up today!
+                  </Text>
+                </Container>
                 <Flex
                 justify="space-around"
                 align="center"
@@ -107,7 +129,9 @@ const SignIn = () => {
                   <Box>
                     <Button
                       mt={4}
-                      colorScheme="teal"
+                      background="white"
+                      p={["20.2px", "md", "lg", "xl"]}
+                      color="teal.500"
                       isLoading={props.isSubmitting}
                       type="submit"
                       >
@@ -117,9 +141,13 @@ const SignIn = () => {
                   <Box>
                     <Button
                         mt={4}
-                        colorScheme="green"
+                        color="white"
+                        bgGradient="linear(to-l, #7928CA, #FF0080)"
                         onClick={handleSignUp}
-
+                        _hover={{
+                          transition: "all 0.6s ease-out",
+                          color: "linear-gradient(to right, #3ebac6 0%, #8b539e 50%, #e53782 100%)"
+                        }}
                     >
                       Sign Up
                     </Button>

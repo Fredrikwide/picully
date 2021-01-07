@@ -1,16 +1,18 @@
-import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList} from '@chakra-ui/react'
-import {useContext, useEffect} from 'react'
+import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem} from '@chakra-ui/react'
+import {useEffect} from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext';
-import { UpdateContext } from '../../contexts/UpdateContext';
 
-const NavBar = () => {
-const {signedUpIsClicked,setSignUpIsClicked} = useContext(UpdateContext)
-const {currentUser, logout} = useAuth();
-const navigate = useNavigate()
-const handleSignUpMenuClick = () => setSignUpIsClicked(!signedUpIsClicked)
+const NavBarSignedIn = () => {
 
-const handleSignOut = async () => { 
+ const {currentUser, logout} = useAuth();
+ const navigate = useNavigate()
+
+useEffect(() => {
+
+}, [currentUser])
+
+ const handleSignOut = async () => { 
    try { 
      await logout() 
      navigate("/") 
@@ -28,10 +30,10 @@ const handleSignOut = async () => {
       justify="space-between"
     >
       <Flex justify="center" align="center">
-        <Heading color="teal.300" ml="60px" p="5px" cursor="pointer" _hover={{color: "teal.200"}}>Picully</Heading>
+        <Heading ml="60px" p="5px">Picully</Heading>
       </Flex>
       <Spacer />
-      <Flex justify="center" align="center" >
+      <Flex justify="center" align="center">
         <UnorderedList
           display="flex" 
           justify="center" 
@@ -43,7 +45,6 @@ const handleSignOut = async () => {
           role="navigation" 
           aria-label="Main"
           mr="60px"
-          cursor="pointer"
          >
           <ListItem  
             p={["4px", "6px", "8px", "16px"]}
@@ -53,29 +54,29 @@ const handleSignOut = async () => {
                 color: "white"
               }}  
             >
-            <Link as={ReactLink} to="/">Home</Link>
+            <Link as={ReactLink} to="/">Console</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
             _hover=
               {{
-                background: "teal.500",
+                border: "2px solid teal.500",
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/">About</Link>
+            <Link as={ReactLink} to="/">Albums</Link>
           </ListItem>
           {
           !currentUser ?
-          <ListItem >
-            <Button 
-              onClick={handleSignUpMenuClick}
-              color="white"
-              background="teal.500"
-              mt="8px"
-            >
-              Sign Up
-            </Button>
+          <ListItem  
+          m={["4px", "6px", "8px", "16px"]}
+          _hover=
+              {{
+                border: "2px solid teal.500",
+                color: "white"
+              }}
+          >            
+            <Link as={ReactLink} to={"/"}>Profile</Link> 
           </ListItem>
           :
           <Button 
@@ -87,21 +88,18 @@ const handleSignOut = async () => {
             Sign out
           </Button>
           }
-          <ListItem  
-            p={["4px", "6px", "8px", "16px"]} 
-            mr={["2px", "4px", "8px", "16px"]}
-            _hover=
-              {{
-                background: "teal.500",
-                color: "white"
-              }}
-            >
-            <Link as={ReactLink} to="/">Contact</Link>
-          </ListItem>
+          <Wrap>
+            <WrapItem>
+              <Avatar 
+                name="Segun Adebayo" 
+                src="https://bit.ly/sage-adebayo"
+               />
+              </WrapItem>
+          </Wrap>
         </UnorderedList>
         </Flex>
     </Flex>
   )
 }
 
-export default NavBar
+export default NavBarSignedIn

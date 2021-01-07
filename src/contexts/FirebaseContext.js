@@ -13,33 +13,17 @@ export const FirebaseProvider = ({ children }) => {
 
   const firebaseFunctions = {
     GetCollection: async collection => await db.collection(collection).get().then((snapshot) => {
-      const restaurants = []
+      const userData = []
       snapshot.forEach((doc) => {
-        restaurants.push({
+        userData.push({
           id: doc.id,
-          name: doc.data().name,
-          coordinates: {
-            latitude: doc.data().coordinates.latitude,
-            longitude: doc.data().coordinates.longitude
-          },
-          description: doc.data().description,
-          address: {
-            street: doc.data().adress.street,
-            city: doc.data().adress.city,
-            zip: doc.data().adress.zip,
-            full: `${doc.data().adress.street},${doc.data().adress.zip}, ${doc.data().adress.city}`
-          },
-          links: {
-            facebook: doc.data().links.facebook,
-            instagram: doc.data().links.instagram,
-            twitter: doc.data().links.twitter,
-            website: doc.data().links.website
-          }
+          username: doc.data().name,
+         
         })
       });
-      console.log("restaurants after map", restaurants)
-      setCollectionData([...restaurants])
-      return restaurants
+      console.log("restaurants after map", userData)
+      setCollectionData([...userData])
+      return userData
     }),
     getSingle: async (collection, id) => await db.collection(collection).doc(id).get()
 

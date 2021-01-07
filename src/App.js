@@ -6,6 +6,7 @@ import SignIn from './components/forms/SignIn';
 import SignUp from './components/forms/SignUp';
 import NavBar from './components/navigation/NavBar';
 import NavIndex from './components/navigation/NavIndex';
+import Console from './components/console/Console';
 
 const App = () => {
   return (
@@ -13,9 +14,9 @@ const App = () => {
       <Router>
         <NavIndex />      
         <Routes>
-          <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <AuthRoute path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <AuthRoute path="/console" elemnt={<Console />} />
         </Routes> 
       </Router>
     </>
