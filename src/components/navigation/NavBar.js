@@ -1,63 +1,102 @@
-import { Box, Flex, Heading, ListItem, Spacer, UnorderedList, useColorMode, useMediaQuery } from '@chakra-ui/react'
-
-import {Link} from 'react-router-dom'
+import { Button, Flex, Heading, ListItem, Spacer, UnorderedList} from '@chakra-ui/react'
+import {useEffect} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext';
 
 const NavBar = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
-  const [isLargerThan900] = useMediaQuery("(min-width: 900px)")
+
+ const {currentUser, logout} = useAuth();
+ const navigate = useNavigate()
+
+useEffect(() => {
+
+}, [currentUser])
+
+ const handleSignOut = async () => { 
+   try { 
+     await logout() 
+     navigate("/") 
+  } catch (err) {
+    console.log(err)
+  }
+}
   return (
     <Flex 
+      color="teal.500"
       maxW="1200px" 
-      minW="100vw" 
-      h="80px" 
-      bg='tomato' 
+      minW="100vw"
+      h="80px"
+
       justify="space-between"
     >
       <Flex justify="center" align="center">
-        <Heading ml="16px" p="5px">Picully</Heading>
+        <Heading ml="60px" p="5px">Picully</Heading>
       </Flex>
       <Spacer />
       <Flex justify="center" align="center">
-        <UnorderedList 
+        <UnorderedList
           display="flex" 
           justify="center" 
           align="stretch"
           direction="row" 
           styleType="none"
-          fontSize="1.125rem"
+          fontSize={["1rem", "1rem", "1.1rem", "1.125rem"]}
           fontWeight="bold"
           role="navigation" 
           aria-label="Main"
-         
-
+          mr="60px"
          >
           <ListItem  
-            p="10px"
+            p={["4px", "6px", "8px", "16px"]}
             _hover=
               {{
-                background: "white",
-                color: "teal.500",
-                height: "100%"
+                background: "teal.500",
+                color: "white"
               }}  
             >
             <Link to="/">Home</Link>
           </ListItem>
           <ListItem
-            p="10px"
+            p={["4px", "6px", "8px", "16px"]}
             _hover=
               {{
-                background: "white",
-                color: "teal.500",
-                height: "100%",
-                borderRadius: "10px"
+                border: "2px solid teal.500",
+                color: "white"
               }}
           >
             <Link to="/">About</Link>
           </ListItem>
-          <ListItem p="10px">
-            <Link to="/sign-up">Sign up</Link>
+          {
+          !currentUser ?
+          <ListItem  
+          m={["4px", "6px", "8px", "16px"]}
+          _hover=
+              {{
+                border: "2px solid teal.500",
+                color: "white"
+              }}
+          >            
+            <Link to={"/sign-in"}>Sign in</Link> 
           </ListItem>
-          <ListItem p="10px" mr="16px">
+          :
+          <Button 
+            onClick={handleSignOut}
+            color="white"
+            background="teal.500"
+            mt="8px"
+          >
+            Sign out
+          </Button>
+          }
+          <ListItem  
+            p={["4px", "6px", "8px", "16px"]} 
+            mr={["2px", "4px", "8px", "16px"]}
+            _hover=
+              {{
+                background: "teal.500",
+                color: "white"
+              }}
+            >
             <Link to="/">Contact</Link>
           </ListItem>
         </UnorderedList>

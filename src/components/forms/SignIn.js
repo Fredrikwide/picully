@@ -107,7 +107,7 @@ const SignIn = () => {
                   <Box>
                     <Button
                       mt={4}
-                      colorScheme="blue"
+                      colorScheme="teal"
                       isLoading={props.isSubmitting}
                       type="submit"
                       >
@@ -118,7 +118,6 @@ const SignIn = () => {
                     <Button
                         mt={4}
                         colorScheme="green"
-                        isLoading={props.isSubmitting}
                         onClick={handleSignUp}
 
                     >

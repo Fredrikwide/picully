@@ -113,9 +113,11 @@ const SignUp = () => {
                               <ModalHeader>Terms and Conditons</ModalHeader>
                               <ModalCloseButton />
                               <ModalBody>
-                                <Text>
-                                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia blanditiis laborum placeat ex animi earum cupiditate est reprehenderit ea quam?
-                                </Text>
+                                <Container>
+                                  <Text>
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia blanditiis laborum placeat ex animi earum cupiditate est reprehenderit ea quam?
+                                  </Text>
+                                </Container>
                               </ModalBody>
                               <Center>
                                 <ModalFooter>

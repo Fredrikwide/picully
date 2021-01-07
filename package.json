@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "formik": "^2.2.6",
+    "react-icons": "^4.1.0",
     "yup": "^0.32.8"
   }
 }

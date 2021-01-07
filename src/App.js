@@ -5,12 +5,13 @@ import AuthRoute from './components/AuthRoute';
 import SignIn from './components/forms/SignIn';
 import SignUp from './components/forms/SignUp';
 import NavBar from './components/navigation/NavBar';
+import NavIndex from './components/navigation/NavIndex';
 
 const App = () => {
   return (
     <>
       <Router>
-        <NavBar />      
+        <NavIndex />      
         <Routes>
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
