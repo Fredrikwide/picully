@@ -1,10 +1,22 @@
-import { Flex } from '@chakra-ui/react'
-import React from 'react'
+import { Box, Flex, Grid, GridItem, Image } from '@chakra-ui/react'
+import React, { useEffect } from 'react'
+import {imageUrls} from './imageData'
+
+
 
 const Console = () => { 
+
+
   return (
-    <Flex justify="center" align="center">
-      <h1>Console</h1>
+    <Flex justify="center" align="center" mt="5rem">
+      <Grid templateColumns="repeat(4, 1fr)" gap={2} w="80%"maxW="100vw" overflow="hidden" >
+        {imageUrls.map((img, i) => {
+          return (
+         
+              <Image src={img} key={i} alt="image" maxW="90%" overflow="hidden" objectFit="cover"  />
+
+          )})}
+      </Grid>
     </Flex>
   )
 }

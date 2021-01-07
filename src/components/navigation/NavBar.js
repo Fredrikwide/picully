@@ -19,19 +19,25 @@ const handleSignOut = async () => {
   }
 }
   return (
-    <Flex 
+    <Flex
       color="teal.500"
-      maxW="1200px" 
+      maxW="100vw" 
       minW="100vw"
       h="80px"
-
+      overflow="hidden"
       justify="space-between"
     >
       <Flex justify="center" align="center">
         <Heading color="teal.300" ml="60px" p="5px" cursor="pointer" _hover={{color: "teal.200"}}>Picully</Heading>
       </Flex>
-      <Spacer />
-      <Flex justify="center" align="center" >
+
+      <Flex 
+          justify="center" 
+          align="center"
+          borderLeft="4px"
+          borderColor="teal.500"
+
+          >
         <UnorderedList
           display="flex" 
           justify="center" 
@@ -43,6 +49,7 @@ const handleSignOut = async () => {
           role="navigation" 
           aria-label="Main"
           mr="60px"
+
           cursor="pointer"
          >
           <ListItem  

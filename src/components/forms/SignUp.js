@@ -76,7 +76,7 @@ const SignUp = () => {
           <Field name="firstname" >
             {({ field, form }) => (
               <Box p={["sm", "md", "lg", "xl"]}>
-                <FormControl isInvalid={form.errors.firstname && form.touched.firstname} >
+                <FormControl isInvalid={form.errors.firstname && form.touched.firstname} isRequired>
                   <FormLabel htmlFor="firstname" color="white" fontWeight="bold" mt="16px">First Name</FormLabel>
                   <Input  
                     {...field}
@@ -96,7 +96,7 @@ const SignUp = () => {
           <Field name="lastname" >
             {({ field, form }) => (
               <Box p={["sm", "md", "lg", "xl"]}>
-                <FormControl isInvalid={form.errors.lastname && form.touched.lastname} >
+                <FormControl isInvalid={form.errors.lastname && form.touched.lastname} isRequired>
                   <FormLabel htmlFor="lastname" color="white" fontWeight="bold" mt="16px">Last Name</FormLabel>
                   <Input  
                     {...field}
@@ -116,7 +116,7 @@ const SignUp = () => {
           <Field name="email">
             {({ field, form }) => (
               <Box p={["sm", "md", "lg", "xl"]}>
-                <FormControl isInvalid={form.errors.email && form.touched.email}>
+                <FormControl isInvalid={form.errors.email && form.touched.email} isRequired>
                   <FormLabel color="white" htmlFor="email" mt="16px">Email</FormLabel>
                   <Input 
                     {...field}
@@ -137,7 +137,7 @@ const SignUp = () => {
           <Field name="password" >
             {({ field, form }) => (
               <Box p={["sm", "md", "lg", "xl"]}>
-                <FormControl isInvalid={form.errors.password && form.touched.password} >
+                <FormControl isInvalid={form.errors.password && form.touched.password} isRequired>
                   <FormLabel htmlFor="password" color="white" fontWeight="bold" mt="16px">Password</FormLabel>
                   <Input  
                     {...field}

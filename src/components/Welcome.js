@@ -11,9 +11,7 @@ const Welcome = () => {
   const {currentUser} = useAuth()
   const {signUpIsClicked} = useContext(UpdateContext)
   return (
-    <>
-    { !currentUser ?
-     (
+  
       <Flex justify="space-around" align="center" direction={["column", "column", "column", "row"]}>
           <WelcomeBanner />
           <Box
@@ -33,11 +31,7 @@ const Welcome = () => {
           </Box>
  
       </Flex>
-     )
-     :
-     <Console />
-    }
-    </>
+  
   )
 }
 

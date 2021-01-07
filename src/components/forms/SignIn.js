@@ -74,7 +74,7 @@ const SignIn = () => {
               <Field name="email">
                 {({ field, form }) => (
                   <Box p={["sm", "md", "lg", "xl"]}>
-                    <FormControl isInvalid={form.errors.email && form.touched.email}>
+                    <FormControl isInvalid={form.errors.email && form.touched.email} isRequired>
                       <FormLabel color="white" htmlFor="email" p={["sm", "md", "lg", "xl"]}>Email</FormLabel>
                       <Input 
                         {...field}
@@ -95,7 +95,7 @@ const SignIn = () => {
               <Field name="password" >
                 {({ field, form }) => (
                   <Box p={["sm", "md", "lg", "xl"]}>
-                    <FormControl isInvalid={form.errors.password && form.touched.password} >
+                    <FormControl isInvalid={form.errors.password && form.touched.password} isRequired >
                       <FormLabel htmlFor="password" color="white" fontWeight="bold" mt="16px">Password</FormLabel>
                       <Input  
                         {...field}

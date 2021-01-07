@@ -24,8 +24,15 @@ export const FirebaseProvider = ({ children }) => {
       console.log("restaurants after map", userData)
       setCollectionData([...userData])
       return userData
-    }),
+    })
+    ,
     getSingle: async (collection, id) => await db.collection(collection).doc(id).get()
+    ,
+    PostUserInfo: async (firstname, lastname) => await db.collection("users").add({
+      firstname: firstname,
+      lastname: lastname
+  })
+
 
   }
 

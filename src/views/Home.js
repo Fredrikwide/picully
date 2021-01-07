@@ -18,8 +18,8 @@ const Home = () => {
 
   return (
       <>
-        <Welcome />
-        {/* <About /> */}
+        { !currentUser ? <Welcome /> : <Console />}
+        { !currentUser && <About />}
       </>
   )
 }

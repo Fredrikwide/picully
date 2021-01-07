@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem} from '@chakra-ui/react'
+import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel} from '@chakra-ui/react'
 import {useEffect} from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext';
@@ -88,14 +88,24 @@ useEffect(() => {
             Sign out
           </Button>
           }
-          <Wrap>
-            <WrapItem>
-              <Avatar 
-                name="Segun Adebayo" 
-                src="https://bit.ly/sage-adebayo"
-               />
-              </WrapItem>
-          </Wrap>
+
+              <Tag 
+                size="lg" 
+                colorScheme="teal" 
+                borderRadius="full" 
+                ml="3rem"
+                mt="2px" 
+                P="5px"
+              >
+                <Avatar
+                  src="https://bit.ly/sage-adebayo"
+                  size="md"
+                  name="Segun Adebayo"
+                  ml={-1}
+                  mr={2}
+                />
+                <TagLabel p="15px">Segun</TagLabel>
+              </Tag>
         </UnorderedList>
         </Flex>
     </Flex>
