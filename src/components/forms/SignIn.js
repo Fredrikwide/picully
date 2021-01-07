@@ -10,13 +10,14 @@ import {
   Container,
   Box,
   Flex, 
-  Spacer
+  Spacer,
+  Text
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
 
-
+//Yup Validation schema for signing in
 const SignInSchema = Yup.object().shape({
   //email validation rules
   email: Yup.string()
@@ -24,7 +25,7 @@ const SignInSchema = Yup.object().shape({
   .required('Please enter a valid email'),
   //pw validation rules
   password: Yup.string()
-  .required('A valid password is reuired')
+  .required('A valid password is required')
   // .min(8, 'password not valid')
   // .matches(/(?=.*[0-9])/, "Password must contain a number.")
 })
@@ -32,10 +33,12 @@ const SignInSchema = Yup.object().shape({
 const SignIn = () => {
   const navigate = useNavigate()
   const { logout, login, currentUser } = useAuth()
-  const handleSignOut = () => logout()
+  const handleSignOut = () => logout();
+  const handleSignUp = () => navigate("/sign-up")
   return (
   
-     
+    //formik handling form state 
+    <Flex justify="center" align="center">
         <Formik
         initialValues={{
           email: '',
@@ -44,19 +47,18 @@ const SignIn = () => {
         validationSchema={SignInSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
-            await login(values.email, values.password)
+            await login(values.email, values.password) // 
             setSubmitting(false)
             navigate("/")
 
         } catch (err) {
-            
             console.log('error', err)
         }
         }}
       >
           {(props) => (
             
-            <Form>
+            <Form w={[300, 400, 560]}>
               <Field name="email">
                 {({ field, form }) => (
                   <FormControl isInvalid={form.errors.email && form.touched.email}>
@@ -90,29 +92,51 @@ const SignIn = () => {
                   </FormControl>
                 )}
               </Field>
-              <Center>
+           
                 {
 
-                  !currentUser ?
-                  <Button
-                  mt={4}
-                  colorScheme="teal"
-                  isLoading={props.isSubmitting}
-                  type="submit"
-                >
-                  Sign in
-                </Button>
+                !currentUser ?
+                <>
+                <Text p="10px">
+                  Not a member yet? Sign up today!
+                </Text>
+                <Flex
+                justify="space-around"
+                align="center"
+                direction={["column", "column", "row", "row"]}>
+                  <Box>
+                    <Button
+                      mt={4}
+                      colorScheme="blue"
+                      isLoading={props.isSubmitting}
+                      type="submit"
+                      >
+                      Sign in
+                    </Button>
+                  </Box>
+                  <Box>
+                    <Button
+                        mt={4}
+                        colorScheme="green"
+                        isLoading={props.isSubmitting}
+                        onClick={handleSignUp}
+
+                    >
+                      Sign Up
+                    </Button>
+                  </Box>
+                </Flex>
+                </>
                 :
                 <Button onClick={handleSignOut}>Sign Out</Button>
-
                 }
              
-              </Center>
+            
             </Form>
         
           )}
         </Formik>
-
+      </Flex>
   )
 }
 

@@ -10,7 +10,20 @@ import {
   Container,
   Box,
   Flex, 
-  Spacer
+  Spacer,
+  Checkbox,
+  Text,
+  Popover,
+  PopoverTrigger,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Link
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -25,17 +38,17 @@ const SignInSchema = Yup.object().shape({
   //pw validation rules
   password: Yup.string()
   .required('A valid password is reuired')
-  // .min(8, 'password not valid')
-  // .matches(/(?=.*[0-9])/, "Password must contain a number.")
+  .min(8, 'password not valid')
+  .matches(/(?=.*[0-9])/, "Password must contain a number.")
 })
 
 const SignUp = () => {
   const navigate = useNavigate()
-  const { SignUp } = useAuth()
-
+  const { signup } = useAuth()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
   
-   
+    <Flex justify="center" align="center">
         <Formik
         initialValues={{
           email: '',
@@ -44,7 +57,7 @@ const SignUp = () => {
         validationSchema={SignInSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
-            await SignUp(values.email, values.password)
+            await signup(values.email, values.password)
             setSubmitting(false)
             navigate("/")
 
@@ -90,6 +103,31 @@ const SignUp = () => {
                   </FormControl>
                 )}
               </Field>
+              <Box>
+                <Checkbox isRequired colorScheme="green">   
+                    by signing up you <strong>agree</strong> to our <Link as="button" color="teal.500" onClick={onOpen}>Terms and Conditons</Link>
+
+                          <Modal isOpen={isOpen} onClose={onClose}>
+                            <ModalOverlay />
+                            <ModalContent>
+                              <ModalHeader>Terms and Conditons</ModalHeader>
+                              <ModalCloseButton />
+                              <ModalBody>
+                                <Text>
+                                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia blanditiis laborum placeat ex animi earum cupiditate est reprehenderit ea quam?
+                                </Text>
+                              </ModalBody>
+                              <Center>
+                                <ModalFooter>
+                                    <Button colorScheme="teal" onClick={onClose}>
+                                      Close
+                                    </Button>
+                                </ModalFooter>
+                              </Center>
+                            </ModalContent>
+                          </Modal>
+                </Checkbox>
+              </Box>
               <Center>
                 <Button
                   mt={4}
@@ -104,7 +142,7 @@ const SignUp = () => {
         
           )}
         </Formik>
-
+      </Flex>
   )
 }
 
