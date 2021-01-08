@@ -1,14 +1,18 @@
-import { FormControl } from '@chakra-ui/react'
-import React from 'react'
+import { Flex, FormControl, FormLabel, Input } from '@chakra-ui/react'
+import React, { useState } from 'react'
 
 const UploadImage = () => {
+  const [imageToUpload, setImageToUpload] = useState()
   const handleSubmitImage = () => console.log('submitted')
   return (
-    <form onSubmit={handleSubmitImage}>
-      <FormControl>
-
-      </FormControl>
-    </form>
+  <Flex justify="center" align="center">
+      <form onSubmit={handleSubmitImage}>
+        <FormControl>
+          <FormLabel>Upload your image</FormLabel>
+          <Input type="file" />
+        </FormControl>
+      </form>
+    </Flex>
   )
 }
 

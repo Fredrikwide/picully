@@ -31,9 +31,8 @@ export const FirebaseProvider = ({ children }) => {
     PostUserInfo: async (firstname, lastname) => await db.collection("users").add({
       firstname: firstname,
       lastname: lastname
-  })
-
-
+  }),
+    
   }
 
   const firebaseContextValue = {

@@ -52,7 +52,13 @@ const SignUp = () => {
   const handleGoBack = () => setSignUpIsClicked(false)
   return (
   
-    <Flex justify="center" align="center" border="5px" borderColor="white">
+    <Flex 
+      justify="center" 
+      align="center"
+      pl={["16px", "18px", "20px", "22px"]}
+      pr={["16px", "18px", "20px", "22px"]}
+      pt={["20px", "18px", "20px", "22px"]}
+    >
     <Formik
     initialValues={{
       email: '',
@@ -185,7 +191,10 @@ const SignUp = () => {
             <Flex
             justify="space-around"
             align="center"
-            direction={["column", "column", "row", "row"]}>     
+            direction={["column", "column", "row", "row"]}
+            p={["16px", "18px", "20px", "22px"]}
+            mb={["16px", "18px", "20px", "22px"]}
+            >     
               <Box>
                 <Button
                     mt={4}
@@ -205,6 +214,8 @@ const SignUp = () => {
                   mt={4}
                   background="white"
                   color="teal.500"
+                  pl={["26px", "28px", "30px", "32px"]}
+                  pr={["26px", "28px", "30px", "32px"]}
                   isLoading={props.isSubmitting}
                   onClick={handleGoBack}
                   >

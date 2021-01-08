@@ -7,7 +7,7 @@ const NavBarSignedIn = () => {
 
  const {currentUser, logout} = useAuth();
  const navigate = useNavigate()
-
+  const handleGoHome = () => navigate('/console')
 useEffect(() => {
 
 }, [currentUser])
@@ -29,8 +29,8 @@ useEffect(() => {
 
       justify="space-between"
     >
-      <Flex justify="center" align="center">
-        <Heading ml="60px" p="5px">Picully</Heading>
+      <Flex justify="center" align="center" cursor="pointer">
+        <Heading ml="60px" p="5px" onClick={handleGoHome}>Picully</Heading>
       </Flex>
       <Spacer />
       <Flex justify="center" align="center">
@@ -54,7 +54,7 @@ useEffect(() => {
                 color: "white"
               }}  
             >
-            <Link as={ReactLink} to="/">Console</Link>
+            <Link as={ReactLink} to="/upload">Upload</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
@@ -64,7 +64,17 @@ useEffect(() => {
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/">Albums</Link>
+            <Link as={ReactLink} to="/albums">Albums</Link>
+          </ListItem>
+          <ListItem
+            p={["4px", "6px", "8px", "16px"]}
+            _hover=
+              {{
+                border: "2px solid teal.500",
+                color: "white"
+              }}
+          >
+            <Link as={ReactLink} to="/console">Console</Link>
           </ListItem>
           {
           !currentUser ?

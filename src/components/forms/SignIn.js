@@ -46,8 +46,6 @@ const SignIn = () => {
     <Flex 
     justify="center" 
     align="center" 
-    border="5px" 
-    borderColor="white" 
     minW={["sm", "md", "lg", "xl"]}
     minH={["sm", "md", "lg", "xl"]}
     >
@@ -125,7 +123,7 @@ const SignIn = () => {
                 <Flex
                 justify="space-around"
                 align="center"
-                direction={["column", "column", "row", "row"]}>
+                direction={["row", "row", "row", "row"]}>
                   <Box>
                     <Button
                       mt={4}

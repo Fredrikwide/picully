@@ -7,8 +7,9 @@ const WelcomeBanner = () => {
       align="center"
       minH={["sm", "md", "lg", "xl"]}
       maxH={[""]}
-      ml={["2rem", "2rem", "5rem", "12rem"]}
+      ml={["1.6rem", "2rem", "5rem", "12rem"]}
       mb={["0rem", "0rem", "1rem", "12rem"]}
+      pb={["3rem", "md", "lg", "xl"]}
       >
         <Box maxW={["100vw", "100vw", "100vw", "70wv"]}>
           <Heading 
@@ -25,8 +26,8 @@ const WelcomeBanner = () => {
             Welcome to Picully
           </Heading>
           <Box 
-            pt={["1rem", "md", "lg", "16px"]} 
-            ml={["3rem", "md", "lg", "4rem"]}
+            pt={["sm", "md", "lg", "16px"]} 
+            ml={["1.8rem", "md", "lg", "4rem"]}
           >
             <Text as="i" color="teal.500" fontSize={["sm", "md", "2rem", "3xl"]}>
             &#8212;&nbsp;&nbsp;&quot;Your photos&#44; their choice&quot;

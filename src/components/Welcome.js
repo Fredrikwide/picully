@@ -18,7 +18,7 @@ const Welcome = () => {
             overflow="hidden"
             ml="auto"
             pb={["sm", "md", "lg", "16px"]}
-            background="teal.500"
+            bgGradient="linear(to-b, teal.600, teal.200)"
             display="flex"
             alignContent="center"
             justifyContent="center"
