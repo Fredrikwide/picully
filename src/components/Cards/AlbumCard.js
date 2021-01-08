@@ -18,8 +18,6 @@ const AlbumCard = () => {
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
         <Image src={property.imageUrl} alt={property.imageAlt} />
   
-      
-  
           <Box
             mt="1"
             fontWeight="semibold"
@@ -43,7 +41,7 @@ const AlbumCard = () => {
               .map((_, i) => (
                 <StarIcon
                   key={i}
-                  color={i < property.rating ? "teal.500" : "gray.300"}
+                  color={i < property.rating ? "teal.300" : "gray.300"}
                 />
               ))}
             <Box as="span" ml="2" color="gray.600" fontSize="sm">

@@ -37,7 +37,8 @@ export const FirebaseProvider = ({ children }) => {
 
   const firebaseContextValue = {
     firebaseFunctions,
-    collectionData
+    collectionData,
+    db
   }
 
   return (

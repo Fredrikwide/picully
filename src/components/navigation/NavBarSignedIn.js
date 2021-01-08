@@ -1,4 +1,4 @@
-import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel} from '@chakra-ui/react'
+import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel, Box} from '@chakra-ui/react'
 import {useEffect} from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext';
@@ -76,8 +76,7 @@ useEffect(() => {
           >
             <Link as={ReactLink} to="/console">Console</Link>
           </ListItem>
-          {
-          !currentUser ?
+
           <ListItem  
           m={["4px", "6px", "8px", "16px"]}
           _hover=
@@ -97,25 +96,26 @@ useEffect(() => {
           >
             Sign out
           </Button>
-          }
-
+          <Box>
               <Tag 
                 size="lg" 
                 colorScheme="teal" 
                 borderRadius="full" 
                 ml="3rem"
                 mt="2px" 
-                P="5px"
+                p="5px"
               >
                 <Avatar
                   src="https://bit.ly/sage-adebayo"
                   size="md"
                   name="Segun Adebayo"
-                  ml={-1}
+                  ml={1}
                   mr={2}
+                 
                 />
                 <TagLabel p="15px">Segun</TagLabel>
               </Tag>
+            </Box>
         </UnorderedList>
         </Flex>
     </Flex>
