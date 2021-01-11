@@ -28,7 +28,7 @@ import {
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { UpdateContext } from '../../contexts/UpdateContext';
 
 
@@ -41,7 +41,12 @@ const SignInSchema = Yup.object().shape({
   password: Yup.string()
   .required('A valid password is reuired')
   .min(8, 'password not valid')
-  .matches(/(?=.*[0-9])/, "Password must contain a number.")
+  .matches(/(?=.*[0-9])/, "Password must contain a number."),
+  confirmPassword: Yup
+    .string()
+    .required()
+    .label('Confirm password')
+    .oneOf([Yup.ref('password'), null],'Passwords must match',),
 })
 
 const SignUp = () => {
@@ -50,6 +55,7 @@ const SignUp = () => {
   const {setSignUpIsClicked} = useContext(UpdateContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const handleGoBack = () => setSignUpIsClicked(false)
+  const [error, setError] = useState(false)
   return (
   
     <Flex 
@@ -61,23 +67,26 @@ const SignUp = () => {
     >
     <Formik
     initialValues={{
+      firstname: '',
+      lastname: '',
       email: '',
       password: '',
+      confirmPassword: ''
+
     }}
     validationSchema={SignInSchema}
     onSubmit={async (values, { setSubmitting }) => {
       try { 
-        await signup(values.email, values.password) // 
+        await signup(values.email, values.password, values.firstname, values.lastname) // 
         setSubmitting(false)
         navigate("/")
 
     } catch (err) {
-        console.log('error', err)
+        setError(true)
     }
     }}
   >
       {(props) => (
-        
         <Form w={[300, 400, 560]} >
           <Field name="firstname" >
             {({ field, form }) => (
@@ -160,6 +169,26 @@ const SignUp = () => {
               </Box>
             )}
           </Field>
+          <Field name="confirmPassword" >
+            {({ field, form }) => (
+              <Box p={["sm", "md", "lg", "xl"]}>
+                <FormControl isInvalid={form.errors.confirmPassword && form.touched.confirmPassword} isRequired>
+                  <FormLabel htmlFor="confirmPassword" color="white" fontWeight="bold" mt="16px">confirm password</FormLabel>
+                  <Input  
+                    {...field}
+                    color="white"
+                    focusBorderColor="white"
+                    value={props.values.confirmPassword}
+                    id="confirmPassword" 
+                    type="password"
+                    placeholder="confirmPassword" 
+                    onChange={props.handleChange} 
+                    onBlur={props.handleBlur} />
+                  <FormErrorMessage>{form.errors.confirmPassword}</FormErrorMessage>
+                </FormControl>
+              </Box>
+            )}
+          </Field>
           <Box m="10px" p="5px">
             <Checkbox isRequired colorScheme="green" color="white">   
               by signing up you <Text as="em">agree</Text> to our <Link as="button" color="white" onClick={onOpen}>Terms and Conditons</Link>
@@ -222,10 +251,12 @@ const SignUp = () => {
                   Close
                 </Button>
               </Box>
+              {error && <header>something went wrong: {error}</header>}
             </Flex>           
         </Form>  
       )}
     </Formik>
+  
   </Flex>
   )
 }

@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../contexts/FirebaseContext';
-import { projectStorage, timestamp } from '../firebase/config';
+import { projectStorage } from '../firebase/config';
 
 const useStorage = (file) => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [url, setUrl] = useState(null);
-  const {db} = useContext(FirebaseContext)
+  const {db, timestamp} = useContext(FirebaseContext)
 
   useEffect(() => {
     // references
@@ -24,7 +24,7 @@ const useStorage = (file) => {
       await collectionRef.add({ url, createdAt });
       setUrl(url);
     });
-  }, [file, db]);
+  }, [file, db, timestamp]);
 
   return { progress, url, error };
 }

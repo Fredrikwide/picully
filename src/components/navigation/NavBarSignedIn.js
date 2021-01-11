@@ -1,16 +1,36 @@
-import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel, Box} from '@chakra-ui/react'
-import {useEffect} from 'react'
+import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel, Box, Spinner} from '@chakra-ui/react'
+import {useCallback, useContext, useEffect, useState} from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext';
+import { FirebaseContext } from '../../contexts/FirebaseContext';
 
 const NavBarSignedIn = () => {
 
- const {currentUser, logout} = useAuth();
- const navigate = useNavigate()
-  const handleGoHome = () => navigate('/console')
+  const {firebaseFunctions} = useContext(FirebaseContext)
+  const {currentUser, logout} = useAuth();
+  const [user, setUser] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
+  const [err, setError] = useState(false)
+  const navigate = useNavigate()
+  
+//get user info on mount
 useEffect(() => {
+  const getUserInfoOnMount = async () => {
+    let res = await firebaseFunctions.getUser(currentUser.uid)
+    if(res) {
+      setUser(res)
+      console.log(user)
+    }
+    else {
+      setError('')
+    }
+  }
+  getUserInfoOnMount()
+}, [])
 
-}, [currentUser])
+
+
+const handleGoHome = () => navigate('/console')
 
  const handleSignOut = async () => { 
    try { 
@@ -64,7 +84,7 @@ useEffect(() => {
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/albums">Albums</Link>
+            <Link as={ReactLink} to="/create">Create</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
@@ -113,12 +133,13 @@ useEffect(() => {
                   mr={2}
                  
                 />
-                <TagLabel p="15px">Segun</TagLabel>
+                <TagLabel pt="10px" pb="10px" pr="12px" pl="5px">{user ? user.first_name : 'error'}</TagLabel>
               </Tag>
             </Box>
         </UnorderedList>
         </Flex>
     </Flex>
+            
   )
 }
 

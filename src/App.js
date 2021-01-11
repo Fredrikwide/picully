@@ -8,6 +8,9 @@ import NavBar from './components/navigation/NavBar';
 import NavIndex from './components/navigation/NavIndex';
 import Console from './components/console/Console';
 import UploadImage from './components/forms/UploadImage';
+import CreateAlbum from './components/album/CreateAlbum';
+import Albums from './components/album/Albums';
+import NotFound from './components/error/NotFound';
 
 const App = () => {
   return (
@@ -18,7 +21,10 @@ const App = () => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
           <AuthRoute path="/console" element={<Console />} />
-          <AuthRoute path="/upload" element={<UploadImage />} />
+       
+          <AuthRoute path="/create" element={<CreateAlbum />}/>
+
+          <Route path="/*" elemnt={<NotFound />} />
         </Routes> 
       </Router>
     </>

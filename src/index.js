@@ -9,13 +9,13 @@ import './app.css'
 import { UpdateProvider } from './contexts/UpdateContext';
 ReactDOM.render(
   <ChakraProvider>
-    <AuthProvider>
-      <FirebaseProvider>
+    <FirebaseProvider>
+      <AuthProvider>
         <UpdateProvider>
           <App />
         </UpdateProvider>
-      </FirebaseProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </FirebaseProvider>
   </ChakraProvider>
     ,
 
