@@ -1,4 +1,4 @@
-import { AspectRatio, Grid, GridItem } from '@chakra-ui/react'
+import { AspectRatio, Grid, GridItem, Image } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
 const ImageGrid = () => {

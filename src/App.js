@@ -31,6 +31,9 @@ const App = () => {
                     <AuthRoute path="/create">
                       <CreateAlbum />
                     </AuthRoute>
+                    <AuthRoute path=":albumName/upload">
+                      <Album />
+                    </AuthRoute>
                   </AuthRoute>
           </AuthRoute>
 

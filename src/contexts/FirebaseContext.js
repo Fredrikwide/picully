@@ -59,17 +59,14 @@ export const FirebaseProvider = ({ children }) => {
     })
     ,
     //create album
-    createAlbum: async (name, desc, id) => {
-    var docRef = db.collection("albums").doc().withConverter();
-
-    await db.collection("albums").doc().set({user_albums: [{
+    createAlbum: async (name, desc, id) => await db.collection("albums").doc().set({
       title: name,
       description: desc,
       owner_id: id,
-  
-    }]}, err => {
+      
+    }, err => {
       console.log(err)
-    })}
+    })
     ,
     //get albums
     getUserAlbums: async (id) => db.collection('albums').get().then((snapshot) => {
