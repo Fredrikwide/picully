@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
+import { boolean } from 'yup/lib/locale';
 
 import { useAuth } from '../contexts/AuthContext'
 import { useFire } from '../contexts/FirebaseContext';
 
-const useUploadImage = (image, albumId = null) => {
+const useUploadImage = (image, albumId, userId) => {
 	const [uploadProgress, setUploadProgress] = useState(null);
 	const [uploadedImage, setUploadedImage] = useState(null);
 	const [error, setError] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
   
 	const { currentUser } = useAuth()
-  const { db, storage, timestamp } = useFire()
+  const { db, storage, firebaseFunctions } = useFire()
 
 	useEffect(() => {
+		const getAlbum = async () => {
+			// const albumRes = await firebaseFunctions.getAlbumById(albumId)
+			console.log(albumId)
+		}
+		getAlbum()
 		if (!image) {
 			setUploadProgress(null);
 			setUploadedImage(null);
@@ -42,21 +48,28 @@ const useUploadImage = (image, albumId = null) => {
 
 			// retrieve URL to uploaded file
 			const url = await snapshot.ref.getDownloadURL();
-
+			
+	
 			// add uploaded file to db
 			const img = {
 				title: image.name,
-				owner: currentUser.uid,
+				owner: userId ? userId : currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
 				type: image.type,
 				url,
 			};
-
+			
+			
+			
 			// get docRef to album (if set)
-			if (albumId) {
-				img.album = db.collection('albums').doc(albumId)
-			}
+			// if (albumId) {
+			// 	img.album = db.collection('albums').doc(albumId)
+			// }
+
+			// if(userId) {
+			// 	img.userId = db.collection('users').doc(userId)
+			// }
 
 			// add image to collection
 			await db.collection('images').add(img)

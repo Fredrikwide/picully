@@ -4,12 +4,9 @@ import { Badge, Box, Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-const AlbumCard = (props ) => {
-  const { albumName } = useParams()
+const AlbumCard = ({name, description, owner}) => {
 
-  useEffect(() => {
-  console.log(props)
-  }, [])
+
 
   return (
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
@@ -22,7 +19,7 @@ const AlbumCard = (props ) => {
             lineHeight="tight"
             isTruncated
           >
-            Album Name: {props.name}
+            Album Name: {name}
           </Box>
           <Box
             mt="1"
@@ -31,7 +28,7 @@ const AlbumCard = (props ) => {
             lineHeight="tight"
             isTruncated
           >
-            description: {props.description}
+            description: {description}
           </Box>
           <Box
             mt="1"
@@ -40,7 +37,7 @@ const AlbumCard = (props ) => {
             lineHeight="tight"
             isTruncated
           >
-            owner_id: {props.owner }
+            owner_id: {owner }
           </Box>
         </Box>
    
