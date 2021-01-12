@@ -8,7 +8,7 @@ export const UpdateProvider = props => {
 
 
     const updateContextValue = {
-
+        
       signUpIsClicked,
       setSignUpIsClicked,      
     }

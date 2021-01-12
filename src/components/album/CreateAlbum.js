@@ -1,31 +1,18 @@
-import { Flex, Input } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
-import { Button } from "react-scroll";
-import { useAuth } from "../../contexts/AuthContext";
-import { FirebaseContext } from "../../contexts/FirebaseContext";
+import { Box, Flex} from "@chakra-ui/react";
+import CreateAlbumForm from "../forms/CreateAlbumForm";
+import Albums from "./Albums";
 
  const CreateAlbum = () => {
-  const [albumName, setAlbumName] = useState("");
-  const {firebaseFunctions} = useContext(FirebaseContext)
-  const {currentUser} = useAuth()
-
-  const onAlbumNameChange = (e) => {
-    setAlbumName(e.target.value);
-  };
-
-  const onAlbumCreate = async () => {
-    if (!albumName && !currentUser) {
-      return;
-    }
-    await firebaseFunctions.createAlbum(albumName, currentUser.uid)
-    setAlbumName("");
-  };
-
+ 
   return (
-    <Flex justify="center" align="center" bg="black">
-      <input value={albumName} onChange={onAlbumNameChange} type="text" placeholder="album name" />
-      <Button onClick={onAlbumCreate}>Create album</Button>
+    <>
+    <Box w="100%" h="100%" mb="10rem" mt="10rem">
+      <Albums />
+    </Box>
+    <Flex justify="center" align="center" bg="teal.600" direction="column">  
+      <CreateAlbumForm />
     </Flex>
+    </>
   );
 };
 

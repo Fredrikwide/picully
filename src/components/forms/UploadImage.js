@@ -1,32 +1,39 @@
-import { Flex, FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react'
-import { Form } from 'formik'
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { Button } from 'react-scroll'
+import { useFire } from '../../contexts/FirebaseContext'
+import firebase from 'firebase'
+import useUploadImage from '../../hooks/useUploadImage'
 
-const UploadImage = () => {
+const types = ["image/png", "image/jpg", "image.jpeg"]
+const UploadImage = ({albumId}) => {
+
   const [imageToUpload, setImageToUpload] = useState()
   const [errorMessage, setErrorMessage] = useState('')
-  const types = ["image/png", "image/jpg", "image.jpeg"]
-  const handleSubmitImage = () => console.log('submitted')
-  const handleFileUpload = (e) => {
-    if(e.target.files.length && types.includes(e.target.files[0].type)){
-      setImageToUpload(e.target.files[0])
-    }
-    else {
-      setImageToUpload(null)
-      setErrorMessage('som ting wong')
-    }
-  }
-  useEffect(() => {
-    console.log(imageToUpload)
-  }, [imageToUpload])
+  const {storage, db} = useFire()
+  const { uploadProgress, error, isSuccess } = useUploadImage(imageToUpload, albumId);
   
+
+  const handleFileUpload = (e) => {
+    console.log("current file", e.target.files[0])
+    setImageToUpload(e.target.files[0])
+  }
+
+  useEffect(() => {
+    console.log('i changed', uploadProgress)
+  }, [imageToUpload])
+  //ChakraUi bugged with file input so had to use inline styles :(
   return (
-        <FormControl>
-          <FormLabel>Upload your image</FormLabel>
-          <Input type="file" onChange={e => handleFileUpload(e)} />
-          <FormErrorMessage>{errorMessage}</FormErrorMessage>
-        </FormControl>
+      
+        <form>
+            <Flex justify="center" align="center">
+              <InputGroup display="flex" justifyContent="center" alignItems="center" mt="10rem">
+              <Input  pt="5px"type="file" onChange={handleFileUpload} w="400px" textAlign="center" />
+              <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
+                Submit
+              </InputRightAddon>
+              </InputGroup>
+            </Flex>
+        </form>   
 
   )
 }

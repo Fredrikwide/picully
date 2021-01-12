@@ -1,20 +1,33 @@
-import { ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons'
-import { Box, Flex, Grid, GridItem, Image, SimpleGrid, Text } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import AlbumCard from '../Cards/AlbumCard'
-import {imageUrls, tallImages} from './imageData'
 
+import { Box, Flex, Link, Heading } from '@chakra-ui/react'
+import {Link as ReactLink, useNavigate} from 'react-router-dom'
 
+const Console = () => {
 
-const Console = () => { 
-
-  const [likes, setLikes] = useState(0) 
   return (
-    <Box p="2rem" mt="10rem"> 
-      <SimpleGrid minChildWidth={["120px", "150px", "200px", "220px"]} spacing="20px" maxW="100vw">
-
-      </SimpleGrid>
-    </Box>
+    <>
+      <Flex justify="center" align="center" maxW="100vw" >
+          <Link as={ReactLink} to="/console/albums" >
+            <Box w="200px" h="300px" p="10px" bg="teal.100" border="2px" borderColor="red">
+              <Flex justify="center" align="center">
+                <Heading>
+                  Go to Albums
+                </Heading>
+              </Flex>
+            </Box>
+          </Link>
+          <Link as={ReactLink} to="/console/albums/create" >
+            <Box w="200px" h="300px" p="10px" bg="teal.100" border="2px" borderColor="red">
+              <Flex justify="center" align="center">
+                <Heading>
+                  create Albums
+                </Heading>
+              </Flex>
+            </Box>
+          </Link>
+      </Flex>
+    </>
+ 
   )
 }
 

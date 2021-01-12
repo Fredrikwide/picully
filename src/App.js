@@ -11,6 +11,7 @@ import UploadImage from './components/forms/UploadImage';
 import CreateAlbum from './components/album/CreateAlbum';
 import Albums from './components/album/Albums';
 import NotFound from './components/error/NotFound';
+import Album from './components/album/Album';
 
 const App = () => {
   return (
@@ -20,11 +21,21 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
-          <AuthRoute path="/console" element={<Console />} />
-       
-          <AuthRoute path="/create" element={<CreateAlbum />}/>
+          <AuthRoute path="/console">
+            <Console />
+                  <AuthRoute path="albums">
+                    <Albums />
+                    <AuthRoute path=":albumName">
+                      <Album />
+                    </AuthRoute>
+                    <AuthRoute path="/create">
+                      <CreateAlbum />
+                    </AuthRoute>
+                  </AuthRoute>
+          </AuthRoute>
 
-          <Route path="/*" elemnt={<NotFound />} />
+
+          <Route path="*" element={<NotFound />} />
         </Routes> 
       </Router>
     </>

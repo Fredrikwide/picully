@@ -74,7 +74,7 @@ const handleGoHome = () => navigate('/console')
                 color: "white"
               }}  
             >
-            <Link as={ReactLink} to="/upload">Upload</Link>
+            <Link as={ReactLink} to="/explore">Explore</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
@@ -84,7 +84,7 @@ const handleGoHome = () => navigate('/console')
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/create">Create</Link>
+            <Link as={ReactLink} to="console/albums">Albums</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
@@ -94,7 +94,7 @@ const handleGoHome = () => navigate('/console')
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/console">Console</Link>
+            <Link as={ReactLink} to="/console">Home</Link>
           </ListItem>
 
           <ListItem  

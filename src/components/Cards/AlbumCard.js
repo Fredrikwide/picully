@@ -1,22 +1,19 @@
 // Sample card from Airbnb
 import { StarIcon } from '@chakra-ui/icons'
 import { Badge, Box, Image } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-const AlbumCard = () => {
-  const property = {
-    imageUrl: "https://bit.ly/2Z4KKcF",
-    imageAlt: "Rear view of modern home with pool",
-    beds: 3,
-    baths: 2,
-    title: "Modern home in city center in the heart of historic Los Angeles",
-    formattedPrice: "$1,900.00",
-    reviewCount: 34,
-    rating: 4,
-  }
+const AlbumCard = (props ) => {
+  const { albumName } = useParams()
+
+  useEffect(() => {
+  console.log(props)
+  }, [])
+
   return (
-      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-        <Image src={property.imageUrl} alt={property.imageAlt} />
+      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
+        <Image src="https://bit.ly/naruto-sage" alt="naruto-sage" />
   
           <Box
             mt="1"
@@ -25,28 +22,25 @@ const AlbumCard = () => {
             lineHeight="tight"
             isTruncated
           >
-            {property.title}
+            Album Name: {props.name}
           </Box>
-  
-          <Box>
-            {property.formattedPrice}
-            <Box as="span" color="gray.600" fontSize="sm">
-              / wk
-            </Box>
+          <Box
+            mt="1"
+            fontWeight="semibold"
+            as="h4"
+            lineHeight="tight"
+            isTruncated
+          >
+            description: {props.description}
           </Box>
-  
-          <Box d="flex" mt="2" alignItems="center">
-            {Array(5)
-              .fill("")
-              .map((_, i) => (
-                <StarIcon
-                  key={i}
-                  color={i < property.rating ? "teal.300" : "gray.300"}
-                />
-              ))}
-            <Box as="span" ml="2" color="gray.600" fontSize="sm">
-              {property.reviewCount} reviews
-            </Box>
+          <Box
+            mt="1"
+            fontWeight="semibold"
+            as="h4"
+            lineHeight="tight"
+            isTruncated
+          >
+            owner_id: {props.owner }
           </Box>
         </Box>
    
