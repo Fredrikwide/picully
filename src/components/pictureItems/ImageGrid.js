@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import {Link as ReactLink} from 'react-router-dom'
 import ImageCard from '../Cards/ImageCard'
 
-const ImageGrid = ({images, albumName}) => {
+const ImageGrid = ({images, albumName, urls}) => {
 
   // const [imageHeight, setImageHeight] = useState(null)
   // const [imageWidth, setImageWidth] = useState(null)
@@ -16,7 +16,7 @@ const ImageGrid = ({images, albumName}) => {
   // }
 
   useEffect(() => {
-      console.log(images, "THIS IS IMAGES")
+
   }, [])
 
   return (
@@ -38,7 +38,19 @@ const ImageGrid = ({images, albumName}) => {
                 </Flex> 
             )
             })
-          : <h1>error</h1>
+          : urls.length && urls.map((prevUrl, index) => {
+            return ( 
+              <Flex justify="center" align="center" direction="column" key={index}>
+           
+                    <ImageCard
+                      url={prevUrl}
+                      title={prevUrl.title || prevUrl.name} 
+                      size={prevUrl.size || "undefined"}
+                      key={prevUrl || "undefined"}
+                    />
+              </Flex> 
+          )
+          })
         }
     
         </SimpleGrid>

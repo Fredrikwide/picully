@@ -8,7 +8,7 @@ import ImageGrid from '../pictureItems/ImageGrid'
 
 const types = ["image/png", "image/jpg", "image.jpeg"]
 const UploadImage = ({albumId, albumTitle, userId}) => {
-
+  let reader = new FileReader();
   const [imageToUpload, setImageToUpload] = useState()
   const [upload, setUpload] = useState(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -16,10 +16,13 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const {firebaseFunctions, db} = useFire()
-
+  const [selectedFile, setSelectedFile] = useState()
+  const [preview, setPreview] = useState()
+  const [previewArr, setPreviewArr] = useState()
   const { uploadProgress, error, isSuccess } = useUploadImage(upload !== undefined &&upload, albumId, userId);
   
   const handleFileUpload = (e) => {
+    e.preventDefault();
     console.log("current files", e.target.files)
     if(e.target.files.length > 1) {
       let temparr = Array.from(e.target.files)
@@ -30,6 +33,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   }
   
   const onSubmit = (e) => {
+    e.preventDefault();
     setImageToUpload(imageToUpload)
     if(imageToUpload.length) {
       setUpload(imageToUpload)
@@ -48,6 +52,26 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
    }
   }, [isSuccess, error, uploadProgress, isSubmitting, upload])
 
+  useEffect(() => {
+    if (!imageToUpload && !imagesToUpload) {
+        setPreview(undefined)
+        return
+    }
+    else if (imagesToUpload.length) {
+      let itemWithUrlArr = imagesToUpload.map(itm => itm.url = URL.createObjectURL(itm))
+      setPreviewArr(itemWithUrlArr)
+    }
+    else if(imageToUpload) {
+      const objectUrl = URL.createObjectURL(imageToUpload)
+      let tmpObj = {url: objectUrl}
+      setPreview(tmpObj)
+      console.log(preview, "single")
+    }
+
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(preview)
+}, [imageToUpload,imagesToUpload])
   //ChakraUi bugged with file input so had to use inline styles :(
   return (
     <>
@@ -66,12 +90,12 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
         </Flex>
       </form>
       {
-      imageToUpload !== undefined && imageToUpload 
+      preview !== undefined && preview 
       && 
-      <ImageCard image={imageToUpload} />
+      <ImageCard image={preview} />
       }
-      {imagesToUpload !== undefined && imagesToUpload.length > 1 
-      && <ImageGrid images={imagesToUpload} />
+      {previewArr !== undefined && previewArr.length > 1 
+      && <ImageGrid images={imagesToUpload} urls={previewArr} />
       }
     </>
 
