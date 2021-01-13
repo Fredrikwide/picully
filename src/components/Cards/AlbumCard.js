@@ -1,17 +1,37 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // Sample card from Airbnb
 import { StarIcon } from '@chakra-ui/icons'
-import { Badge, Box, Image } from '@chakra-ui/react'
+import { Badge, Box, Flex, Image, Input } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Button } from 'react-scroll'
+import {useFire} from '../../contexts/FirebaseContext'
 
-const AlbumCard = ({name, description, owner}) => {
+
+const AlbumCard = ({id, title, description}) => {
+
+  const {firebaseFunctions, images} = useFire()
+  const [thumbNailImage, setThumbNailImage] = useState([])
+
+  useEffect(() => {
+    const getRandomThumbNailFromAlbum = async () => {
+      await firebaseFunctions.getImagesByAlbumId(id)
+      let tempArr = images.map(pic => pic)
+      let random = tempArr[Math.floor(Math.random() * tempArr.length)];
+      setThumbNailImage(random)
+    }
+
+    getRandomThumbNailFromAlbum()
+  }, [])
 
 
 
   return (
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
-        <Image src="https://bit.ly/naruto-sage" alt="naruto-sage" />
-  
+        <Image 
+          src={thumbNailImage ? thumbNailImage.url : "https://via.placeholder.com/300"}
+          alt={thumbNailImage ? thumbNailImage.title: "empty"}/>
+
           <Box
             mt="1"
             fontWeight="semibold"
@@ -19,7 +39,7 @@ const AlbumCard = ({name, description, owner}) => {
             lineHeight="tight"
             isTruncated
           >
-            Album Name: {name}
+            title: {title}
           </Box>
           <Box
             mt="1"
@@ -30,17 +50,9 @@ const AlbumCard = ({name, description, owner}) => {
           >
             description: {description}
           </Box>
-          <Box
-            mt="1"
-            fontWeight="semibold"
-            as="h4"
-            lineHeight="tight"
-            isTruncated
-          >
-            owner_id: {owner }
-          </Box>
+        
         </Box>
-   
+        
   )
 }
 

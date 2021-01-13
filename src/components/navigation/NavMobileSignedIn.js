@@ -46,19 +46,19 @@ const NavMobileSignedIn = () => {
                 fontSize="1.3rem"
               >
                 <ListItem>
-                  <Link as={ReactLink} to="/">Console</Link>
+                  <Link as={ReactLink} to="/">Home</Link>
                 </ListItem>
 
                 <ListItem mt="30px">
-                  <Link as={ReactLink} to="/" pr="5px">Albums</Link>
+                  <Link as={ReactLink} to="/albums" pr="5px">Albums</Link>
                 </ListItem>
 
                 <ListItem mt="30px">
-                  <Link as={ReactLink} to="/">Profile</Link>
+                  <Link as={ReactLink} to="/profile">Profile</Link>
                 </ListItem>
 
                 <ListItem mt="30px">
-                  <Link as={ReactLink} to="/">Upload</Link>
+                  <Link as={ReactLink} to="/albums/create">Upload</Link>
                 </ListItem>
 
               </UnorderedList>

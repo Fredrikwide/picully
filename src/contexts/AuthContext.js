@@ -1,28 +1,27 @@
 import React, { useContext, useState, useEffect } from "react"
 import { auth } from "../config/firebase"
-import { useFire } from "./FirebaseContext"
+import { FirebaseContext } from "./FirebaseContext"
 
 const AuthContext = React.createContext()
 
 
 
-export const useAuth = () => {
-  return useContext(AuthContext)
-}
+export const useAuth = () => useContext(AuthContext)
+
 
 export const AuthProvider = ({ children }) => {
-  const {firebaseFunctions} = useFire()
+  const {db} = useContext(FirebaseContext)
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
 
   const signup = (email, password, firstname, lastname) => {
-     auth.createUserWithEmailAndPassword(email, password).then( async user => {
-       let tempUser={}
-       tempUser = await firebaseFunctions.createuser(firstname, lastname)
-       console.log(user, tempUser)
-      return tempUser
-    })
-  }
+    auth.createUserWithEmailAndPassword(email, password).then(cred => {
+     return db.collection('users').doc(cred.user.uid).set({
+       firstName: firstname,
+       lastName: lastname,
+     })
+ })
+ }
 
   const login = (email, password) => auth.signInWithEmailAndPassword(email, password)
 

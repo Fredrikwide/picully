@@ -53,6 +53,7 @@ const useUploadImage = (image, albumId, userId) => {
 			// add uploaded file to db
 			const img = {
 				title: image.name,
+				album: image.ablumId,
 				owner: userId ? userId : currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
@@ -61,11 +62,9 @@ const useUploadImage = (image, albumId, userId) => {
 			};
 			
 			
-			
-			// get docRef to album (if set)
-			// if (albumId) {
-			// 	img.album = db.collection('albums').doc(albumId)
-			// }
+			if (albumId) {
+				img.album = db.collection('albums').doc(albumId)
+			}
 
 			// if(userId) {
 			// 	img.userId = db.collection('users').doc(userId)

@@ -13,18 +13,13 @@ const Albums = () => {
   const [currUserAlbums, setCurrUserAlbums] = useState([])
   const [error, setError] = useState(false)
   const [owner, setOwner] = useState()
-  const {db} = useFire()
+  const {firebaseFunctions} = useFire()
 
   
 
   useEffect(() => {
    const getOwnersById = async () => {
-     let ownerRes = await db.collection("albums").where("owner_id", "==", currentUser.uid).get().then(snapshot => {
-       snapshot.forEach( doc => {
-        console.log(doc.data())
-       })
-     })
-     console.log(ownerRes)
+    await firebaseFunctions.getUserAlbums(currentUser.uid)
    }
    getOwnersById()
   }, [])
@@ -38,7 +33,7 @@ const Albums = () => {
       </Flex>
 
 			{
-				loading
+				loading && albums.length 
 					? (
           <Flex justify="center" align="center" mt="10rem" key={214124}>
             <Spinner   thickness="4px"

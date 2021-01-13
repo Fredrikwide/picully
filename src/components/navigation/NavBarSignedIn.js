@@ -46,7 +46,6 @@ const handleGoHome = () => navigate('/console')
       maxW="1200px" 
       minW="100vw"
       h="80px"
-
       justify="space-between"
     >
       <Flex justify="center" align="center" cursor="pointer">
@@ -126,14 +125,14 @@ const handleGoHome = () => navigate('/console')
                 p="5px"
               >
                 <Avatar
-                  src="https://bit.ly/sage-adebayo"
+                  src="https://bit.ly/broken-link"
                   size="md"
-                  name="Segun Adebayo"
+                  name={user.firstName}
                   ml={1}
                   mr={2}
                  
                 />
-                <TagLabel pt="10px" pb="10px" pr="12px" pl="5px">{user ? user.first_name : 'error'}</TagLabel>
+                <TagLabel pt="10px" pb="10px" pr="12px" pl="5px">{user ? `${user.firstName} ${user.lastName}` : 'error'}</TagLabel>
               </Tag>
             </Box>
         </UnorderedList>

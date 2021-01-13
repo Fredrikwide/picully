@@ -12,7 +12,6 @@ import {
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
-
 import {  useFire } from '../../contexts/FirebaseContext';
 
 
@@ -20,6 +19,7 @@ import {  useFire } from '../../contexts/FirebaseContext';
 const CreateAlbumSchema = Yup.object().shape({
   //email validation rules
   name: Yup.string()
+  .trim()
   .min(2, 'must be minimum och 2 characters')
   .max(140, 'max name length is 140 chars')
   .required('Please enter a valid album name'),
@@ -51,12 +51,13 @@ const CreateAlbumForm = () => {
         initialValues={{
           name: '',
           description: '',
-          owner: currentUser.uid, 
+          owner: currentUser.uid,
+          id: '',
         }}
         validationSchema={CreateAlbumSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
-            await firebaseFunctions.createAlbum(values.name, values.description, values.owner) // 
+            await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
             setSubmitting(false)
             navigate('/console/albums')
 

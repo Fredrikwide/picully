@@ -1,4 +1,4 @@
-import { SimpleGrid, Flex, Link, Box, Heading, Text, Button } from '@chakra-ui/react'
+import { SimpleGrid, Flex, Link, Box, Heading, Text, Button, Input } from '@chakra-ui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { FirebaseContext, useFire } from '../../contexts/FirebaseContext'
@@ -20,43 +20,31 @@ const Albums = ({albums}) => {
   const navigate=useNavigate()
 
 
-  useEffect(() => {
-   const getOwnersById = async () => {
-     let ownerRes = await db.collection("albums").where("owner", "==", currentUser.uid).get().then(snapshot => {
-       snapshot.forEach( doc => {
-        console.log(doc.data())
-       })
-     })
-     console.log(ownerRes)
-   }
-   getOwnersById()
-  }, [])
-
   return (
     <>
       <Flex justify="center" align="center" flex="1" >
 
         <SimpleGrid minChildWidth={["120px", "150px", "200px", "220px"]} spacing="22px" maxW="100vw">
-          {albums.length ?
+          {albums.length &&
           albums.map((album, index) => {
               return ( 
                 <Flex justify="center" align="center" direction="column" key={index}>
                   <Link as={ReactLink} to={`/console/albums/${album.title}`} key={album.ownerId} >
                       <AlbumCard
                       description={album.description}
-                      name={album.title} 
-                      owner={album.owner_id} 
+                      title={album.title} 
+                      id={album.id} 
                       key={album.name}
                       />
                     </Link>
+
                 </Flex> 
             )
             })
-          : <h1>{error}</h1>
         }
     
         </SimpleGrid>
-       { albums.length ? (<Box ml="4rem" maxH="150px" cursor="pointer" onClick={() => navigate('/console/albums/create')}>
+       { albums.length ? (<Box ml="4rem" maxH="150px" cursor="pointer" onClick={() => navigate('/home/albums/create')}>
           <Button bg="teal.400" color="white" _hover={{backgroundColor: "teal.200" , color: "white"}} onClick={() => navigate('/console/albums/create')}>
             Add Album
           </Button>
@@ -69,6 +57,7 @@ const Albums = ({albums}) => {
         </Flex>)
       }
       </Flex>
+
     </>
   )
 }

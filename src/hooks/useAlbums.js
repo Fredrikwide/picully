@@ -12,6 +12,7 @@ const useAlbums = () => {
 			setLoading(true)
 			const snapshotAlbums = []
 			snapshot.forEach(doc => {
+
 				snapshotAlbums.push({
 					id: doc.id,
 					...doc.data(),

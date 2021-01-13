@@ -6,10 +6,10 @@ const Console = () => {
 
   return (
     <>
-      <Flex justify="center" align="center" maxW="100vw" >
+      <Flex justify="space-around" align="center" maxW="100vw" h="70vh">
           <Link as={ReactLink} to="/console/albums" >
-            <Box w="200px" h="300px" p="10px" bg="teal.100" border="2px" borderColor="red">
-              <Flex justify="center" align="center">
+            <Box w="300px" h="400px" p="10px" bg="teal.100" border="2px" borderColor="red">
+              <Flex justify="center" align="center" w="100%" h="100%">
                 <Heading>
                   Go to Albums
                 </Heading>

@@ -1,16 +1,22 @@
-import React, { useState, createContext } from 'react'
+import React, { useState, createContext, useContext } from 'react'
 
 export const UpdateContext = createContext();
 
 
-export const UpdateProvider = props => {
-    const [signUpIsClicked, setSignUpIsClicked] = useState(false)
+export const useUpdate = () => useContext(UpdateContext)
+  
 
+export const UpdateProvider = props => {
+    
+    const [signUpIsClicked, setSignUpIsClicked] = useState(false)
+    const [currentAlbumID, setCurrentAlbumID] = useState("")
 
     const updateContextValue = {
         
       signUpIsClicked,
-      setSignUpIsClicked,      
+      setSignUpIsClicked,
+      currentAlbumID,
+      setCurrentAlbumID 
     }
 
     return (

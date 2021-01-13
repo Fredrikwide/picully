@@ -6,9 +6,8 @@ import "firebase/firestore";
 
 export const FirebaseContext = createContext()
 
-export const useFire = () => {
-  return useContext(FirebaseContext)
-}
+export const useFire = () => useContext(FirebaseContext)
+
 
 export const FirebaseProvider = ({ children }) => {
   
@@ -17,10 +16,13 @@ export const FirebaseProvider = ({ children }) => {
   const storage = firebase.storage()
 
   const timestamp = firebase.firestore.FieldValue.serverTimestamp;
-
+  const [currentAlbum, setCurrentAlbum] = useState()
   const [collectionData, setCollectionData] = useState([])
+  const [albumCollection, setAlbumCollection] = useState([])
+  const [updated, setUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState({})
+  const [images, setImages] = useState([])
 
   const firebaseFunctions = {
     //get user collection
@@ -46,12 +48,12 @@ export const FirebaseProvider = ({ children }) => {
     getUser: async (id) => await db.collection('users').doc(id).get().then(doc => {
       setIsLoading(true)
       const user = {
-        first_name: '',
-        last_name: '',
+        firstName: '',
+        lastName: '',
         id: '',
       }
-      user.first_name = doc.data().firstname
-      user.last_name = doc.data().lastname
+      user.firstName = doc.data().firstName
+      user.lastName = doc.data().lastName
       user.id = doc.data().id
       setUserData({...user})
       console.log(user)
@@ -75,6 +77,7 @@ export const FirebaseProvider = ({ children }) => {
       title: name,
       description: desc,
       owner_id: id,
+      id
       
     }).then(docRef => {
       const dataRef = db.collection("albums").doc(docRef.id);
@@ -83,13 +86,22 @@ export const FirebaseProvider = ({ children }) => {
      })
     })
   ,
+    updateAlbumName: async (id, newName) => {
+      let ref = db.collection("albums").doc(id)
+      setIsLoading(true)
+      await ref.update({
+        title: newName
+      }).then(
+        console.log("success")
+      ).catch(err => console.log("error", err))
+
+    },
       //get albums
-    getUserAlbums: async () => await db.collection('albums').get().then((snapshot) => {
+    getUserAlbums: async (id, title) => await db.collection('albums').where("owner_id", "==", id).get().then((snapshot) => {
       setIsLoading(true)
       const albums = []
-      const ref = db.collection('albums').doc();
+      const ref = db.collection('albums')
       snapshot.forEach((doc) => {
-        
         albums.push({
           name: doc.data().title,
           description: doc.data().description,
@@ -104,42 +116,43 @@ export const FirebaseProvider = ({ children }) => {
     }, err => {
       console.log(err)
     }),
-    getAlbumByTitle: async (name) => await db.collection('albums').where('title', '==', name).get().then(doc => {
-      setIsLoading(true)
-      const album = {
-        title: '',
-        owner_id: '',
-        description: '',
-        id: '',
-      }
-      album.title = doc.data().title
-      album.description = doc.data().description
-      album.owner_id = doc.data().owner_id
-      album.id = doc.data().id
-      setIsLoading(false)
-      return album
-    }, err => {
-      console.log(err)
-    })
+    getAlbumByTitle: async (name) => {
+     await db.collection('albums').where('title', '==', name).get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const tempAlbums = []
+          let tempObj = doc.id
+          tempAlbums.push(doc.data())
+          setAlbumCollection(tempAlbums)
+          setCurrentAlbum(tempObj)
+          setIsLoading(false)
+          return tempObj
+        })          
+      }).catch(function(error) {
+        console.log("Error getting document:", error);
+      });
+    }
     ,
     //get ablum by album id
-    getAlbumById: async (id) => await db.collection('albums').where('id', '==', id).get().then(doc => {
+    getAlbumById: async (albumId) => {
+      // get ref
+      const albumIdRef = db.collection('albums')
       setIsLoading(true)
-      const album = {
-        title: '',
-        owner_id: '',
-        description: '',
-        id: '',
-      }
-      album.title = doc.data().title
-      album.description = doc.data().description
-      album.owner_id = doc.data().owner_id
-      album.id = doc.data().id
-      setIsLoading(false)
-      return album
-    }, err => {
-      console.log(err)
-    })
+      albumIdRef
+      .where('id', '==', albumId)
+      //.where('title', '==', 'School1') // does not need index
+      //.where('score', '<=', 10)    // needs index
+      //.orderBy('owner', 'asc')
+      //.limit(3)
+      .onSnapshot((querySnapshot) => {
+        const items = [];
+        querySnapshot.forEach((doc) => {
+          items.push(doc.data());
+        })
+        console.log(items)
+        return items
+      })
+      
+  }
 
     ,
     //get images from collection
@@ -154,8 +167,7 @@ export const FirebaseProvider = ({ children }) => {
           ownderId: doc.data().owner_id,
           url: doc.data().url
         })
-      });
-      console.log("image info", imageArr)
+      })
       setCollectionData([...imageArr])
       setIsLoading(false)
       return imageArr
@@ -163,23 +175,26 @@ export const FirebaseProvider = ({ children }) => {
       console.log(err)
     })
     ,
-    getImagesByOwnerId: async (id) => await db.collection('images').where("ownerId", "==", id).get().then((snapshot) => {
-      setIsLoading(true)
-      const imageArr = []
-      snapshot.forEach((doc) => {
-        imageArr.push({
-          title: doc.data().title,
-          path: doc.data().path,
-          ownderId: doc.data().owner,
+    getImagesByAlbumId: async (id) => { await db.collection("images").where("album", "==", db.collection("albums").doc(id)).get().then(querySnapshot => {
+        const imageArr = []
+        querySnapshot.forEach(doc => {
+            imageArr.push({
+              title: doc.data().title,
+              album: doc.data().album,
+              path: doc.data().path,
+              size: doc.data().size,
+              url: doc.data().url
+            })
+          })
+          setImages([...imageArr])
+          setIsLoading(false)
+          return imageArr
         })
-      });
-      console.log("image info", imageArr)
-      setCollectionData([...imageArr])
-      setIsLoading(false)
-      return imageArr
-    }, err => {
-      console.log(err)
-    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+    },
+     
   }
 
 
@@ -190,6 +205,10 @@ export const FirebaseProvider = ({ children }) => {
     isLoading,
     timestamp,
     db,
+    images,
+    albumCollection,
+    updated,
+    currentAlbum,
     storage
   }
 

@@ -78,7 +78,7 @@ const NavMobile = () => {
                   pt="16"
                 >
                   <Box>
-                    <Link as={ReactLink} to="/">Home</Link>
+                    <Link as={ReactLink} to="/">About</Link>
                   </Box>
                   <Box>
                     <ArrowForwardIcon />
@@ -94,7 +94,7 @@ const NavMobile = () => {
                   pt="16"
                 >
                   <Box>
-                    <Link as={ReactLink} to="/">Home</Link>
+                    <Link as={ReactLink} to="/">Contact</Link>
                   </Box>
                   <Box>
                     <ArrowForwardIcon />

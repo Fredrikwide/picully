@@ -9,6 +9,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 
   const [imageToUpload, setImageToUpload] = useState()
   const [upload, setUpload] = useState()
+
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const {firebaseFunctions, db} = useFire()
@@ -18,7 +19,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   const handleFileUpload = (e) => {
     console.log("current file", e.target.files[0])
     setUpload(e.target.files[0])
-    e.target.value = '';
+    
   }
   
   const onSubmit = (e) => {
@@ -28,10 +29,6 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   
   useEffect(() => {
     const getAlbumById = async () => {
-      let res = await firebaseFunctions.getAlbumByTitle(albumTitle)
-      // let Otherres = firebaseFunctions.getAlbumById(albumId)
-      console.log(res, "get album by title")
-      console.log(albumId, "Album ID")
     }
     getAlbumById()
    if(isSuccess) {
@@ -42,7 +39,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
    else if(error) {
      console.log(error)
    }
-  }, [isSuccess, error,uploadProgress])
+  }, [isSuccess, error, uploadProgress])
 
   //ChakraUi bugged with file input so had to use inline styles :(
   return (
