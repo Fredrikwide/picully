@@ -44,7 +44,7 @@ const Albums = ({albums}) => {
         }
     
         </SimpleGrid>
-       { albums.length ? (<Box ml="4rem" maxH="150px" cursor="pointer" onClick={() => navigate('/home/albums/create')}>
+       { albums.length ? (<Box ml="4rem" maxH="150px" cursor="pointer" onClick={() => navigate('/console/albums/create')}>
           <Button bg="teal.400" color="white" _hover={{backgroundColor: "teal.200" , color: "white"}} onClick={() => navigate('/console/albums/create')}>
             Add Album
           </Button>

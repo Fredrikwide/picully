@@ -20,7 +20,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <AuthRoute path="/console">
             <Console />
-                  <AuthRoute path="/albums">
+                  <AuthRoute path="albums">
                     <Albums />
                     <AuthRoute path="/:albumName">
                       <Album />

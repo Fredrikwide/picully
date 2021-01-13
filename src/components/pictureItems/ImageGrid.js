@@ -27,10 +27,10 @@ const ImageGrid = ({images, albumName}) => {
           images.map((image, index) => {
               return ( 
                 <Flex justify="center" align="center" direction="column" key={index}>
-                  <Link as={ReactLink} to={`/console/albums/${albumName}/${image.title}`} key={image.id} >
+                  <Link as={ReactLink} to={`/console/albums/${albumName}/${image.title ||image.name}`} key={image.id} >
                       <ImageCard
                         url={image.url}
-                        title={image.title} 
+                        title={image.title || image.name} 
                         size={image.size}
                         key={image.url}
                       />

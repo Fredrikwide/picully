@@ -1,10 +1,11 @@
+import { Flex, Heading } from '@chakra-ui/react'
 import React from 'react'
 
 const NotFound = () => {
   return (
-    <div>
-      <h1>404 Page not found</h1>
-    </div>
+    <Flex justify="center" align="center" h="70vh">
+      <Heading>404 Page not found</Heading>
+    </Flex>
   )
 }
 

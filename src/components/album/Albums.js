@@ -27,7 +27,7 @@ const Albums = () => {
 	return (
 		<>
 			<Flex justify="center" align="center" w="100%" mt="5rem">
-        <Heading>
+        <Heading pt="1rem" pb="2rem">
           {albums.length ? "Your Albums" : "Create new albums"}
         </Heading>
       </Flex>
