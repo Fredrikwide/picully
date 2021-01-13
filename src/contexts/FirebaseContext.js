@@ -194,6 +194,26 @@ export const FirebaseProvider = ({ children }) => {
         console.log("Error getting documents: ", error);
     });
     },
+    getImagesByUserId: async (id) => {
+      await db.collection("images").where("owner", "==", id).get().then(querySnapshot => {
+        const imageArr = []
+        querySnapshot.forEach(doc => {
+            imageArr.push({
+              title: doc.data().title,
+              album: doc.data().album,
+              path: doc.data().path,
+              size: doc.data().size,
+              url: doc.data().url
+            })
+          })
+          setImages([...imageArr])
+          setIsLoading(false)
+          return imageArr
+        })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+    }
      
   }
 

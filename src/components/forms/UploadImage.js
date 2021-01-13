@@ -1,4 +1,4 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress } from '@chakra-ui/react'
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
 import firebase from 'firebase'
@@ -19,7 +19,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   const [selectedFile, setSelectedFile] = useState()
   const [preview, setPreview] = useState()
   const [previewArr, setPreviewArr] = useState()
-  const { uploadProgress, error, isSuccess } = useUploadImage(upload !== undefined &&upload, albumId, userId);
+  const { uploadProgress, error, isSuccess } = useUploadImage(upload !== undefined && upload, albumId, userId);
   
   const handleFileUpload = (e) => {
     e.preventDefault();
@@ -27,18 +27,19 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
     if(e.target.files.length > 1) {
       let temparr = Array.from(e.target.files)
       let multiple = temparr.map(file => file)
-      setImagesToUpload(multiple)
+      setImagesToUpload(prevState => [...prevState, ...multiple])
     }
     else setImageToUpload(e.target.files[0])
   }
   
   const onSubmit = (e) => {
     e.preventDefault();
-    setImageToUpload(imageToUpload)
-    if(imageToUpload.length) {
-      setUpload(imageToUpload)
+    setUpload(imageToUpload)
+    if(imagesToUpload.length) {
+      setUpload(imagesToUpload)
     }
-    
+
+    setPreview(undefined)
   }
   
   useEffect(() => {
@@ -64,14 +65,14 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
     else if(imageToUpload) {
       const objectUrl = URL.createObjectURL(imageToUpload)
       let tmpObj = {url: objectUrl}
-      setPreview(tmpObj)
+      setPreview(tmpObj.url)
       console.log(preview, "single")
     }
 
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(preview)
-}, [imageToUpload,imagesToUpload])
+}, [imageToUpload,imagesToUpload, preview])
   //ChakraUi bugged with file input so had to use inline styles :(
   return (
     <>
@@ -92,10 +93,14 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
       {
       preview !== undefined && preview 
       && 
-      <ImageCard image={preview} />
+      <ImageCard image={imagesToUpload} previewURL={preview}/>
       }
       {previewArr !== undefined && previewArr.length > 1 
-      && <ImageGrid images={imagesToUpload} urls={previewArr} />
+      && 
+      <Flex mt="3rem" justify="center" align="center" direction="column">
+        <Heading>Files Staged for upload (preview)</Heading>
+        <ImageGrid images={imagesToUpload} previewURLS={previewArr} />
+      </Flex>
       }
     </>
 

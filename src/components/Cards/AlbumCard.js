@@ -8,29 +8,13 @@ import { Button } from 'react-scroll'
 import {useFire} from '../../contexts/FirebaseContext'
 
 
-const AlbumCard = ({id, title, description}) => {
-
-  const {firebaseFunctions, images} = useFire()
-  const [thumbNailImage, setThumbNailImage] = useState([])
-
-  useEffect(() => {
-    const getRandomThumbNailFromAlbum = async () => {
-      await firebaseFunctions.getImagesByAlbumId(id)
-      let tempArr = images.map(pic => pic)
-      let random = tempArr[Math.floor(Math.random() * tempArr.length)];
-      setThumbNailImage(random)
-    }
-
-    getRandomThumbNailFromAlbum()
-  }, [])
-
-
-
+const AlbumCard = ({id, title, description,thumbNail}) => {
+console.log(thumbNail, "thumbnail")
   return (
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
         <Image 
-          src={thumbNailImage ? thumbNailImage.url : "https://via.placeholder.com/300"}
-          alt={thumbNailImage ? thumbNailImage.title: "empty"}/>
+          src={thumbNail ? thumbNail.url : "https://via.placeholder.com/300"}
+          alt={thumbNail ? thumbNail.title: "empty"}/>
 
           <Box
             mt="1"

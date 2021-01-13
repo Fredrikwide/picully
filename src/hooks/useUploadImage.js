@@ -11,14 +11,10 @@ const useUploadImage = (image, albumId, userId) => {
   const [isSuccess, setIsSuccess] = useState(false);
   
 	const { currentUser } = useAuth()
-  const { db, storage, firebaseFunctions } = useFire()
+  const { db, storage } = useFire()
 
 	useEffect(() => {
-		const getAlbum = async () => {
-			// const albumRes = await firebaseFunctions.getAlbumById(albumId)
-			console.log(albumId)
-		}
-		getAlbum()
+
 		if (!image) {
 			setUploadProgress(null);
 			setUploadedImage(null);
@@ -27,6 +23,7 @@ const useUploadImage = (image, albumId, userId) => {
 
 			return;
 		}
+
 
 		// reset environment
 		setError(null);
@@ -66,9 +63,9 @@ const useUploadImage = (image, albumId, userId) => {
 				img.album = db.collection('albums').doc(albumId)
 			}
 
-			// if(userId) {
-			// 	img.userId = db.collection('users').doc(userId)
-			// }
+			if(userId) {
+				img.userId = db.collection('users').doc(userId)
+			}
 
 			// add image to collection
 			await db.collection('images').add(img)

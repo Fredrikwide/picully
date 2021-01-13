@@ -1,22 +1,15 @@
-import { SimpleGrid, Flex, Link, Box, Heading, Text, Button, Input } from '@chakra-ui/react'
-import React, { useContext, useEffect, useState } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
-import { FirebaseContext, useFire } from '../../contexts/FirebaseContext'
+import { SimpleGrid, Flex, Link, Box, Button } from '@chakra-ui/react'
+
+
 import AlbumCard from '../Cards/AlbumCard'
-import Album from './Album'
-import {Link as ReactLink, Navigate, useNavigate, useParams} from 'react-router-dom'
-import useAlbums from '../../hooks/useAlbums'
+
+import {Link as ReactLink, useNavigate} from 'react-router-dom'
 
 
 
-const Albums = ({albums}) => {
-  const {currentUser} = useAuth()
-  const {albumName} = useParams()
-  const [currUserAlbums, setCurrUserAlbums] = useState([])
-  const [error, setError] = useState(false)
-  const [owner, setOwner] = useState()
-  const [who, setWho] = useState()
-  const {firebaseFunctions, db} = useFire()
+
+const Albums = ({albums, thumbNail}) => {
+
   const navigate=useNavigate()
 
 
@@ -35,6 +28,7 @@ const Albums = ({albums}) => {
                       title={album.title} 
                       id={album.id} 
                       key={album.name}
+                      thumbNail={thumbNail}
                       />
                     </Link>
 
