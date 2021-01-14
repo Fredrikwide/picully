@@ -1,7 +1,6 @@
 
 
-    //TODO
-    Som fotograf vill jag kunna redigera ett albumnamn. inProgress
+
     
     Som fotograf vill jag kunna ladda upp fler bilder till ett redan skapat album.
     Som fotograf vill jag kunna markera bilder och skapa ett nytt album utifrån de markerade bilderna.
