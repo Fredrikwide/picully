@@ -1,5 +1,5 @@
 
-import { Grid, GridItem, Heading, Image, Text, Button, CloseButton } from '@chakra-ui/react'
+import { Grid, GridItem, Heading, Image, Text, Button, CloseButton, Checkbox, Flex, AspectRatio, Box } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFire } from '../../contexts/FirebaseContext';
@@ -12,8 +12,9 @@ ImageGrid = ({images}) => {
   const {db, storage} = useFire()
   const [deleteImage, setDeleteImage] = useState(false);
   const { currentUser } = useAuth()
-  const {imagesOwnedByCurrentUser, imageDeleted, setImageDeleted} = useUpdate()
-
+  const {isUploaded} = useUpdate()
+  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted} = useUpdate()
+  const [isChecked, setIsChecked] = useState(false)
 
 	const handleDeleteImage = async (img) => {
 
@@ -33,6 +34,17 @@ ImageGrid = ({images}) => {
     console.log("deleted")
   }, [imageDeleted])
 
+  useEffect(() => {
+    console.log("uploaded")
+  }, [isUploaded])
+
+
+  let pickedImages = []
+  const handlePickImage = (item) => {
+      let ref = db.collection("images").where("album", "==", item.album)
+    setIsChecked(!isChecked)
+  }
+
   return (
     <Grid 
     mr="1rem"
@@ -40,18 +52,43 @@ ImageGrid = ({images}) => {
     templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
     templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
     mt="5rem" 
-    gap={3} 
-    h="600px"
-
-    maxW="100vw">
+    gap={6} 
+    h="600px">
       {
-        !imageDeleted && imagesOwnedByCurrentUser !== undefined && imagesOwnedByCurrentUser.length && 
-        imagesOwnedByCurrentUser.map((image, index) => (
-          <GridItem colSpan={1} key={index} overflow="hidden">
-            <CloseButton size="sm" onClick={() => handleDeleteImage(image)} />
-            <Text fontSize="sm" textAlign="center" p="5px">{image.title}</Text>
-            <Image src={image.url} alt={image.title} h="100%" w="100%" objectFit="contain"/>
+        !imageDeleted && imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length && 
+        imagesInCurrentAlbum.map((image, index) => (
+          <>
+          <GridItem colSpan={1} rowSpan={2} key={index} overflow="hidden">
+            <Flex justify="space-between" align="center" >
+            <CloseButton  size="sm" onClick={() => handleDeleteImage(image)} />
+
+            
+            <Text 
+            fontSize="sm" 
+            textAlign="center" 
+            p="5px">{image.title}
+            </Text>
+            </Flex>
+            <AspectRatio>
+              <Image 
+              src={image.url} 
+              alt={image.title} 
+              h="100%" 
+              w="100%" 
+              objectFit="contain" 
+              />
+            </AspectRatio>
+            <Flex justify="flex-end" align="center">
+              <Checkbox 
+              size="md"
+              id={image.owner}
+              colorScheme="teal" 
+              onChange={() => handlePickImage(image)}>
+                pick
+              </Checkbox>
+            </Flex>
           </GridItem>
+          </>
         ))
       }
     </Grid>

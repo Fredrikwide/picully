@@ -12,11 +12,12 @@ export const UpdateProvider = props => {
     
     const [signUpIsClicked, setSignUpIsClicked] = useState(false)
     const [imageDeleted, setImageDeleted] = useState(false)
-    const [currentAlbumID, setCurrentAlbumID] = useState("")
+    const [currentAlbumID, setCurrentAlbumID] = useState(undefined)
     const [currentUserAlbums, setCurrentUserAlbums] = useState([])
     const [userLoggedIn, setUserLoggedIn] = useState(false)
     const {firebaseFunctions, db} = useFire()
     const [isUploaded, setIsUploaded] = useState(false)
+    const [imagesInCurrentAlbum, setImagesInCurrentAlbum] = useState()
     const [imagesOwnedByCurrentUser, setImagesOwnedByCurrentUser] = useState()
     const {currentUser} = useAuth()
 
@@ -43,10 +44,27 @@ export const UpdateProvider = props => {
         setImageDeleted(false)
         }
         
-    }, [userLoggedIn, imageDeleted])
+    }, [userLoggedIn,isUploaded, imageDeleted])
 
 
+    useEffect(() => {
+        ( async () => {
+            if(currentAlbumID !== undefined) {
+                let ref = db.collection("images").where("album", "==", currentAlbumID)
+            await ref.get().then(snapshot => {
+                    let albumImages = []
+                    snapshot.forEach(doc => {
+                        console.log(doc.data(), "I RAN")
+                        albumImages.push(doc.data())
+                        setImagesInCurrentAlbum(albumImages)
+                    })
+                })
+            }
+            else return;
+        }
 
+        )()
+    }, [currentAlbumID])
 
 
     const updateContextValue = {

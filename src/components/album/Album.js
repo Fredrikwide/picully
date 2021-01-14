@@ -18,43 +18,29 @@ const Album = () => {
   const [albumArr, setAlbumArr] = useState()
   const {currentUser} = useAuth()
   const [isLoading, setIsLoading] = useState(false)
-  const [pictures, setPictures] = useState([])
-  const [albumId, setAlbumId] = useState()
-  const {firebaseFunctions, currentAlbum, albumCollection, images,} = useFire()
+  const {firebaseFunctions, albumCollection, images,} = useFire()
   const {currentAlbumID, setCurrentAlbumID} = useUpdate()
   const [editAlbumName, setEditAlbumName] = useState(albumName)
-  const [currAlbumID, setCurrAlbumID] = useState("")
   const [editActive, setEditActive] = useState(false)
-  const [currAlbum, setCurrAlbum] = useState({})
+  const {db} = useFire()
 
 
-
-  useEffect(() => {
-
-  (async () => {
-    setIsLoading(true)
-    let arr = await albumCollection.map(item => item )
-    console.log(arr)
-    setAlbumArr(arr)
-    const tempAlb = Object.assign({}, ...arr);
-    console.log("ALBUM", tempAlb.id)
-    setCurrAlbum(tempAlb.id)
-    let res = await firebaseFunctions.getImages(currentUser.uid)
-    console.log("PLEASE", res)
-    }
-    )()
-    setIsLoading(false)
-  }, [albumCollection])
   
 
   useEffect(() => {
     (async () => {
       setIsLoading(true)
-      await firebaseFunctions.getAlbumByTitle(albumName)
- 
+      let ref = db.collection("albums").where("title", "==", albumName)
+      await ref.get().then(snapshot => {
+        snapshot.forEach(doc => {
+          let newArr = []
+          newArr.push(doc.data().id)
+          setCurrentAlbumID(doc.data().id)
+        })
+      })
     })()
     setIsLoading(false)
-  }, [currentAlbum])
+  }, [])
 
   const handleEdit = () => {
     setEditActive(true) 
@@ -70,12 +56,12 @@ const Album = () => {
       return 
     }
     let arr = await albumCollection.map(item => item )
-    console.log(arr)
+
     setAlbumArr(arr)
     const tempAlb = Object.assign({}, ...arr);
-    console.log("ALBUM", tempAlb.id)
-    setCurrAlbumID(tempAlb.id)
-    console.log(currAlbumID, "curr", "current", currentAlbumID)
+
+    setCurrentAlbumID(tempAlb.id)
+  
    await firebaseFunctions.updateAlbumName(tempAlb.id, editAlbumName)
     setEditActive(false)
   }
@@ -120,8 +106,8 @@ const Album = () => {
         </Flex>)
 			}
        </Flex>
-       { currAlbumID !== undefined && 
-        <UploadImage albumId={currAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
+       { currentAlbumID !== undefined && 
+        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
      
 		</>
 	)

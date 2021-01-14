@@ -122,6 +122,7 @@ export const FirebaseProvider = ({ children }) => {
         snapshot.forEach(doc => {
           const tempAlbums = []
           let tempObj = doc.id
+          console.log("albums")
           tempAlbums.push(doc.data())
           setAlbumCollection(tempAlbums)
           setCurrentAlbum(tempObj)

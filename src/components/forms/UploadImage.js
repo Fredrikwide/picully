@@ -1,4 +1,4 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading } from '@chakra-ui/react'
+import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading, Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
 import firebase from 'firebase'
@@ -11,8 +11,8 @@ import { ref } from 'yup'
 import { useUpdate } from '../../contexts/UpdateContext'
 
 
-const UploadImage = ({albumId, albumTitle, userId}) => {
-  let reader = new FileReader();
+const UploadImage = ({albumId}) => {
+  
   const [imageToUpload, setImageToUpload] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imagesToUpload, setImagesToUpload] = useState([])
@@ -30,8 +30,9 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 
   const types = ["image/png", "image/jpg", "image.jpeg"]
 
-  const onUpload = (e) => {
+  const onUpload = (e, id) => {
     let image = e.target.files[0]
+   
 		if (!image && image) {
 			setUploadProgress(null);
 			setUploadedImage(null);
@@ -54,7 +55,8 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 			const url = await snapshot.ref.getDownloadURL();
 			// add uploaded file to db
 			const img = {
-				title: image.name,
+        title: image.name,
+        album: image.album,
 				owner: currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
@@ -62,8 +64,10 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 				url,
 			};
 						
-			if (albumId) {
-				img.album = db.collection('albums').doc(albumId)
+			if (id) {
+        
+        img.album = db.collection('albums').doc(id)
+        console.log("PLEASE", img)
 			}
 			// add image to collection
 			await db.collection('images').add(img)
@@ -81,12 +85,15 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 				type: "warning",
 				msg: `Image could not be uploaded due to an error (${error.code})`
 			});
-		});
+    });
+    
+    
 
 	}
 
   
   useEffect(() => {
+    console.log("i")
    if(isSuccess) {
      setImageToUpload({})
      setIsUploaded(true)
@@ -96,30 +103,30 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
    }
   }, [isSuccess, error, uploadProgress, isSubmitting])
 
+//TODO fix the previews
 
 
+//   useEffect(() => {
+//     if (!imageToUpload && !imagesToUpload) {
+//         setPreview(undefined)
+//         return
+//     }
+//     else if (imagesToUpload.length) {
+//       let itemWithUrlArr = imagesToUpload.map(itm => itm.url = URL.createObjectURL(itm))
+//       console.log("URLS", itemWithUrlArr)
+//       setPreviewArr(itemWithUrlArr)
+//     }
+//     else if(imageToUpload) {
+//       const objectUrl = URL.createObjectURL(imageToUpload)
+//       let tmpObj = {url: objectUrl}
+//       setPreview(tmpObj.url)
+//       console.log(preview, "single")
+//     }
 
-  useEffect(() => {
-    if (!imageToUpload && !imagesToUpload) {
-        setPreview(undefined)
-        return
-    }
-    else if (imagesToUpload.length) {
-      let itemWithUrlArr = imagesToUpload.map(itm => itm.url = URL.createObjectURL(itm))
-      console.log("URLS", itemWithUrlArr)
-      setPreviewArr(itemWithUrlArr)
-    }
-    else if(imageToUpload) {
-      const objectUrl = URL.createObjectURL(imageToUpload)
-      let tmpObj = {url: objectUrl}
-      setPreview(tmpObj.url)
-      console.log(preview, "single")
-    }
 
-
-    // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(preview)
-}, [imageToUpload])
+//     // free memory when ever this component is unmounted
+//     return () => URL.revokeObjectURL(preview)
+// }, [imageToUpload])
 
 
 
@@ -133,25 +140,13 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" mt="10rem">
-            <Input  pt="5px"type="file" multiple onChange={onUpload} w="400px" textAlign="center" />
+            <Input  pt="5px"type="file" multiple onChange={(e) => onUpload(e, albumId)} w="400px" textAlign="center" />
             <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>
           </InputGroup> 
         </Flex>
       </form>
-      {
-      preview !== undefined && preview && !previewArr.length
-      && 
-      <ImageCard image={imagesToUpload} previewURL={preview}/>
-      }
-      {previewArr !== undefined && previewArr.length > 1 && !preview 
-      && 
-      <Flex mt="3rem" justify="center" align="center">
-        <Heading>Files Staged for upload (preview)</Heading>
-        <PreviewImageGrid previewURLS={previewArr} />
-      </Flex>
-      }
     </Box>
 
   )
