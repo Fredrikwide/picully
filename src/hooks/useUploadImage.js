@@ -11,7 +11,7 @@ const useUploadImage = (image, albumId, userId) => {
   const [isSuccess, setIsSuccess] = useState(false);
   
 	const { currentUser } = useAuth()
-  const { db, storage } = useFire()
+  const { db, storage, timestamp } = useFire()
 
    const onUpload = () => {
 
@@ -53,6 +53,7 @@ const useUploadImage = (image, albumId, userId) => {
 				path: snapshot.ref.fullPath,
 				size: image.size,
 				type: image.type,
+				createdAt: (image.createdAt = timestamp()),
 				id: 
 				url,
 			};

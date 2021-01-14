@@ -25,17 +25,39 @@ const Album = () => {
   const {db} = useFire()
 
 
+
+  
+  // useEffect(() => {
+  //   (async () => {
+  //     setIsLoading(true)
+  //     let imgref = db.collection("images").where("albums", "==", currentAlbumID)
+  //     await imgref.get().then(snapshot => {
+  //       snapshot.forEach(doc => {
+  //         console.log("test")
+  //         let newArr = []
+  //         console.log(doc.data().id)
+  //         newArr.push(doc.data().id)
+  //         setCurrentAlbumID(doc.data().id)
+  //       })
+  //     })
+  //   })()
+  //   setIsLoading(false)
+  // }, [])
+
   
 
   useEffect(() => {
+   
     (async () => {
+      console.log(albumName, "NAME")
       setIsLoading(true)
-      let ref = db.collection("albums").where("title", "==", albumName)
-      await ref.get().then(snapshot => {
-        snapshot.forEach(doc => {
+     await db.collection("albums").where("title", "==", editAlbumName).get().then(snapShot => {
+        snapShot.forEach(doc => {
+          console.log("test")
           let newArr = []
+          console.log(doc.data().id)
           newArr.push(doc.data().id)
-          setCurrentAlbumID(doc.data().id)
+          // setCurrentAlbumID(doc.data().id)
         })
       })
     })()
@@ -66,6 +88,12 @@ const Album = () => {
     setEditActive(false)
   }
 
+  // useEffect(() => {
+  //   const getId = async () => {
+  //     let res = await db.collection("albums").where("id")
+  //   }
+  //   }
+  // }, [input])
 
  
 
@@ -79,11 +107,11 @@ const Album = () => {
                   <Input type="text" onChange={handleChangeAlbumName}/>
                 </Flex> }
             { !editActive ? 
-            <Flex justify="center" cursor="pointer" Align="center" _hover={{backgroundColor: "teal.300"}} >
+            <Flex justify="center" cursor="pointer" align="center" _hover={{backgroundColor: "teal.300"}} >
               <GrEdit color="white" size={"1.2rem"} onClick={handleEdit}  />
             </Flex> 
             : 
-            <Flex  justify="center" cursor="pointer" Align="center" _hover={{backgroundColor: "teal.300"}}>
+            <Flex  justify="center" cursor="pointer" align="center" _hover={{backgroundColor: "teal.300"}}>
               <CheckIcon w={8} h={8} color="teal.500" onClick={handleFinishedEdit} /> 
             </Flex>}
               <Heading >{editAlbumName}</Heading> 
@@ -106,8 +134,8 @@ const Album = () => {
         </Flex>)
 			}
        </Flex>
-       { currentAlbumID !== undefined && 
-        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
+     
+        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> 
      
 		</>
 	)

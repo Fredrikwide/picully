@@ -50,6 +50,7 @@ const CreateAlbumForm = () => {
         <Formik
         initialValues={{
           name: '',
+          images: [],
           description: '',
           owner: currentUser.uid,
           id: '',
@@ -57,7 +58,7 @@ const CreateAlbumForm = () => {
         validationSchema={CreateAlbumSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
-            await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
+            await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id, values.images) // 
             setSubmitting(false)
             navigate('/console/albums')
 

@@ -56,7 +56,7 @@ const UploadImage = ({albumId}) => {
 			// add uploaded file to db
 			const img = {
         title: image.name,
-        album: image.album,
+        album: [],
 				owner: currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
@@ -66,7 +66,7 @@ const UploadImage = ({albumId}) => {
 						
 			if (id) {
         
-        img.album = db.collection('albums').doc(id)
+        img.album.push( db.collection('albums').doc(id))
         console.log("PLEASE", img)
 			}
 			// add image to collection

@@ -49,6 +49,7 @@ export const UpdateProvider = props => {
 
     useEffect(() => {
         ( async () => {
+            console.log(currentAlbumID, "ALBUM ID")
             if(currentAlbumID !== undefined) {
                 let ref = db.collection("images").where("album", "==", currentAlbumID)
             await ref.get().then(snapshot => {
