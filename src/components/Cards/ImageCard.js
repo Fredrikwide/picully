@@ -30,8 +30,8 @@ const ImageCard = ({title, url, size, previewURL}) => {
       </Flex>
     </Box>
     : previewURL !== undefined &&
-    <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
-    <Image src={previewURL} alt={previewURL.title || "preview"} />
+    <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="none" mt="5rem">
+    <Image src={previewURL} alt={previewURL.title || "preview"} objectFit="contain"/>
     <Flex justify="center" align="center" direction="column">
         <Box
           mt="1"

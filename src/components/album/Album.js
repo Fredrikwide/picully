@@ -9,6 +9,8 @@ import { useFire } from '../../contexts/FirebaseContext'
 import {GrEdit} from 'react-icons/gr'
 import {CheckIcon} from '@chakra-ui/icons'
 import { useUpdate } from '../../contexts/UpdateContext'
+import PreviewImageGrid from '../pictureItems/PreviewImageGrid'
+import useAlbums from '../../hooks/useAlbums'
 
 
 const Album = () => {
@@ -18,7 +20,7 @@ const Album = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [pictures, setPictures] = useState([])
   const [albumId, setAlbumId] = useState()
-  const {firebaseFunctions, currentAlbum, albumCollection, images} = useFire()
+  const {firebaseFunctions, currentAlbum, albumCollection, images,} = useFire()
   const {currentAlbumID, setCurrentAlbumID} = useUpdate()
   const [editAlbumName, setEditAlbumName] = useState(albumName)
   const [currAlbumID, setCurrAlbumID] = useState("")
@@ -26,24 +28,24 @@ const Album = () => {
   const [currAlbum, setCurrAlbum] = useState({})
 
 
+
   useEffect(() => {
-    
+
   (async () => {
+    setIsLoading(true)
     let arr = await albumCollection.map(item => item )
+    console.log(arr)
     setAlbumArr(arr)
     const tempAlb = Object.assign({}, ...arr);
-    setCurrAlbum(tempAlb)
-    setCurrAlbumID(tempAlb.id)
-    setCurrentAlbumID(tempAlb.id)
-    if(currentAlbumID){
-      console.log("true")
-      await firebaseFunctions.getImagesByAlbumId(currentAlbumID)
-      setIsLoading(false)
-    }
+    console.log("ALBUM", tempAlb.id)
+    setCurrAlbum(tempAlb.id)
+    let res = await firebaseFunctions.getImages()
+    console.log("PLEASE", images)
     }
     )()
- 
+    setIsLoading(false)
   }, [albumCollection])
+  
 
   useEffect(() => {
     (async () => {
@@ -51,7 +53,7 @@ const Album = () => {
       await firebaseFunctions.getAlbumByTitle(albumName)
  
     })()
-
+    setIsLoading(false)
   }, [currentAlbum])
 
   const handleEdit = () => {
@@ -64,34 +66,45 @@ const Album = () => {
   }
 
   const handleFinishedEdit = async ()=> {
-   await firebaseFunctions.updateAlbumName(currAlbumID, editAlbumName)
+    if(!editAlbumName) {
+      return 
+    }
+    let arr = await albumCollection.map(item => item )
+    console.log(arr)
+    setAlbumArr(arr)
+    const tempAlb = Object.assign({}, ...arr);
+    console.log("ALBUM", tempAlb.id)
+    setCurrAlbumID(tempAlb.id)
+    console.log(currAlbumID, "curr", "current", currentAlbumID)
+   await firebaseFunctions.updateAlbumName(tempAlb.id, editAlbumName)
     setEditActive(false)
   }
 
 
-  const { loading } = useAlbum(albumId)
+ 
 
 	return (
 		<>
-      <Flex justify="center" align="center" direction="column">
-        <Heading>This is album {editAlbumName}</Heading>
-          <Flex>
-            <Text mr="1rem">Edit album name</Text>
+      <Flex direction="column" mt="3rem">
+       <Flex justify="center" align="center" direction="column">
+            <Text>Edit album name</Text>
             {editActive &&
                 <Flex justify="center" align="center">
                   <Input type="text" onChange={handleChangeAlbumName}/>
                 </Flex> }
             { !editActive ? 
-            <Box  cursor="pointer" _hover={{backgroundColor: "teal.300"}} >
+            <Flex justify="center" cursor="pointer" Align="center" _hover={{backgroundColor: "teal.300"}} >
               <GrEdit color="white" size={"1.2rem"} onClick={handleEdit}  />
-            </Box> 
+            </Flex> 
             : 
-            <Box  cursor="pointer" _hover={{}}>
+            <Flex  justify="center" cursor="pointer" Align="center" _hover={{backgroundColor: "teal.300"}}>
               <CheckIcon w={8} h={8} color="teal.500" onClick={handleFinishedEdit} /> 
-            </Box>}
-          </Flex>
+            </Flex>}
+              <Heading isTruncated>{editAlbumName}</Heading> 
+          
+        </Flex>
         {
-        loading 
+        isLoading 
         ? 
         <Spinner   
           thickness="4px"
@@ -101,11 +114,12 @@ const Album = () => {
           size="xl"  
         />
         : 
-        (images !== undefined && images.length ? <ImageGrid images={images} albumName={albumName} /> : <Heading mt="2rem">No images in this album</Heading>)
+        (images !== undefined && images.length ? <ImageGrid images={images} /> : <Heading mt="2rem">No images in this album</Heading>)
 			}
+       </Flex>
        { currAlbumID !== undefined && 
         <UploadImage albumId={currAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
-      </Flex>
+     
 		</>
 	)
 }

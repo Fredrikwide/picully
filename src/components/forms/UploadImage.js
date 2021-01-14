@@ -5,53 +5,112 @@ import firebase from 'firebase'
 import useUploadImage from '../../hooks/useUploadImage'
 import ImageCard from '../Cards/ImageCard'
 import ImageGrid from '../pictureItems/ImageGrid'
+import PreviewImageGrid from '../pictureItems/PreviewImageGrid'
+import { useAuth } from '../../contexts/AuthContext'
 
-const types = ["image/png", "image/jpg", "image.jpeg"]
+
 const UploadImage = ({albumId, albumTitle, userId}) => {
   let reader = new FileReader();
   const [imageToUpload, setImageToUpload] = useState()
   const [upload, setUpload] = useState(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imagesToUpload, setImagesToUpload] = useState([])
-  const [message, setMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const {firebaseFunctions, db} = useFire()
-  const [selectedFile, setSelectedFile] = useState()
+	const [uploadProgress, setUploadProgress] = useState(null);
+	const [uploadedImage, setUploadedImage] = useState(null);
+	const [error, setError] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+	const { currentUser } = useAuth()
+  const { db, storage } = useFire()
   const [preview, setPreview] = useState()
   const [previewArr, setPreviewArr] = useState()
-  const { uploadProgress, error, isSuccess } = useUploadImage(upload !== undefined && upload, albumId, userId);
-  
-  const handleFileUpload = (e) => {
-    e.preventDefault();
-    console.log("current files", e.target.files)
-    if(e.target.files.length > 1) {
-      let temparr = Array.from(e.target.files)
-      let multiple = temparr.map(file => file)
-      setImagesToUpload(prevState => [...prevState, ...multiple])
-    }
-    else setImageToUpload(e.target.files[0])
-  }
-  
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setUpload(imageToUpload)
-    if(imagesToUpload.length) {
-      setUpload(imagesToUpload)
-    }
 
-    setPreview(undefined)
-  }
+  const types = ["image/png", "image/jpg", "image.jpeg"]
+
+  const onUpload = (e) => {
+    let image = e.target.files[0]
+		if (!image && image) {
+			setUploadProgress(null);
+			setUploadedImage(null);
+			setError(null);
+			setIsSuccess(false);
+
+			return;
+		}
+		// reset environment
+		setError(null);
+		setIsSuccess(false);
+
+    // get file reference
+    const fileRef = storage.ref(`images/${currentUser.uid}/${image.name}`);
+
+		// upload image to fileRef
+		const uploadTask = fileRef.put(image);
+
+		// attach listener for `state_changed`-event
+		uploadTask.on('state_changed', taskSnapshot => {
+			setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
+		});
+
+		// are we there yet?
+		uploadTask.then(async snapshot => {
+
+			// retrieve URL to uploaded file
+			const url = await snapshot.ref.getDownloadURL();
+			
+	
+			// add uploaded file to db
+			const img = {
+				title: image.name,
+				owner: userId ? userId : currentUser.uid,
+				path: snapshot.ref.fullPath,
+				size: image.size,
+				type: image.type,
+				url,
+			};
+			
+			
+			if (albumId) {
+				img.album = db.collection('albums').doc(albumId)
+			}
+
+			if(userId) {
+				img.userId = db.collection('users').doc(userId)
+			}
+
+			// add image to collection
+			await db.collection('images').add(img)
+
+			// let user know we're done
+			setIsSuccess(true);
+			setUploadProgress(null);
+
+			// file has been added to db, refresh list of files
+			setUploadedImage(img);
+			setIsSuccess(true);
+		}).catch(error => {
+			console.error("File upload triggered an error!", error);
+			setError({
+				type: "warning",
+				msg: `Image could not be uploaded due to an error (${error.code})`
+			});
+		});
+
+	}
+
   
   useEffect(() => {
    if(isSuccess) {
      setImageToUpload({})
      setUpload("")
-     setMessage('Successfully uploaded the image')
+     console.log("YAAAY")
    }
    else if(error) {
      console.log(error)
    }
-  }, [isSuccess, error, uploadProgress, isSubmitting, upload])
+  }, [isSuccess, error, uploadProgress, isSubmitting])
+
+
+
 
   useEffect(() => {
     if (!imageToUpload && !imagesToUpload) {
@@ -60,6 +119,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
     }
     else if (imagesToUpload.length) {
       let itemWithUrlArr = imagesToUpload.map(itm => itm.url = URL.createObjectURL(itm))
+      console.log("URLS", itemWithUrlArr)
       setPreviewArr(itemWithUrlArr)
     }
     else if(imageToUpload) {
@@ -72,37 +132,37 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(preview)
-}, [imageToUpload,imagesToUpload, preview])
+}, [])
   //ChakraUi bugged with file input so had to use inline styles :(
   return (
-    <>
+    <Box mb="10rem" pb="10rem">
      
       <Flex>
-        { uploadProgress !== null && <Progress value={uploadProgress} />}
+        { uploadProgress !== null && <Progress value={uploadProgress}  size="md" colorScheme="teal.200"/>}
       </Flex>
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" mt="10rem">
-            <Input  pt="5px"type="file" multiple onChange={handleFileUpload} w="400px" textAlign="center" />
-            <InputRightAddon bg="teal.400" color="white" cursor="pointer" onClick={onSubmit} _hover={{backgroundColor: "teal.200", color: "white"}}>
+            <Input  pt="5px"type="file" multiple onChange={onUpload} w="400px" textAlign="center" />
+            <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>
           </InputGroup> 
         </Flex>
       </form>
       {
-      preview !== undefined && preview 
+      preview !== undefined && preview && !previewArr.length
       && 
       <ImageCard image={imagesToUpload} previewURL={preview}/>
       }
-      {previewArr !== undefined && previewArr.length > 1 
+      {previewArr !== undefined && previewArr.length > 1 && !preview 
       && 
-      <Flex mt="3rem" justify="center" align="center" direction="column">
+      <Flex mt="3rem" justify="center" align="center">
         <Heading>Files Staged for upload (preview)</Heading>
-        <ImageGrid images={imagesToUpload} previewURLS={previewArr} />
+        <PreviewImageGrid previewURLS={previewArr} />
       </Flex>
       }
-    </>
+    </Box>
 
   )
 }

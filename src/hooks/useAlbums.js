@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useFire } from "../contexts/FirebaseContext"
 
-const useAlbums = () => {
+const useAlbums = (id) => {
   
 	const [albums, setAlbums] = useState([])
 	const [loading, setLoading] = useState(true)
@@ -12,7 +12,9 @@ const useAlbums = () => {
 			setLoading(true)
 			const snapshotAlbums = []
 			snapshot.forEach(doc => {
-
+				if(id === doc.owner_id){
+					console.log("TRUE")
+				}
 				snapshotAlbums.push({
 					id: doc.id,
 					...doc.data(),

@@ -16,11 +16,11 @@ const Console = () => {
               </Flex>
             </Box>
           </Link>
-          <Link as={ReactLink} to="/console/albums/create" >
-            <Box w="200px" h="300px" p="10px" bg="teal.100" border="2px" borderColor="red">
-              <Flex justify="center" align="center">
+          <Link as={ReactLink} to="/console/albums" >
+            <Box w="300px" h="400px" p="10px" bg="teal.100" border="2px" borderColor="red">
+              <Flex justify="center" align="center" w="100%" h="100%">
                 <Heading>
-                  create Albums
+                  Create Albums
                 </Heading>
               </Flex>
             </Box>

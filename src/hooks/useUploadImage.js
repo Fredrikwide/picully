@@ -13,7 +13,7 @@ const useUploadImage = (image, albumId, userId) => {
 	const { currentUser } = useAuth()
   const { db, storage } = useFire()
 
-	useEffect(() => {
+	const uploadFunc = () => {
 
 		if (!image) {
 			setUploadProgress(null);
@@ -77,7 +77,7 @@ const useUploadImage = (image, albumId, userId) => {
 			// file has been added to db, refresh list of files
 			setUploadedImage(img);
 			setIsSuccess(true);
-
+			console.error("SUCCESS", img);
 		}).catch(error => {
 			console.error("File upload triggered an error!", error);
 			setError({
@@ -86,7 +86,7 @@ const useUploadImage = (image, albumId, userId) => {
 			});
 		});
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [image, currentUser]);
+	}
 
 	return { uploadProgress, uploadedImage, error, isSuccess };
 }

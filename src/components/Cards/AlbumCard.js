@@ -11,7 +11,7 @@ import {useFire} from '../../contexts/FirebaseContext'
 const AlbumCard = ({id, title, description,thumbNail}) => {
 console.log(thumbNail, "thumbnail")
   return (
-      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" mt="5rem">
+      <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="none" mt="5rem">
         <Image 
           src={thumbNail ? thumbNail.url : "https://via.placeholder.com/300"}
           alt={thumbNail ? thumbNail.title: "empty"}/>
