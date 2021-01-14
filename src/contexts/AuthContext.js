@@ -1,7 +1,10 @@
 import React, { useContext, useState, useEffect } from "react"
 import { auth } from "../config/firebase"
 import { FirebaseContext } from "./FirebaseContext"
-
+import "firebase/auth";
+import "firebase/storage"
+import "firebase/firestore";
+import firebase from "firebase/app";
 const AuthContext = React.createContext()
 
 
@@ -10,7 +13,7 @@ export const useAuth = () => useContext(AuthContext)
 
 
 export const AuthProvider = ({ children }) => {
-  const {db} = useContext(FirebaseContext)
+  const db = firebase.firestore()
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
 

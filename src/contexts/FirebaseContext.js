@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/storage"
 import "firebase/firestore";
+import { useAuth } from './AuthContext';
 
 export const FirebaseContext = createContext()
 
@@ -23,7 +24,7 @@ export const FirebaseProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState({})
   const [images, setImages] = useState([])
-
+  const {currentUser} = useAuth()
   const firebaseFunctions = {
     //get user collection
     getUsers: async () => await db.collection('users').get().then((snapshot) => {
@@ -156,9 +157,10 @@ export const FirebaseProvider = ({ children }) => {
 
     ,
     //get images from collection
-    getImages: async () => await db.collection('images').get().then((snapshot) => {
+    getImages: async (id) => await db.collection('images').get().then((snapshot) => {
       setIsLoading(true)
       const imageArr = []
+      const userImgs = []
       snapshot.forEach((doc) => {
         imageArr.push({
           title: doc.data().title,
@@ -168,6 +170,12 @@ export const FirebaseProvider = ({ children }) => {
           url: doc.data().url
         })
       })
+      imageArr.forEach(item => {
+        if(item.ownerId === currentUser.uid) {
+          console.log("item has owner", item)
+          userImgs.push(item)
+        }
+      })
       setImages([...imageArr])
       setIsLoading(false)
       return imageArr
@@ -176,7 +184,7 @@ export const FirebaseProvider = ({ children }) => {
     })
     ,
     getImagesByAlbumId: async (id) => {
-       await db.collection("images").where("album", "==", `albums/${db.collection("albums").doc(id)}`).get().then(querySnapshot => {
+       await db.collection("images").where("album", "==", `albums/${id}`).get().then(querySnapshot => {
         const imageArr = []
         querySnapshot.forEach(doc => {
           console.log(doc.data(), "DATA")
@@ -189,34 +197,14 @@ export const FirebaseProvider = ({ children }) => {
             })
           })
           console.log("image in current album", imageArr, id)
-          setImages([...imageArr])
+          // setImages([...imageArr])
           setIsLoading(false)
           return imageArr
         })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
     });
-    },
-    getUserImages: async (id) => 
-    await db.collection('images').where("owner", "==", id).get().then((snapshot) => {
-      setIsLoading(true)
-      const userImages = []
-
-      snapshot.forEach((doc) => {
-        userImages.push({
-          name: doc.data().title,
-          description: doc.data().description,
-          ownderId: doc.data().owner_id,
-          id: doc.data().id
-        })
-      });
-      console.log("album info", userImages)
-      setImages([...userImages])
-      setIsLoading(false)
-      return userImages
-    }, err => {
-      console.log(err)
-    }),
+    }
      
   }
 

@@ -39,8 +39,8 @@ const Album = () => {
     const tempAlb = Object.assign({}, ...arr);
     console.log("ALBUM", tempAlb.id)
     setCurrAlbum(tempAlb.id)
-    let res = await firebaseFunctions.getImages()
-    console.log("PLEASE", images)
+    let res = await firebaseFunctions.getImages(currentUser.uid)
+    console.log("PLEASE", res)
     }
     )()
     setIsLoading(false)
@@ -100,7 +100,7 @@ const Album = () => {
             <Flex  justify="center" cursor="pointer" Align="center" _hover={{backgroundColor: "teal.300"}}>
               <CheckIcon w={8} h={8} color="teal.500" onClick={handleFinishedEdit} /> 
             </Flex>}
-              <Heading isTruncated>{editAlbumName}</Heading> 
+              <Heading >{editAlbumName}</Heading> 
           
         </Flex>
         {
@@ -114,7 +114,10 @@ const Album = () => {
           size="xl"  
         />
         : 
-        (images !== undefined && images.length ? <ImageGrid images={images} /> : <Heading mt="2rem">No images in this album</Heading>)
+        (images !== undefined && images.length ? <ImageGrid images={images} /> :
+        <Flex justify="center" align="center">
+          <Text as="i" mt="2rem">here be dragons</Text>
+        </Flex>)
 			}
        </Flex>
        { currAlbumID !== undefined && 

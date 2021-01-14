@@ -1,8 +1,12 @@
 
 import { Box, Flex, Link, Heading } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 
 const Console = () => {
+
+
 
   return (
     <>

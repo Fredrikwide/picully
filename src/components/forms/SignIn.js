@@ -35,7 +35,7 @@ const SignInSchema = Yup.object().shape({
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const {signupIsClicked, setSignUpIsClicked} = useContext(UpdateContext)
+  const {signupIsClicked, setSignUpIsClicked, setUserLoggedIn} = useContext(UpdateContext)
   const { logout, login, currentUser } = useAuth()
   const handleSignOut = () => logout();
   const handleSignUp = () => setSignUpIsClicked(!signupIsClicked)
@@ -59,6 +59,7 @@ const SignIn = () => {
           try { 
             await login(values.email, values.password) // 
             setSubmitting(false)
+            setUserLoggedIn(true)
             navigate("/")
 
         } catch (err) {

@@ -13,7 +13,7 @@ const useUploadImage = (image, albumId, userId) => {
 	const { currentUser } = useAuth()
   const { db, storage } = useFire()
 
-	const uploadFunc = () => {
+   const onUpload = () => {
 
 		if (!image) {
 			setUploadProgress(null);
@@ -23,8 +23,6 @@ const useUploadImage = (image, albumId, userId) => {
 
 			return;
 		}
-
-
 		// reset environment
 		setError(null);
 		setIsSuccess(false);
@@ -85,7 +83,7 @@ const useUploadImage = (image, albumId, userId) => {
 				msg: `Image could not be uploaded due to an error (${error.code})`
 			});
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+
 	}
 
 	return { uploadProgress, uploadedImage, error, isSuccess };

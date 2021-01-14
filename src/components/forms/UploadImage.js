@@ -7,21 +7,25 @@ import ImageCard from '../Cards/ImageCard'
 import ImageGrid from '../pictureItems/ImageGrid'
 import PreviewImageGrid from '../pictureItems/PreviewImageGrid'
 import { useAuth } from '../../contexts/AuthContext'
+import { ref } from 'yup'
+import { useUpdate } from '../../contexts/UpdateContext'
 
 
 const UploadImage = ({albumId, albumTitle, userId}) => {
   let reader = new FileReader();
   const [imageToUpload, setImageToUpload] = useState()
-  const [upload, setUpload] = useState(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [imagesToUpload, setImagesToUpload] = useState([])
 	const [uploadProgress, setUploadProgress] = useState(null);
-	const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  
 	const [error, setError] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth()
   const { db, storage } = useFire()
+  const {setIsUploaded} = useUpdate()
   const [preview, setPreview] = useState()
+
   const [previewArr, setPreviewArr] = useState()
 
   const types = ["image/png", "image/jpg", "image.jpeg"]
@@ -36,47 +40,31 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 
 			return;
 		}
-		// reset environment
 		setError(null);
 		setIsSuccess(false);
-
-    // get file reference
     const fileRef = storage.ref(`images/${currentUser.uid}/${image.name}`);
-
-		// upload image to fileRef
 		const uploadTask = fileRef.put(image);
 
-		// attach listener for `state_changed`-event
 		uploadTask.on('state_changed', taskSnapshot => {
 			setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
 		});
 
-		// are we there yet?
 		uploadTask.then(async snapshot => {
 
-			// retrieve URL to uploaded file
 			const url = await snapshot.ref.getDownloadURL();
-			
-	
 			// add uploaded file to db
 			const img = {
 				title: image.name,
-				owner: userId ? userId : currentUser.uid,
+				owner: currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
-				type: image.type,
+        type: image.type,
 				url,
 			};
-			
-			
+						
 			if (albumId) {
 				img.album = db.collection('albums').doc(albumId)
 			}
-
-			if(userId) {
-				img.userId = db.collection('users').doc(userId)
-			}
-
 			// add image to collection
 			await db.collection('images').add(img)
 
@@ -101,8 +89,7 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
   useEffect(() => {
    if(isSuccess) {
      setImageToUpload({})
-     setUpload("")
-     console.log("YAAAY")
+     setIsUploaded(true)
    }
    else if(error) {
      console.log(error)
@@ -132,8 +119,11 @@ const UploadImage = ({albumId, albumTitle, userId}) => {
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(preview)
-}, [])
-  //ChakraUi bugged with file input so had to use inline styles :(
+}, [imageToUpload])
+
+
+
+
   return (
     <Box mb="10rem" pb="10rem">
      
