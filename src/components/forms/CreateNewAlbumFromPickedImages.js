@@ -71,11 +71,19 @@ const CreateAlbumForm = ({pictures}) => {
                 
                 await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id)
                 
-                
+                await db.collection("images").get().then(snapshot => {
+                  snapshot.forEach(doc => {
+                    console.log(doc.data(), "RRRRRRRRREEEEEEEEEE")
+                      const id = doc.id; 
+                      
+                  });
+                });
+             
                 await pictures.forEach((pic) => {
-                  console.log(pic)
+  
                   db.collection("images")
-                    .update({
+                    .doc(pic)
+                    .add({
                       albums: firebase.firestore.FieldValue.arrayUnion(
                         db.collection("albums").where("owner_id", "==", currentUser.uid)
                       ),

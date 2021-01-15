@@ -15,7 +15,7 @@ const ImageGrid = ({albumId}) => {
   const {isPicked, setIsPicked} = useUpdate()
   const [picCullyUrl, setPicCullyUrl] = useState("")
   const {isUploaded} = useUpdate()
-  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted, setPickedImages, pickedImages} = useUpdate()
+  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbumID, setPickedImages, pickedImages} = useUpdate()
   const [isChecked, setIsChecked] = useState([])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -48,27 +48,35 @@ const ImageGrid = ({albumId}) => {
 
   useEffect(() => {
     console.log("uploaded")
-  }, [isUploaded])
+  }, [isUploaded, currentAlbumID])
 
   let pickedItems = []
   let unPickedItems = []
-  const handlePickImage = (e,item) => {
-    console.log(e.target.checked)
- 
 
-    let ref = db.collection("images").where("albums", "array-contains", item.albums)
-      if(e.target.checked && e.target.id === item.title) {
-        pickedItems.push(ref)
-        setPickedImages(previtems => [...previtems, ...pickedItems])
-        console.log(pickedItems)
-      }
-      else if(!e.target.checked && e.target.id === item.title){
-        unPickedItems.push(ref)
-        pickedItems.filter(item => !unPickedItems.includes(item))
-        setPickedImages(pickedItems)
-        console.log(pickedItems)
+  const handlePickImage = async (e,item) => {
+    console.log(e.target.checked, item)
+      let ref = await db.collection("images").where("albums", "array-contains", albumId)
+      console.log(ref.id)
+      let res = await db.collection("images").doc(item.uid)
+      console.log(res, "RES")
+
+      // await db.collection("images").where("id", "==", item.id).get().then(querySnapshot => {
+      //     querySnapshot.forEach(doc => {
+      //       console.log(doc.data())
+      //     })
+      //   } )
+      // if(e.target.checked && e.target.id === item.title) {
+      //   pickedItems.push(ref)
+      //   setPickedImages(previtems => [...previtems, ...pickedItems])
+      //   console.log(pickedItems)
+      // }
+      // else if(!e.target.checked && e.target.id === item.title){
+      //   unPickedItems.push(ref)
+      //   pickedItems.filter(item => !unPickedItems.includes(item))
+      //   setPickedImages(pickedItems)
+      //   console.log(pickedItems)
     
-      }
+      // }
     setIsChecked(!isChecked)
   }
 

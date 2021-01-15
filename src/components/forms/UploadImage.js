@@ -28,14 +28,12 @@ const UploadImage = ({albumId}) => {
 
   const [previewArr, setPreviewArr] = useState()
 
- 
-  console.log("ID", albumId)
   const onUpload = (e, id) => {
     e.preventDefault()
     const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg"]
     let image = e.target.files[0]
 
-		if (!image || types.includes(image.type)) {
+		if (!image || !types.includes(image.type)) {
 			setUploadProgress(null);
       setUploadedImage(null);
       setIsUploaded(false)
@@ -56,7 +54,8 @@ const UploadImage = ({albumId}) => {
 
 		uploadTask.then(async snapshot => {
 
-			const url = await snapshot.ref.getDownloadURL();
+      const url = await snapshot.ref.getDownloadURL();
+      console.log(await snapshot.ref.id, "SNAP ID")
 			// add uploaded file to db
 			const img = {
         title: image.name,
@@ -72,10 +71,21 @@ const UploadImage = ({albumId}) => {
         img.albums = []
         img.albums.push( db.collection('albums').doc(id))
       }
-      
+
 			// add image to collection
 			await db.collection('images').add(img)
+      // add uid as id to pic
+      await db.collection("images").get().then(snapshot => {
+        snapshot.forEach(doc => {
+         doc.update({id: doc.id})
+        });
+      });
 
+      // await db.collection("albums").doc(albumId).get().then(snapshot => {
+      //   snapshot.forEach(doc => {
+      //     doc.data().images.push(img.path)
+      //   })
+      // })
 			// let user know we're done
 			setIsSuccess(true);
 			setUploadProgress(null);
