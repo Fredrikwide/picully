@@ -1,11 +1,11 @@
 
 
 
-    
-    Som fotograf vill jag kunna ladda upp fler bilder till ett redan skapat album.
+
     Som fotograf vill jag kunna markera bilder och skapa ett nytt album utifrån de markerade bilderna.
+
     Som fotograf vill jag kunna bjuda in min kund till att gallra bland bilderna, och de bilder som kunden väljer ska hamna i ett nytt album på mitt konto.
+
     Som fotograf vill jag att den länken som jag skickar till min kund innehåller en unik kod och att kunden kommer till en separat vy utan att behöva logga in.
+    
     Som fotograf vill jag att kunden endast ska kunna betygsätta bilderna i det albumet, och att när kunden markerat att hen är klar så skapas ett nytt album på mitt konto (förslagsvis med albumets namn + tidpunkt för gallringen).
-    VG: Som fotograf vill jag kunna ta bort bilder från ett album (om bilden inte finns i fler album så ska bilden raderas).
-    VG: Som fotograf vill jag kunna ta bort ett album (om bilderna inte finns i fler album så ska bilderna också raderas).

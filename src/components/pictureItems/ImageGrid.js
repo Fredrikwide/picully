@@ -12,9 +12,10 @@ ImageGrid = ({images}) => {
   const {db, storage} = useFire()
   const [deleteImage, setDeleteImage] = useState(false);
   const { currentUser } = useAuth()
+
   const {isUploaded} = useUpdate()
   const {imagesInCurrentAlbum, imageDeleted, setImageDeleted} = useUpdate()
-  const [isChecked, setIsChecked] = useState(false)
+  const [isChecked, setIsChecked] = useState([])
 
 	const handleDeleteImage = async (img) => {
 
@@ -37,14 +38,14 @@ ImageGrid = ({images}) => {
   useEffect(() => {
     console.log("uploaded")
   }, [isUploaded])
-
-
-  let pickedImages = []
-  const handlePickImage = (item) => {
-      let ref = db.collection("images").where("album", "==", item.album)
+ 
+  const handlePickImage = (e,item) => {
+    console.log(e.target.checked)
+      let ref = db.collection("images").where("albums", "array-contains", item.albums)
+      console.log("ref", ref)
     setIsChecked(!isChecked)
   }
-
+  
   return (
     <Grid 
     mr="1rem"
@@ -52,38 +53,42 @@ ImageGrid = ({images}) => {
     templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
     templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
     mt="5rem" 
-    gap={6} 
-    h="600px">
+    gap={8} 
+    h="100vh"
+    w="100vw">
       {
+        
         !imageDeleted && imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length && 
         imagesInCurrentAlbum.map((image, index) => (
           <>
           <GridItem colSpan={1} rowSpan={2} key={index} overflow="hidden">
+
             <Flex justify="space-between" align="center" >
             <CloseButton  size="sm" onClick={() => handleDeleteImage(image)} />
-
-            
-            <Text 
+            <Text
+            w="100%"
             fontSize="sm" 
             textAlign="center" 
             p="5px">{image.title}
             </Text>
             </Flex>
-            <AspectRatio>
+            <Box>
               <Image 
               src={image.url} 
               alt={image.title} 
               h="100%" 
               w="100%" 
-              objectFit="contain" 
+              objectFit="contain"
+              p="5px" 
               />
-            </AspectRatio>
-            <Flex justify="flex-end" align="center">
-              <Checkbox 
+            </Box>
+            <Flex border="3px" borderColor="red">
+              <Checkbox
+              ml="5px"
               size="md"
               id={image.owner}
-              colorScheme="teal" 
-              onChange={() => handlePickImage(image)}>
+              colorScheme="green"
+              onChange={(e) => handlePickImage(e,image)}>
                 pick
               </Checkbox>
             </Flex>

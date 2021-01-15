@@ -12,7 +12,7 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 
-const Albums = () => {
+const AlbumGrid = () => {
   const {currentUserAlbums} = useUpdate()
   const navigate=useNavigate()
   const {currentUser}  = useAuth()
@@ -42,4 +42,4 @@ const Albums = () => {
   )
 }
 
-export default Albums
+export default AlbumGrid

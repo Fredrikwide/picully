@@ -22,7 +22,7 @@ const UploadImage = ({albumId}) => {
 	const [error, setError] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth()
-  const { db, storage } = useFire()
+  const { db, storage, timestamp } = useFire()
   const {setIsUploaded} = useUpdate()
   const [preview, setPreview] = useState()
 
@@ -31,16 +31,20 @@ const UploadImage = ({albumId}) => {
   const types = ["image/png", "image/jpg", "image.jpeg"]
 
   const onUpload = (e, id) => {
-    let image = e.target.files[0]
+    e.preventDefault()
    
-		if (!image && image) {
+    let image = e.target.files[0]
+    console.log(image, id)
+		if (!image) {
 			setUploadProgress(null);
-			setUploadedImage(null);
+      setUploadedImage(null);
+      setIsUploaded(false)
 			setError(null);
 			setIsSuccess(false);
 
 			return;
-		}
+    }
+    setIsUploaded(false)
 		setError(null);
 		setIsSuccess(false);
     const fileRef = storage.ref(`images/${currentUser.uid}/${image.name}`);
@@ -56,18 +60,23 @@ const UploadImage = ({albumId}) => {
 			// add uploaded file to db
 			const img = {
         title: image.name,
-        album: [],
 				owner: currentUser.uid,
 				path: snapshot.ref.fullPath,
 				size: image.size,
         type: image.type,
+        // createdAt: timestamp(),
 				url,
 			};
 						
-			if (id) {
-        
-        img.album.push( db.collection('albums').doc(id))
-        console.log("PLEASE", img)
+			if (id) {    
+        img.albums = []
+        img.albums.push( db.collection('albums').doc(id))
+      //  await db.collection("albums").doc(albumId).get().then(snapshot => {
+      //     snapshot.forEach(doc => {
+      //       console.log("DOCS", doc.data())
+      //     })
+      //   })
+       
 			}
 			// add image to collection
 			await db.collection('images').add(img)
@@ -86,9 +95,6 @@ const UploadImage = ({albumId}) => {
 				msg: `Image could not be uploaded due to an error (${error.code})`
 			});
     });
-    
-    
-
 	}
 
   

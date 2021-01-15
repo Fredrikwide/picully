@@ -12,7 +12,7 @@ export const useFire = () => useContext(FirebaseContext)
 
 export const FirebaseProvider = ({ children }) => {
   
-
+  
   const db = firebase.firestore()
   const storage = firebase.storage()
 
@@ -20,6 +20,7 @@ export const FirebaseProvider = ({ children }) => {
   const [currentAlbum, setCurrentAlbum] = useState()
   const [collectionData, setCollectionData] = useState([])
   const [albumCollection, setAlbumCollection] = useState([])
+  const [created, setCreated] = useState(false)
   const [updated, setUpdated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState({})
@@ -74,8 +75,12 @@ export const FirebaseProvider = ({ children }) => {
      })
     }),
     //create album
-    createAlbum: async (name, desc, id) => await db.collection("albums").add({
+    createAlbum: async (name, desc, id,  images,) => {
+    setIsLoading(true)
+    setCreated(false)
+    await db.collection("albums").add({
       title: name,
+      images,
       description: desc,
       owner_id: id,
       id
@@ -86,6 +91,10 @@ export const FirebaseProvider = ({ children }) => {
         id: dataRef.id
      })
     })
+    setIsLoading(false)
+    setCreated(true)
+    
+  }
   ,
     updateAlbumName: async (id, newName) => {
       let ref = db.collection("albums").doc(id)
@@ -185,7 +194,7 @@ export const FirebaseProvider = ({ children }) => {
     })
     ,
     getImagesByAlbumId: async (id) => {
-       await db.collection("images").where("album", "==", `albums/${id}`).get().then(querySnapshot => {
+       await db.collection("images").where("album", "==", id).get().then(querySnapshot => {
         const imageArr = []
         querySnapshot.forEach(doc => {
           console.log(doc.data(), "DATA")
@@ -217,6 +226,7 @@ export const FirebaseProvider = ({ children }) => {
     isLoading,
     timestamp,
     db,
+    created,
     images,
     albumCollection,
     updated,

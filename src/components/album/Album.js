@@ -19,32 +19,30 @@ const Album = () => {
   const {currentUser} = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, albumCollection, images,} = useFire()
-  const {currentAlbumID, setCurrentAlbumID} = useUpdate()
+  const {currentAlbumID, isUploaded, setCurrentAlbumID,imagesInCurrentAlbum, setImagesInCurrentAlbum} = useUpdate()
   const [editAlbumName, setEditAlbumName] = useState(albumName)
   const [editActive, setEditActive] = useState(false)
   const {db} = useFire()
 
-
-
+  const fetchImages = async (id) => {
+    try {
+    await db.collection("images").where("albums", "array-contains", db.collection("albums").doc(id)).get().then(snapshot => {
+      setIsLoading(true)
+      let imgArr = []
+      snapshot.forEach(doc => {
+        console.log("IMAGES IN THIS ALBUM", doc.data())
+        imgArr.push(doc.data())
+      })
+      setImagesInCurrentAlbum([...imgArr])
+      setIsLoading(false)
+    })
+  }
+  catch {
+    console.log("error")
+  }
   
-  // useEffect(() => {
-  //   (async () => {
-  //     setIsLoading(true)
-  //     let imgref = db.collection("images").where("albums", "==", currentAlbumID)
-  //     await imgref.get().then(snapshot => {
-  //       snapshot.forEach(doc => {
-  //         console.log("test")
-  //         let newArr = []
-  //         console.log(doc.data().id)
-  //         newArr.push(doc.data().id)
-  //         setCurrentAlbumID(doc.data().id)
-  //       })
-  //     })
-  //   })()
-  //   setIsLoading(false)
-  // }, [])
+  }
 
-  
 
   useEffect(() => {
    
@@ -52,17 +50,39 @@ const Album = () => {
       console.log(albumName, "NAME")
       setIsLoading(true)
      await db.collection("albums").where("title", "==", editAlbumName).get().then(snapShot => {
+      let albId = ""
         snapShot.forEach(doc => {
-          console.log("test")
-          let newArr = []
+          console.log("test")    
           console.log(doc.data().id)
-          newArr.push(doc.data().id)
-          // setCurrentAlbumID(doc.data().id)
+          albId = doc.data().id
         })
+        setCurrentAlbumID(albId)
+        fetchImages(albId)
+        setIsLoading(false)
       })
     })()
-    setIsLoading(false)
-  }, [])
+    
+  }, [isUploaded])
+
+
+  useEffect(() => {
+    ( async () => {
+        console.log(currentAlbumID, "ALBUM ID")
+        if(currentAlbumID !== undefined) {
+            let ref = db.collection("images").where("album", "==", currentAlbumID)
+        await ref.get().then(snapshot => {
+                let albumImages = []
+                snapshot.forEach(doc => {
+                    console.log(doc.data(), "I RAN")
+                    albumImages.push(doc.data())
+                    setImagesInCurrentAlbum(albumImages)
+                })
+            })
+        }
+    }
+
+    )()
+}, [])
 
   const handleEdit = () => {
     setEditActive(true) 
@@ -88,13 +108,6 @@ const Album = () => {
     setEditActive(false)
   }
 
-  // useEffect(() => {
-  //   const getId = async () => {
-  //     let res = await db.collection("albums").where("id")
-  //   }
-  //   }
-  // }, [input])
-
  
 
 	return (
@@ -119,23 +132,25 @@ const Album = () => {
         </Flex>
         {
         isLoading 
-        ? 
+        ?
+        <Flex justify="center" align="center">
         <Spinner   
-          thickness="4px"
+          thickness="6px"
           speed="0.65s"
           emptyColor="gray.200"
-          color="blue.500"
+          color="teal.500"
           size="xl"  
         />
+        </Flex>
         : 
-        (images !== undefined && images.length ? <ImageGrid images={images} /> :
+        (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length ? <ImageGrid images={imagesInCurrentAlbum} /> :
         <Flex justify="center" align="center">
           <Text as="i" mt="2rem">here be dragons</Text>
         </Flex>)
 			}
        </Flex>
-     
-        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> 
+        { currentAlbumID !== undefined && !isLoading &&
+        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
      
 		</>
 	)

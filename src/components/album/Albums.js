@@ -35,7 +35,7 @@ const Albums = () => {
       </Flex>
 
 			{
-				loadin && currentUserAlbums.length && renderImages
+				isLoading && currentUserAlbums.length && renderImages
 					? (
           <Flex justify="center" align="center" mt="1rem" key={214124}>
             <Spinner   

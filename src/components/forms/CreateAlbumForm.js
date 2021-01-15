@@ -33,7 +33,7 @@ const CreateAlbumSchema = Yup.object().shape({
 const CreateAlbumForm = () => {
   const navigate= useNavigate()
   const { currentUser } = useAuth()
-  const {firebaseFunctions} = useFire()
+  const {firebaseFunctions, isLoading} = useFire()
 
   return (
   <>
@@ -58,6 +58,7 @@ const CreateAlbumForm = () => {
         validationSchema={CreateAlbumSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
+
             await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id, values.images) // 
             setSubmitting(false)
             navigate('/console/albums')
