@@ -22,20 +22,20 @@ const UploadImage = ({albumId}) => {
 	const [error, setError] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth()
-  const { db, storage, timestamp } = useFire()
+  const { db, storage, timestamp, firestoreFunctions } = useFire()
   const {setIsUploaded} = useUpdate()
   const [preview, setPreview] = useState()
 
   const [previewArr, setPreviewArr] = useState()
 
-  const types = ["image/png", "image/jpg", "image.jpeg"]
-
+ 
+  console.log("ID", albumId)
   const onUpload = (e, id) => {
     e.preventDefault()
-   
+    const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg"]
     let image = e.target.files[0]
-    console.log(image, id)
-		if (!image) {
+
+		if (!image || types.includes(image.type)) {
 			setUploadProgress(null);
       setUploadedImage(null);
       setIsUploaded(false)
@@ -64,20 +64,15 @@ const UploadImage = ({albumId}) => {
 				path: snapshot.ref.fullPath,
 				size: image.size,
         type: image.type,
-        // createdAt: timestamp(),
+        createdAt: timestamp(),
 				url,
 			};
 						
-			if (id) {    
+			if (albumId) {    
         img.albums = []
         img.albums.push( db.collection('albums').doc(id))
-      //  await db.collection("albums").doc(albumId).get().then(snapshot => {
-      //     snapshot.forEach(doc => {
-      //       console.log("DOCS", doc.data())
-      //     })
-      //   })
-       
-			}
+      }
+      
 			// add image to collection
 			await db.collection('images').add(img)
 
@@ -138,22 +133,17 @@ const UploadImage = ({albumId}) => {
 
 
   return (
-    <Box mb="10rem" pb="10rem">
-     
-      <Flex>
-        { uploadProgress !== null && <Progress value={uploadProgress}  size="md" colorScheme="teal.200"/>}
-      </Flex>
+
       <form>
         <Flex justify="center" align="center">
-          <InputGroup display="flex" justifyContent="center" alignItems="center" mt="10rem">
-            <Input  pt="5px"type="file" multiple onChange={(e) => onUpload(e, albumId)} w="400px" textAlign="center" />
+          <InputGroup display="flex" justifyContent="center" alignItems="center" >
+            <Input  pt="5px"type="file" onChange={(e) => onUpload(e, albumId)} w="400px" textAlign="center" />
             <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>
           </InputGroup> 
         </Flex>
       </form>
-    </Box>
 
   )
 }

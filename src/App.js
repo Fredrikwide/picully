@@ -9,6 +9,7 @@ import CreateAlbum from './components/album/CreateAlbum';
 import Albums from './components/album/Albums';
 import NotFound from './components/error/NotFound';
 import Album from './components/album/Album';
+import SharedAlbum from './components/album/SharedAlbum';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
+          <Route path="/:albumName/:picully" element={<SharedAlbum />} />
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">

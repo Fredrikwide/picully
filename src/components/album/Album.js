@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import UploadImage from '../forms/UploadImage'
 import { useAuth } from '../../contexts/AuthContext'
-import { AspectRatio, Box, Flex, Heading, Image, Input, Spinner, Text } from '@chakra-ui/react'
-import useAlbum from '../../hooks/useAlbum'
+import { Flex, Heading, Input, Spinner, Text } from '@chakra-ui/react'
+
 import ImageGrid from '../pictureItems/ImageGrid'
 import { useFire } from '../../contexts/FirebaseContext'
 import {GrEdit} from 'react-icons/gr'
 import {CheckIcon} from '@chakra-ui/icons'
 import { useUpdate } from '../../contexts/UpdateContext'
-import PreviewImageGrid from '../pictureItems/PreviewImageGrid'
-import useAlbums from '../../hooks/useAlbums'
 
 
 const Album = () => {
@@ -19,18 +17,19 @@ const Album = () => {
   const {currentUser} = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, albumCollection, images,} = useFire()
-  const {currentAlbumID, isUploaded, setCurrentAlbumID,imagesInCurrentAlbum, setImagesInCurrentAlbum} = useUpdate()
-  const [editAlbumName, setEditAlbumName] = useState(albumName)
+  const {currentAlbumID,imageDeleted, isUploaded, setCurrentAlbumID,imagesInCurrentAlbum, setImagesInCurrentAlbum} = useUpdate()
+  const [editAlbumName, setEditAlbumName] = useState()
   const [editActive, setEditActive] = useState(false)
   const {db} = useFire()
-
+  const navigate = useNavigate()
+  const location = useLocation()
+ 
   const fetchImages = async (id) => {
     try {
     await db.collection("images").where("albums", "array-contains", db.collection("albums").doc(id)).get().then(snapshot => {
       setIsLoading(true)
       let imgArr = []
       snapshot.forEach(doc => {
-        console.log("IMAGES IN THIS ALBUM", doc.data())
         imgArr.push(doc.data())
       })
       setImagesInCurrentAlbum([...imgArr])
@@ -43,16 +42,17 @@ const Album = () => {
   
   }
 
+  
+
 
   useEffect(() => {
    
     (async () => {
-      console.log(albumName, "NAME")
+      setImagesInCurrentAlbum("")
       setIsLoading(true)
-     await db.collection("albums").where("title", "==", editAlbumName).get().then(snapShot => {
+     await db.collection("albums").where("title", "==", albumName).get().then(snapShot => {
       let albId = ""
         snapShot.forEach(doc => {
-          console.log("test")    
           console.log(doc.data().id)
           albId = doc.data().id
         })
@@ -62,7 +62,7 @@ const Album = () => {
       })
     })()
     
-  }, [isUploaded])
+  }, [imageDeleted, isUploaded])
 
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const Album = () => {
     }
 
     )()
-}, [])
+}, [imageDeleted, isUploaded])
 
   const handleEdit = () => {
     setEditActive(true) 
@@ -97,15 +97,10 @@ const Album = () => {
     if(!editAlbumName) {
       return 
     }
-    let arr = await albumCollection.map(item => item )
-
-    setAlbumArr(arr)
-    const tempAlb = Object.assign({}, ...arr);
-
-    setCurrentAlbumID(tempAlb.id)
-  
-   await firebaseFunctions.updateAlbumName(tempAlb.id, editAlbumName)
+   await firebaseFunctions.updateAlbumName(currentAlbumID, editAlbumName)
     setEditActive(false)
+   
+    
   }
 
  
@@ -113,21 +108,26 @@ const Album = () => {
 	return (
 		<>
       <Flex direction="column" mt="3rem">
+      { currentAlbumID !== undefined && !isLoading &&
+        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
        <Flex justify="center" align="center" direction="column">
+          
             <Text>Edit album name</Text>
+            <Flex justify="space-around" align="center" >
             {editActive &&
                 <Flex justify="center" align="center">
-                  <Input type="text" onChange={handleChangeAlbumName}/>
+                  <Input type="text" placeholder={albumName} onChange={handleChangeAlbumName}/>
                 </Flex> }
             { !editActive ? 
             <Flex justify="center" cursor="pointer" align="center" _hover={{backgroundColor: "teal.300"}} >
               <GrEdit color="white" size={"1.2rem"} onClick={handleEdit}  />
-            </Flex> 
+            </Flex>
             : 
-            <Flex  justify="center" cursor="pointer" align="center" _hover={{backgroundColor: "teal.300"}}>
-              <CheckIcon w={8} h={8} color="teal.500" onClick={handleFinishedEdit} /> 
+            <Flex ml="1rem" justify="center" cursor="pointer" align="center">
+              <CheckIcon  _hover={{color: "teal.300"}} w={6} h={6} color="teal.500" onClick={handleFinishedEdit} /> 
             </Flex>}
-              <Heading >{editAlbumName}</Heading> 
+          </Flex>
+              <Heading >{!editActive ? albumName : editActive && editAlbumName && editAlbumName}</Heading> 
           
         </Flex>
         {
@@ -143,15 +143,13 @@ const Album = () => {
         />
         </Flex>
         : 
-        (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length ? <ImageGrid images={imagesInCurrentAlbum} /> :
+        (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length ? <ImageGrid images={imagesInCurrentAlbum} albumId={currentAlbumID} /> :
         <Flex justify="center" align="center">
           <Text as="i" mt="2rem">here be dragons</Text>
         </Flex>)
 			}
+
        </Flex>
-        { currentAlbumID !== undefined && !isLoading &&
-        <UploadImage albumId={currentAlbumID} albumTitle={albumName} userId={currentUser.uid}/> }
-     
 		</>
 	)
 }

@@ -11,19 +11,9 @@ import ImageGrid from '../pictureItems/ImageGrid'
 import AlbumGrid from './AlbumGrid'
 
 const Albums = () => {
-  const { currentUser } = useAuth()
-  const { albums } = useAlbums()
-  const {firebaseFunctions, isLoading, images, albumCollection} = useFire()
-  const [renderImages, setRenderImages] = useState(false)
-  const [thumbNailImage, setThumbNailImage] = useState([])
-  const [loadin, setLoadin] = useState(false)
-  const [albumCurrent, setAlbumsCurrent] = useState()
+
+  const { isLoading, images} = useFire()
   const {currentUserAlbums} = useUpdate()
-
-  useEffect(() => {
-      console.log(images,"images in albums")
-  }, [])
-
 
 	return (
 		<>
@@ -35,7 +25,7 @@ const Albums = () => {
       </Flex>
 
 			{
-				isLoading && currentUserAlbums.length && renderImages
+				isLoading && currentUserAlbums.length 
 					? (
           <Flex justify="center" align="center" mt="1rem" key={214124}>
             <Spinner   
@@ -45,7 +35,7 @@ const Albums = () => {
             color="teal.500"
             size="xl"  />
           </Flex>)
-					: currentUserAlbums.length && (<AlbumGrid albums={currentUserAlbums} images={images} thumbNail={thumbNailImage} />)
+					: currentUserAlbums.length && (<AlbumGrid albums={currentUserAlbums} images={images} />)
 			}
 
 		</>

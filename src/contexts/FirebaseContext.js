@@ -12,11 +12,12 @@ export const useFire = () => useContext(FirebaseContext)
 
 export const FirebaseProvider = ({ children }) => {
   
-  
+
   const db = firebase.firestore()
   const storage = firebase.storage()
 
   const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+
   const [currentAlbum, setCurrentAlbum] = useState()
   const [collectionData, setCollectionData] = useState([])
   const [albumCollection, setAlbumCollection] = useState([])
@@ -26,6 +27,9 @@ export const FirebaseProvider = ({ children }) => {
   const [userData, setUserData] = useState({})
   const [images, setImages] = useState([])
   const {currentUser} = useAuth()
+
+
+
   const firebaseFunctions = {
     //get user collection
     getUsers: async () => await db.collection('users').get().then((snapshot) => {
@@ -65,9 +69,11 @@ export const FirebaseProvider = ({ children }) => {
       console.log(err)
     })
     ,
+    //create User
     createUser: async (firstname, lastname) => await db.collection('users').add({
       firstname,
       lastname,
+      createdAt: timestamp()
     }).then(docRef => {
       const dataRef = db.collection("users").doc(docRef.id);
       return dataRef.update({
@@ -75,26 +81,27 @@ export const FirebaseProvider = ({ children }) => {
      })
     }),
     //create album
-    createAlbum: async (name, desc, id,  images,) => {
-    setIsLoading(true)
-    setCreated(false)
-    await db.collection("albums").add({
-      title: name,
-      images,
-      description: desc,
-      owner_id: id,
-      id
+    createAlbum: async (name, desc, id) => {
+      setIsLoading(true)
+      setCreated(false)
+      await db.collection("albums").add({
+        title: name,
+        description: desc,
+        owner_id: id,
+        images: [],
+        createdAt: timestamp(),
+        id
+        
+      }).then(docRef => {
+        const dataRef = db.collection("albums").doc(docRef.id);
+        return dataRef.update({
+          id: dataRef.id
+      })
+      })
+      setIsLoading(false)
+      setCreated(true)
       
-    }).then(docRef => {
-      const dataRef = db.collection("albums").doc(docRef.id);
-      return dataRef.update({
-        id: dataRef.id
-     })
-    })
-    setIsLoading(false)
-    setCreated(true)
-    
-  }
+    }
   ,
     updateAlbumName: async (id, newName) => {
       let ref = db.collection("albums").doc(id)
@@ -102,9 +109,10 @@ export const FirebaseProvider = ({ children }) => {
       await ref.update({
         title: newName
       }).then(
-        console.log("success")
+        setIsLoading(false)
+       
       ).catch(err => console.log("error", err))
-
+ 
     },
       //get albums
     getUserAlbums: async (id) => await db.collection('albums').where("owner_id", "==", id).get().then((snapshot) => {

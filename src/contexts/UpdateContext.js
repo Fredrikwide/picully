@@ -17,6 +17,7 @@ export const UpdateProvider = props => {
     const [userLoggedIn, setUserLoggedIn] = useState(false)
     const {firebaseFunctions, db} = useFire()
     const [isUploaded, setIsUploaded] = useState(false)
+    const [pickedImages, setPickedImages] = useState([])
     const [imagesInCurrentAlbum, setImagesInCurrentAlbum] = useState([])
     const [imagesOwnedByCurrentUser, setImagesOwnedByCurrentUser] = useState()
     const {currentUser} = useAuth()
@@ -25,6 +26,7 @@ export const UpdateProvider = props => {
     useEffect(() => {
         ( async () => {
             if(currentUser !== null) {
+                setCurrentUserAlbums("")
                 console.log("I RAN")
                 let res = await firebaseFunctions.getUserAlbums(currentUser.uid)
                 console.log(res)
@@ -85,6 +87,8 @@ export const UpdateProvider = props => {
       imagesInCurrentAlbum,
       setImagesInCurrentAlbum,
       isUploaded,
+      pickedImages,
+      setPickedImages,
       setIsUploaded,
       setImageDeleted
     }

@@ -31,18 +31,19 @@ const CreateAlbumSchema = Yup.object().shape({
 
 })
 
-const CreateAlbumForm = (pickedImages) => {
+const CreateAlbumForm = ({pictures}) => {
   const navigate= useNavigate()
   const { currentUser } = useAuth()
   const {firebaseFunctions, isLoading} = useFire()
   const {timestamp,db} = useFire()
   const [error, setError] = useState("")
 
+
+
+
+
   return (
   <>
-    <Box p="1rem" mt="3rem">
-      <Heading>Create a new album</Heading>
-    </Box>
     <Flex 
     justify="center" 
     align="center" 
@@ -60,27 +61,23 @@ const CreateAlbumForm = (pickedImages) => {
         validationSchema={CreateAlbumSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try { 
-            if(!pickedImages.length || pickedImages === undefined) {
+            if(!pictures.length || pictures === undefined) {
               await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
               setSubmitting(false)
               navigate('/console/albums')
             }
             else {
-              const createdAt = timestamp();
               try {
-                const docReference = await db.collection("albums").add({
-                  title: values.name,
-                  description: values.description,
-                  createdAt,
-                  owner: currentUser.uid,
-                });
-          
-                await pickedImages.forEach((image) => {
+                
+                await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id)
+                
+                
+                await pictures.forEach((pic) => {
+                  console.log(pic)
                   db.collection("images")
-                    .doc(image)
                     .update({
                       albums: firebase.firestore.FieldValue.arrayUnion(
-                        db.collection("albums").doc(docReference.owner)
+                        db.collection("albums").where("owner_id", "==", currentUser.uid)
                       ),
                     });
                 });
@@ -101,13 +98,13 @@ const CreateAlbumForm = (pickedImages) => {
                 {({ field, form }) => (
                   <Box p={["sm", "md", "lg", "xl"]} mt={["sm", "md", "lg", "xl"]}>
                     <FormControl isInvalid={form.errors.name && form.touched.name} isRequired>
-                      <FormLabel color="white" htmlFor="name" p={["sm", "md", "lg", "xl"]}>name</FormLabel>
+                      <FormLabel color="teal.500" htmlFor="name" p={["sm", "md", "lg", "xl"]}>name</FormLabel>
                       <Input 
                         {...field}
-                        focusBorderColor="white"
+                        focusBorderColor="teal.500"
                         value={props.values.name}
                         id="name"
-                        color="white"
+                        color="teal.500"
                         type="name"
                         placeholder="name" 
                         onChange={props.handleChange} 
@@ -122,13 +119,13 @@ const CreateAlbumForm = (pickedImages) => {
                 {({ field, form }) => (
                   <Box p={["sm", "md", "lg", "xl"]} mt={["sm", "md", "lg", "10px"]}>
                     <FormControl isInvalid={form.errors.description && form.touched.description} isRequired>
-                      <FormLabel color="white" htmlFor="description" p={["sm", "md", "lg", "xl"]}>description</FormLabel>
+                      <FormLabel color="teal.500" htmlFor="description" p={["sm", "md", "lg", "xl"]}>description</FormLabel>
                       <Input 
                         {...field}
-                        focusBorderColor="white"
+                        focusBorderColor="teal"
                         value={props.values.description}
                         id="description"
-                        color="white"
+                        color="teal.500"
                         type="description"
                         placeholder="description" 
                         onChange={props.handleChange} 
@@ -140,14 +137,10 @@ const CreateAlbumForm = (pickedImages) => {
                 )}
               </Field>
               
-                <Flex
-                justify="space-around"
-                align="center"
-                direction={["row", "row", "row", "row"]}>
                   <Box>
                     <Button
                       mt={4}
-                      background="white"
+                      background="teal.200"
                       p={["20.2px", "md", "lg", "xl"]}
                       color="teal.500"
                       isLoading={props.isSubmitting}
@@ -156,7 +149,7 @@ const CreateAlbumForm = (pickedImages) => {
                       Create Album
                     </Button>
                   </Box>
-                </Flex>
+              
             </Form>
         
           )}

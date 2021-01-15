@@ -13,10 +13,9 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 const AlbumGrid = () => {
-  const {currentUserAlbums} = useUpdate()
+  const {currentUserAlbums, imagesInCurrentAlbum} = useUpdate()
   const navigate=useNavigate()
   const {currentUser}  = useAuth()
-
 
   return (
     <>
@@ -30,6 +29,7 @@ const AlbumGrid = () => {
               <Flex justify="center" align="center" direction="column">
               <Text as="i" fontSize="sm" textAlign="center" p="5px" mt="1rem" textDecor="none">name: {album.name}</Text>
               <Text as="i" fontSize="sm" textAlign="center" p="5px" mt="1rem" textDecor="none">description: {album.description}</Text>
+              <Text as="i" fontSize="sm" textAlign="center" p="5px" mt="1rem" textDecor="none">pictures: {imagesInCurrentAlbum.length}</Text>
               <Image src={tempImage} alt={album.name} h="400px" w="300px" objectFit="contain"/>
               </Flex>
             </GridItem>
