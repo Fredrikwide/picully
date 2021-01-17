@@ -4,7 +4,7 @@ import "firebase/auth";
 import "firebase/storage"
 import "firebase/firestore";
 import { useAuth } from './AuthContext';
-
+import { v4 as uuidv4 } from 'uuid';
 export const FirebaseContext = createContext()
 
 export const useFire = () => useContext(FirebaseContext)
@@ -84,21 +84,21 @@ export const FirebaseProvider = ({ children }) => {
     createAlbum: async (name, desc, id) => {
       setIsLoading(true)
       setCreated(false)
+      const num = uuidv4()
        await db.collection("albums").add({
         title: name,
         description: desc,
         owner_id: id,
         images: [],
-        slug: name.replace(/\s+/g, '-').toLowerCase(),
+        slug: name.replace(/\s+/g, '-').toLowerCase() + `-${num}`,
         createdAt: timestamp(),
         id
         
       }).then(ref => {
         ref.update({
           id: ref.id
-      }).then(
-        console.log("REF ID IN FF", ref.id)
-        
+      }).catch(
+       err => console.error("error", err)   
       )
       setIsLoading(false)
       setCreated(true)
@@ -108,7 +108,7 @@ export const FirebaseProvider = ({ children }) => {
   ,
 
     createAlbumWithImages: async (title, desc, owner, id, images) => {
-      console.log(images)
+      const num = uuidv4()
       setIsLoading(true)
       setCreated(false)
       await db.collection("albums").add({
@@ -116,7 +116,7 @@ export const FirebaseProvider = ({ children }) => {
         description: desc,
         owner_id: owner,
         images: [],
-        slug: title.replace(/\s+/g, '-').toLowerCase(),
+        slug: title.replace(/\s+/g, '-').toLowerCase()+ `-${num}`,
         createdAt: timestamp(),
         id
         
@@ -134,7 +134,9 @@ export const FirebaseProvider = ({ children }) => {
             })
           })    
         }
-      })
+      }).catch(
+        err => console.error("error", err)   
+       )
       
 
       setIsLoading(false)
@@ -147,14 +149,16 @@ export const FirebaseProvider = ({ children }) => {
     ,
     updateAlbumName: async (id, newName) => {
       let ref = db.collection("albums").doc(id)
+      const num = uuidv4()
       setIsLoading(true)
       setUpdatedAlbumTitle(true)
       await ref.update({
         title: newName,
-        slug: newName.replace(/\s+/g, '-').toLowerCase(),
+        slug: newName.replace(/\s+/g, '-').toLowerCase()+ `-${num}`,
       }).then(
         setIsLoading(false),
         setUpdatedAlbumTitle(false)
+        
       ).catch(err => console.log("error", err))
  
     },

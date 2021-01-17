@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import UploadImage from '../forms/UploadImage'
 import { useAuth } from '../../contexts/AuthContext'
 import { Flex, Heading, Input, Spinner, Text } from '@chakra-ui/react'
@@ -14,9 +14,9 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 const Album = () => {
   const  {slug} = useParams()
-
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-  const {firebaseFunctions, db} = useFire()
+  const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
   const { 
           imageDeleted,
           isUploaded, 
@@ -24,28 +24,21 @@ const Album = () => {
           imagesInCurrentAlbum,
           setCurrentAlbum,
           setImagesInCurrentAlbum} = useUpdate()
-  const [editAlbumName, setEditAlbumName] = useState()
+  const [editAlbumName, setEditAlbumName] = useState(false)
   const [editActive, setEditActive] = useState(false)
   const {currentUser} = useAuth()
 
   useEffect(() => {
   (async () => {
-    if(!currentAlbum || !currentAlbum.id){
-      await db.collection("albums")
-      .where("slug", "==", slug)
-      .get()
-      .then(snapshot => {
-        let album = {}
-        snapshot.forEach(doc => {
-          if(doc.data().owner_id === currentUser.uid){
-           album = doc.data()
-            setCurrentAlbum(album)
-          }
-
+    if(currentAlbum === undefined || !currentAlbum){
+      await db.collection("albums").where("slug", "==", slug).get().then(querySnapshot => {
+        let currAlb = "";
+        querySnapshot.forEach(doc => {
+          currAlb = doc.data()
         })
+        setCurrentAlbum(currAlb)
       })
-    }
-    
+    } 
   })()
  
 }, [])
@@ -68,8 +61,6 @@ const Album = () => {
   
   }
 
-  
-
 
   useEffect(() => {
    
@@ -78,6 +69,7 @@ const Album = () => {
       setIsLoading(true)
 
       if(currentAlbum) {
+          setCurrentAlbum(currentAlbum)
           fetchImages(currentAlbum.id)
           setIsLoading(false)
       }
@@ -90,25 +82,6 @@ const Album = () => {
   }, [imageDeleted, isUploaded, currentAlbum])
 
 
-
-  
-  useEffect(() => 
-    {
-      ( async () => 
-        {
-          if(currentAlbum !== undefined) {
-            let ref = db.collection("images").where("album", "==", currentAlbum.id)
-              await ref.get().then(snapshot => {
-                let albumImages = []
-                snapshot.forEach(doc => {
-                console.log(doc.data(), "I RAN")
-                albumImages.push(doc.data())
-                setImagesInCurrentAlbum(albumImages)
-              })
-            })
-          }
-        })()
-    }, [currentAlbum])
 
   const handleEdit = () => {
     setEditActive(true) 
@@ -125,15 +98,17 @@ const Album = () => {
     }
    await firebaseFunctions.updateAlbumName(currentAlbum.id, editAlbumName)
     setEditActive(false)
-   
-    
   }
 
- 
+ useEffect(() => {
+
+ }, [updatedAlbumTitle])
 
 	return (
 		<>
+
      { currentAlbum !== undefined &&
+
       <Flex 
         direction="column" 
         mt="3rem">
@@ -189,7 +164,7 @@ const Album = () => {
                 /> 
               </Flex>}
             </Flex>
-                <Heading >{!editActive ? currentAlbum.title : editActive && editAlbumName && editAlbumName}</Heading>        
+                <Heading >{editAlbumName ? editAlbumName : currentAlbum.title }</Heading>        
           </Flex>
           {
           isLoading 
@@ -211,6 +186,7 @@ const Album = () => {
           ? 
           <ImageGrid images={imagesInCurrentAlbum} albumId={currentAlbum.id} />
           :
+
           <Flex justify="center" align="center">
             <Text as="i" mt="2rem">here be dragons</Text>
           </Flex>)

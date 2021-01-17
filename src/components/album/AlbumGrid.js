@@ -41,7 +41,8 @@ const AlbumGrid = () => {
               align="center" 
               direction="column"
               >
-              <Text 
+              <Text
+              isTruncated
               as="i" 
               fontSize="sm" 
               textAlign="center" 
@@ -50,7 +51,8 @@ const AlbumGrid = () => {
               >
                 name: {album.title}
               </Text>
-              <Text 
+              <Text
+               isTruncated
               as="i" 
               fontSize="sm" 
               textAlign="center" 
@@ -59,15 +61,6 @@ const AlbumGrid = () => {
               textDecor="none"
               >
                 description: {album.description}
-              </Text>
-              <Text 
-              as="i" 
-              fontSize="sm" 
-              textAlign="center" 
-              p="5px" 
-              mt="1rem" 
-              textDecor="none">
-                pictures: {imagesInCurrentAlbum.length}
               </Text>
               <Image 
                 src={tempImage} 

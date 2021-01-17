@@ -155,7 +155,7 @@ const UploadImage = ({albumId}) => {
 
 
   return (
-
+    <>
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" >
@@ -166,7 +166,8 @@ const UploadImage = ({albumId}) => {
           </InputGroup> 
         </Flex>
       </form>
-
+      {uploadProgress !== null && <Progress colorScheme="teal" size="md" value={uploadProgress}/>}
+    </>
   )
 }
 
