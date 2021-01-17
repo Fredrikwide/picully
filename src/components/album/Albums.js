@@ -1,7 +1,8 @@
-import {Flex, Heading, Spinner, Link } from '@chakra-ui/react'
+import {Flex, Heading, Spinner, Link, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import {Link as ReactLink} from 'react-router-dom'
 
+import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { useFire } from '../../contexts/FirebaseContext'
@@ -12,8 +13,14 @@ import AlbumGrid from './AlbumGrid'
 
 const Albums = () => {
 
-  const { isLoading, images} = useFire()
+  const { isLoading, images, updatedAlbumTitle} = useFire()
   const {currentUserAlbums} = useUpdate()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+
+  useEffect(() => {
+
+  }, [updatedAlbumTitle])
 
 	return (
 		<>
@@ -21,7 +28,33 @@ const Albums = () => {
         <Heading pt="1rem" >
           {currentUserAlbums.length ? "Your Albums" : "Create new albums"}
         </Heading>
-        <Link as={ReactLink} to="/console/albums/create" fontSize="5.2rem">+</Link>
+        <>
+          <Button mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={onOpen}>
+           +
+          </Button>
+          <Modal
+            closeOnOverlayClick={false}
+            isOpen={isOpen}
+            onClose={onClose}
+          >
+            <ModalOverlay  />
+            <ModalContent >
+            <Flex justifyContent="center" alignItems="center" direction="column">
+              <ModalHeader>Create new album</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <Flex justify="center" align="center">
+                  <CreateNewAlbumFromPickedImages />
+               </Flex>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button onClick={onClose}>Cancel</Button>
+              </ModalFooter>
+            </Flex>
+            </ModalContent>
+          </Modal>
+        </>
       </Flex>
 
 			{

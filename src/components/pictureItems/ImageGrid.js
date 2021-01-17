@@ -12,10 +12,10 @@ const ImageGrid = ({albumId}) => {
   const {db, storage} = useFire()
   const [deleteImage, setDeleteImage] = useState(false);
   const { currentUser } = useAuth()
-  const {isPicked, setIsPicked} = useUpdate()
+
   const [picCullyUrl, setPicCullyUrl] = useState("")
   const {isUploaded} = useUpdate()
-  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbumID, setPickedImages, pickedImages} = useUpdate()
+  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbum, setPickedImages, pickedImages} = useUpdate()
   const [isChecked, setIsChecked] = useState([])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -48,35 +48,25 @@ const ImageGrid = ({albumId}) => {
 
   useEffect(() => {
     console.log("uploaded")
-  }, [isUploaded, currentAlbumID])
+  }, [isUploaded, currentAlbum.id])
 
-  let pickedItems = []
-  let unPickedItems = []
 
-  const handlePickImage = async (e,item) => {
+
+  const handlePickImage = async (e, item) => {
     console.log(e.target.checked, item)
-      let ref = await db.collection("images").where("albums", "array-contains", albumId)
-      console.log(ref.id)
-      let res = await db.collection("images").doc(item.uid)
-      console.log(res, "RES")
 
-      // await db.collection("images").where("id", "==", item.id).get().then(querySnapshot => {
-      //     querySnapshot.forEach(doc => {
-      //       console.log(doc.data())
-      //     })
-      //   } )
-      // if(e.target.checked && e.target.id === item.title) {
-      //   pickedItems.push(ref)
-      //   setPickedImages(previtems => [...previtems, ...pickedItems])
-      //   console.log(pickedItems)
-      // }
-      // else if(!e.target.checked && e.target.id === item.title){
-      //   unPickedItems.push(ref)
-      //   pickedItems.filter(item => !unPickedItems.includes(item))
-      //   setPickedImages(pickedItems)
-      //   console.log(pickedItems)
+      if(e.target.checked && e.target.id === item.id) {
+
+        setPickedImages(prevItems => [...prevItems, item])
+        console.log(pickedImages, "added")
     
-      // }
+      }
+      else if(!e.target.checked && e.target.id === item.id){
+
+        setPickedImages(pickedImages.filter(item => !pickedImages.includes(item)))
+        console.log(pickedImages, "popped")
+    
+      }
     setIsChecked(!isChecked)
   }
 
@@ -85,8 +75,9 @@ const ImageGrid = ({albumId}) => {
   }, [pickedImages])
 
 
-  const handleNewAlbum = () => {
+  const handleNewAlbum = async () => {
     onOpen()
+
   }
 
   const handleShareAlbum = () => {
@@ -176,9 +167,9 @@ const ImageGrid = ({albumId}) => {
               <Checkbox
               ml="5px"
               size="md"
-              id={image.title}
+              id={image.id}
               colorScheme="green"
-              onChange={(e) => handlePickImage(e,image)}>
+              onChange={(e) => handlePickImage(e, image)}>
                 pick
               </Checkbox>
             </Flex>

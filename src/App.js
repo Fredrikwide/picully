@@ -19,12 +19,12 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
-          <Route path="/:albumName/:picully" element={<SharedAlbum />} />
+          <Route path="/:slug/:picully" element={<SharedAlbum />} />
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">
                     <Albums />
-                    <AuthRoute path="/:albumName">
+                    <AuthRoute path="/:slug">
                       <Album />
                     </AuthRoute>
                     <AuthRoute path="/create">

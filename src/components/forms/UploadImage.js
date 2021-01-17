@@ -1,13 +1,10 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormLabel, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading, Image } from '@chakra-ui/react'
+import { Box, Flex, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading, Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
 import firebase from 'firebase'
-import useUploadImage from '../../hooks/useUploadImage'
-import ImageCard from '../Cards/ImageCard'
-import ImageGrid from '../pictureItems/ImageGrid'
-import PreviewImageGrid from '../pictureItems/PreviewImageGrid'
+
 import { useAuth } from '../../contexts/AuthContext'
-import { ref } from 'yup'
+
 import { useUpdate } from '../../contexts/UpdateContext'
 
 
@@ -55,7 +52,7 @@ const UploadImage = ({albumId}) => {
 		uploadTask.then(async snapshot => {
 
       const url = await snapshot.ref.getDownloadURL();
-      console.log(await snapshot.ref.id, "SNAP ID")
+  
 			// add uploaded file to db
 			const img = {
         title: image.name,
@@ -64,6 +61,7 @@ const UploadImage = ({albumId}) => {
 				size: image.size,
         type: image.type,
         createdAt: timestamp(),
+        id,
 				url,
 			};
 						
@@ -73,13 +71,26 @@ const UploadImage = ({albumId}) => {
       }
 
 			// add image to collection
-			await db.collection('images').add(img)
+      await db.collection('images').add(img).then(function(docRef) {
+      docRef.update({
+        id: docRef.id
+      })
+      console.log("Document written with ID: ", img);
+      
+       })
+      .catch(function(error) {
+      console.error("Error adding document: ", error);
+     })
+  
       // add uid as id to pic
-      await db.collection("images").get().then(snapshot => {
-        snapshot.forEach(doc => {
-         doc.update({id: doc.id})
-        });
-      });
+      
+      
+    
+
+
+      
+
+
 
       // await db.collection("albums").doc(albumId).get().then(snapshot => {
       //   snapshot.forEach(doc => {
@@ -92,7 +103,8 @@ const UploadImage = ({albumId}) => {
 
 			// file has been added to db, refresh list of files
 			setUploadedImage(img);
-			setIsSuccess(true);
+      setIsSuccess(true);
+      e.target.files[0] = "";
 		}).catch(error => {
 			console.error("File upload triggered an error!", error);
 			setError({

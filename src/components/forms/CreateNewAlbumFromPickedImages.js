@@ -15,6 +15,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import {  useFire } from '../../contexts/FirebaseContext';
 import { useState } from 'react';
 import firebase from'firebase/app'
+import { useUpdate } from '../../contexts/UpdateContext';
 
 //Yup Validation schema for signing in
 const CreateAlbumSchema = Yup.object().shape({
@@ -34,6 +35,7 @@ const CreateAlbumSchema = Yup.object().shape({
 const CreateAlbumForm = ({pictures}) => {
   const navigate= useNavigate()
   const { currentUser } = useAuth()
+  const {pickedImages, currentAlbum} = useUpdate()
   const {firebaseFunctions, isLoading} = useFire()
   const {timestamp,db} = useFire()
   const [error, setError] = useState("")
@@ -41,7 +43,7 @@ const CreateAlbumForm = ({pictures}) => {
 
 
 
-
+  console.log(pictures, "PICS", pickedImages, "context pics")
   return (
   <>
     <Flex 
@@ -55,49 +57,34 @@ const CreateAlbumForm = ({pictures}) => {
         initialValues={{
           name: '',
           description: '',
+          images: [],
           owner: currentUser.uid,
+          slug: '',
           id: '',
         }}
         validationSchema={CreateAlbumSchema}
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
           try { 
-            if(!pictures.length || pictures === undefined) {
+            if(pickedImages !== undefined && pickedImages.length) {
+             await firebaseFunctions.createAlbumWithImages(values.name, values.description, values.owner, values.id, pickedImages)
+              
+                navigate('/console/albums')
+                resetForm({})
+            }
+            else {
+              console.log("I ELSE RAN")
               await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
               setSubmitting(false)
               navigate('/console/albums')
-            }
-            else {
-              try {
-                
-                await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id)
-                
-                await db.collection("images").get().then(snapshot => {
-                  snapshot.forEach(doc => {
-                    console.log(doc.data(), "RRRRRRRRREEEEEEEEEE")
-                      const id = doc.id; 
-                      
-                  });
-                });
-             
-                await pictures.forEach((pic) => {
-  
-                  db.collection("images")
-                    .doc(pic)
-                    .add({
-                      albums: firebase.firestore.FieldValue.arrayUnion(
-                        db.collection("albums").where("owner_id", "==", currentUser.uid)
-                      ),
-                    });
-                });
-              } catch (error) {
-                setError(error.message);
-              }
-            }        
+              resetForm({})
+              
+              
 
-        } catch (err) {
-            console.log('error', err)
-        }
-        }}
+              }      
+            } catch (err) {
+                console.log('error', err)
+            }
+            }}
       >
           {(props) => (
             

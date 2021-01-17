@@ -66,27 +66,15 @@ const CreateAlbumForm = (pickedImages) => {
               navigate('/console/albums')
             }
             else {
-              const createdAt = timestamp();
-              try {
-                const docReference = await db.collection("albums").add({
-                  title: values.name,
-                  description: values.description,
-                  createdAt,
-                  owner: currentUser.uid,
+              await pickedImages.forEach((image) => {
+                db.collection("images")
+                .doc(image.id)
+                .update({
+                albums: firebase.firestore.FieldValue.arrayUnion(
+                db.collection("albums").doc(pickedImages.id)
+                ),
                 });
-          
-                await pickedImages.forEach((image) => {
-                  db.collection("images")
-                    .doc(image)
-                    .update({
-                      albums: firebase.firestore.FieldValue.arrayUnion(
-                        db.collection("albums").doc(docReference.owner)
-                      ),
-                    });
                 });
-              } catch (error) {
-                setError(error.message);
-              }
             }        
 
         } catch (err) {
