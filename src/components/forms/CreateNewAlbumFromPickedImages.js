@@ -77,9 +77,6 @@ const CreateAlbumForm = ({pictures}) => {
               setSubmitting(false)
               navigate('/console/albums')
               resetForm({})
-              
-              
-
               }      
             } catch (err) {
                 console.log('error', err)

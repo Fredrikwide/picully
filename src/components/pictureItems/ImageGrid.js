@@ -1,4 +1,5 @@
 
+import { AddIcon } from '@chakra-ui/icons';
 import { Grid, GridItem, Heading, Image, Text, Button, CloseButton, Checkbox, Flex, AspectRatio, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, useDisclosure, ModalFooter } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,39 +7,39 @@ import { useFire } from '../../contexts/FirebaseContext';
 import { useUpdate } from '../../contexts/UpdateContext';
 import useDelete from '../../hooks/useDelete';
 import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages';
-
+import {v4 as uuidv4} from 'uuid'
 
 const ImageGrid = ({albumId}) => {
   const {db, storage} = useFire()
   const [deleteImage, setDeleteImage] = useState(false);
   const { currentUser } = useAuth()
-
-  const [picCullyUrl, setPicCullyUrl] = useState("")
   const {isUploaded} = useUpdate()
-  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbum, setPickedImages, pickedImages} = useUpdate()
+  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbum, setPickedImages, pickedImages, setAlbumToShare} = useUpdate()
   const [isChecked, setIsChecked] = useState([])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
 
   
   const handleReviewLink = (album) => {
+    setAlbumToShare(album)
+    let uniqNum = uuidv4()
     let baseUrl = window.location.origin;
-    let url = `${baseUrl}/cull/${album}`;
-    setPicCullyUrl(url);
+    let url = `${baseUrl}/picully/${album.slug}/${uniqNum}`;
+    console.log(url)
   };
 
 
 	const handleDeleteImage = async (img) => {
     console.log(img)
     // eslint-disable-next-line no-restricted-globals
-    let ref = db.collection('images').where("url", "==", img.url)
+    let ref = db.collection('images').where("albums", "array-contains", currentAlbum.id)
     ref.get().then(function(querySnapshot) {
       querySnapshot.forEach(function(doc) {
         doc.ref.delete()
       });
     });
-    // await ref.delete();
-    // await storage.ref(img.path).delete();
+    await ref.delete();
+    await storage.ref(img.path).delete();
      setImageDeleted(true)
 	}
 
@@ -86,18 +87,18 @@ const ImageGrid = ({albumId}) => {
   
   return (
     <>
-    <Flex justify="flex-end" align="center" width="100%" mt="2rem" mb="1rem">
-    <Flex justify="space-between" w="400px">
-        <Text>Add checked items to new album &gt;&gt;&gt;</Text>
+      <Flex justify="flex-end" align="center" width="100%" mt="2rem" mb="1rem">
+        <Flex justify="space-between" w="400px">
+        <Text>Add images to new album</Text>
         <Button mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
-          Create +
+          <AddIcon h={6} w={6} colorScheme="teal" />
         </Button>
-        <>
-          <Modal
-            closeOnOverlayClick={false}
-            isOpen={isOpen}
-            onClose={onClose}
-          >
+          <>
+            <Modal
+              closeOnOverlayClick={false}
+              isOpen={isOpen}
+              onClose={onClose}
+            >
             <ModalOverlay  />
             <ModalContent >
             <Flex justifyContent="center" alignItems="center" direction="column">
@@ -117,10 +118,9 @@ const ImageGrid = ({albumId}) => {
           </Modal>
         </>
       </Flex>
-      <Flex justify="space-between" w="400px">
-        <Text>share</Text>
-        <Button mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
-          Create +
+      <Flex justify="center" align="center" w="400px">
+        <Button mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={() => handleReviewLink(currentAlbum)}>
+          share
         </Button>
       </Flex>
     </Flex>

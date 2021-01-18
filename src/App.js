@@ -19,7 +19,7 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
-          <Route path="/:slug/:picully" element={<SharedAlbum />} />
+          <Route path="/picully/:slug/:uniqNum" element={<SharedAlbum />} />
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">

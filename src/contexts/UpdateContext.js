@@ -1,4 +1,5 @@
 import React, { useState, createContext, useContext, useEffect } from 'react'
+import { useParams } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useFire } from './FirebaseContext';
 
@@ -19,9 +20,10 @@ export const UpdateProvider = props => {
     const {firebaseFunctions, db} = useFire()
     const [isUploaded, setIsUploaded] = useState(false)
     const [pickedImages, setPickedImages] = useState([])
+    const [sharedIamges, setSharedImages] = useState([])
     const [imagesInCurrentAlbum, setImagesInCurrentAlbum] = useState([])
     const [imagesOwnedByCurrentUser, setImagesOwnedByCurrentUser] = useState()
-
+    const [albumToShare, setAlbumToShare] = useState(undefined)
     const {currentUser} = useAuth()
     const {created} = useFire()
 
@@ -53,7 +55,18 @@ export const UpdateProvider = props => {
         
     }, [userLoggedIn,isUploaded, imageDeleted, created])
 
-
+    useEffect(() => {
+        (async () => {
+            if(albumToShare){
+                await db.collection("images").doc("albums", "array-contains", albumToShare.id).get().then(snapshot => {
+                    snapshot.forEach(doc=> {
+                        setSharedImages(prevImages => [...prevImages, doc.data()])
+                    })
+                })
+            }
+        })()
+       
+    }, [albumToShare])
 
     const updateContextValue = {
         
@@ -75,7 +88,9 @@ export const UpdateProvider = props => {
       pickedImages,
       setPickedImages,
       setIsUploaded,
-      setImageDeleted
+      setImageDeleted,
+      setAlbumToShare,
+      albumToShare
     }
 
     return (
