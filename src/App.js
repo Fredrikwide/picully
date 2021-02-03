@@ -10,8 +10,12 @@ import Albums from './components/album/Albums';
 import NotFound from './components/error/NotFound';
 import Album from './components/album/Album';
 import SharedAlbum from './components/album/SharedAlbum';
+import { useUpdate } from './contexts/UpdateContext';
 
 const App = () => {
+
+  const {albumToShare,sharedUrl} = useUpdate()
+
   return (
     <>
       <Router>
@@ -19,7 +23,9 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
-          <Route path="/picully/:slug/:uniqNum" element={<SharedAlbum />} />
+          { sharedUrl && albumToShare &&
+          <Route path={`/picully/:shared`} element={<SharedAlbum album={albumToShare} />} />
+          }
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">
@@ -32,8 +38,6 @@ const App = () => {
                     </AuthRoute>
                   </AuthRoute>
           </AuthRoute>
-
-
           <Route path="*" element={<NotFound />} />
         </Routes> 
       </Router>

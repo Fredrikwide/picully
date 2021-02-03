@@ -12,37 +12,19 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 
-const SharedAlbum = () => {
-  const  {slug, uniqNum} = useParams()
+const SharedAlbum = ({album}) => {
+  const  {shared} = useParams()
 
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
   const { 
-          imageDeleted,
-          isUploaded, 
-          albumToshare,
-          setAlbumToShare,
           sharedIamges,
           setSharedImages,
-          setAlbumToshare} = useUpdate()
+        } = useUpdate()
+
   const [editAlbumName, setEditAlbumName] = useState(false)
   const [editActive, setEditActive] = useState(false)
 
-
-  useEffect(() => {
-  (async () => {
-    if(albumToshare === undefined || !albumToshare){
-      await db.collection("albums").where("slug", "==", slug).get().then(querySnapshot => {
-        let currAlb = "";
-        querySnapshot.forEach(doc => {
-          currAlb = doc.data()
-        })
-        setAlbumToShare(currAlb)
-      })
-    } 
-  })()
- 
-}, [])
 
   const fetchImages = async (id) => {
     try {
@@ -62,16 +44,14 @@ const SharedAlbum = () => {
   
   }
 
-
   useEffect(() => {
    
     (async () => {
 
       setIsLoading(true)
 
-      if(albumToshare) {
-        setAlbumToShare(albumToshare)
-          fetchImages(albumToshare.id)
+      if(album) {
+          fetchImages(album.id)
           setIsLoading(false)
       }
       else {
@@ -79,7 +59,7 @@ const SharedAlbum = () => {
       }
     })()
     
-  }, [imageDeleted, isUploaded, albumToshare])
+  }, [album])
 
 
 
@@ -96,7 +76,7 @@ const SharedAlbum = () => {
     if(!editAlbumName) {
       return 
     }
-   await firebaseFunctions.updateAlbumName(albumToshare.id, editAlbumName)
+   await firebaseFunctions.updateAlbumName(album.id, editAlbumName)
     setEditActive(false)
   }
 
@@ -107,14 +87,14 @@ const SharedAlbum = () => {
 	return (
 		<>
 
-     { albumToshare !== undefined &&
+     { album !== undefined &&
 
       <Flex 
         direction="column" 
         mt="3rem">
-        { albumToshare !== undefined && !isLoading &&
+        { album !== undefined && !isLoading &&
         <UploadImage 
-          albumId={albumToshare.id !== undefined && albumToshare.id } 
+          albumId={album.id !== undefined && album.id } 
         /> }
         <Flex 
           justify="center" 
@@ -164,7 +144,7 @@ const SharedAlbum = () => {
                 /> 
               </Flex>}
             </Flex>
-                <Heading >{editAlbumName ? editAlbumName : albumToshare.title }</Heading>        
+                <Heading >{editAlbumName ? editAlbumName : album.title }</Heading>        
           </Flex>
           {
           isLoading 
@@ -184,7 +164,7 @@ const SharedAlbum = () => {
           : 
           (sharedIamges !== undefined && sharedIamges.length 
           ? 
-          <ImageGrid images={sharedIamges} albumId={albumToshare.id} />
+          <ImageGrid images={sharedIamges} albumId={album.id} />
           :
 
           <Flex justify="center" align="center">

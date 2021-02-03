@@ -2,8 +2,6 @@
 
 
 
-    Som fotograf vill jag kunna markera bilder och skapa ett nytt album utifrån de markerade bilderna.
-
     Som fotograf vill jag kunna bjuda in min kund till att gallra bland bilderna, och de bilder som kunden väljer ska hamna i ett nytt album på mitt konto.
 
     Som fotograf vill jag att den länken som jag skickar till min kund innehåller en unik kod och att kunden kommer till en separat vy utan att behöva logga in.

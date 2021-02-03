@@ -11,7 +11,7 @@ const Console = () => {
 
   return (
     <>
-    <Albums />
+      <Albums />
     </>
  
   )

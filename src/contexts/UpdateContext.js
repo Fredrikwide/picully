@@ -26,7 +26,7 @@ export const UpdateProvider = props => {
     const [albumToShare, setAlbumToShare] = useState(undefined)
     const {currentUser} = useAuth()
     const {created} = useFire()
-
+    const [sharedUrl, setSharedUrl] = useState(false)
     useEffect(() => {
         ( async () => {
             if(currentUser !== null) {
@@ -58,9 +58,9 @@ export const UpdateProvider = props => {
     useEffect(() => {
         (async () => {
             if(albumToShare){
-                await db.collection("images").doc("albums", "array-contains", albumToShare.id).get().then(snapshot => {
-                    snapshot.forEach(doc=> {
-                        setSharedImages(prevImages => [...prevImages, doc.data()])
+                await db.collection("images").where("albums", "array-contains", albumToShare.id).get().then(snapshot => {
+                    snapshot.forEach(doc => {
+                        console.log(doc.data())
                     })
                 })
             }
@@ -90,7 +90,9 @@ export const UpdateProvider = props => {
       setIsUploaded,
       setImageDeleted,
       setAlbumToShare,
-      albumToShare
+      albumToShare,
+      setSharedUrl,
+      sharedUrl
     }
 
     return (
