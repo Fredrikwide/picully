@@ -14,7 +14,7 @@ import { useUpdate } from './contexts/UpdateContext';
 
 const App = () => {
 
-  const {albumToShare,sharedUrl} = useUpdate()
+  const {sharedIamges,albumToShare, sharedUrl} = useUpdate()
 
   return (
     <>
@@ -24,7 +24,7 @@ const App = () => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
           { sharedUrl && albumToShare &&
-          <Route path={`/picully/:shared`} element={<SharedAlbum album={albumToShare} />} />
+          <Route path={`/picully/:shared`} element={<SharedAlbum album={albumToShare} images={sharedIamges} />} />
           }
           <AuthRoute path="/console">
             <Console />

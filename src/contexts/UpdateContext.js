@@ -20,6 +20,7 @@ export const UpdateProvider = props => {
     const {firebaseFunctions, db} = useFire()
     const [isUploaded, setIsUploaded] = useState(false)
     const [pickedImages, setPickedImages] = useState([])
+    const [discardedImages, setDiscardedImages] = useState([])
     const [sharedIamges, setSharedImages] = useState([])
     const [imagesInCurrentAlbum, setImagesInCurrentAlbum] = useState([])
     const [imagesOwnedByCurrentUser, setImagesOwnedByCurrentUser] = useState()
@@ -27,6 +28,10 @@ export const UpdateProvider = props => {
     const {currentUser} = useAuth()
     const {created} = useFire()
     const [sharedUrl, setSharedUrl] = useState(false)
+
+    const [userSelectedImagesToKeep, setuserSelectedImagesToKeep] = useState([])
+    const [userSelectedImagesToDelete, setuserSelectedImagesToDelete] = useState([])
+
     useEffect(() => {
         ( async () => {
             if(currentUser !== null) {
@@ -92,7 +97,15 @@ export const UpdateProvider = props => {
       setAlbumToShare,
       albumToShare,
       setSharedUrl,
-      sharedUrl
+      sharedUrl,
+      sharedIamges,
+      setSharedImages,
+      discardedImages,
+      setDiscardedImages,
+      userSelectedImagesToKeep, 
+      setuserSelectedImagesToKeep,
+      userSelectedImagesToDelete, 
+      setuserSelectedImagesToDelete   
     }
 
     return (

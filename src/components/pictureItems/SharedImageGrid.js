@@ -1,56 +1,26 @@
 
 import { AddIcon } from '@chakra-ui/icons';
-import { Grid, GridItem, Image, Text, Button, CloseButton, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody } from '@chakra-ui/react'
+import { Grid, GridItem, Image, Text, Button, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react';
-
-import { useFire } from '../../contexts/FirebaseContext';
 import { useUpdate } from '../../contexts/UpdateContext';
 import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages';
 import {v4 as uuidv4} from 'uuid'
-import { useNavigate } from 'react-router-dom';
 
-const ImageGrid = ({albumId}) => {
-  const {db, storage} = useFire()
- 
-  const {isUploaded} = useUpdate()
-  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbum, setPickedImages, pickedImages, albumToShare , setAlbumToShare, setSharedUrl, sharedUrl, discardedImages, setDiscardedImages,setSharedImages} = useUpdate()
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+const ImageGrid = ({images}) => {
+
+  const { userSelectedImagesToKeep, setuserSelectedImagesToKeep,
+    userSelectedImagesToDelete, setuserSelectedImagesToDelete} = useUpdate()
+
   const [checkers, setCheckers] = useState([])
 
-  const navigate = useNavigate()
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-
-
-
-
-
-  const handleReviewLink = () => {
-    let uniqNum = uuidv4()
-    let url = `/picully/${uniqNum}`;
-    setSharedUrl(url)
-  };
-
-
-	const handleDeleteImage = async (img) => {
-    console.log(img)
-    // eslint-disable-next-line no-restricted-globals
-    let ref = db.collection('images').where("albums", "array-contains", currentAlbum.id)
-    ref.get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        doc.ref.delete()
-      });
-    });
-    await ref.delete();
-    await storage.ref(img.path).delete();
-     setImageDeleted(true)
-  }
-  
   useEffect(() => {
-    imagesInCurrentAlbum.map((img, i) => {
+    images.map((img, i) => {
       let imageItem = {
         id: i,
         image: img,
@@ -61,12 +31,6 @@ const ImageGrid = ({albumId}) => {
     })
   }, [])
 
-  useEffect(() => {
-  }, [imageDeleted])
-
-  useEffect(() => {
-  }, [isUploaded, currentAlbum.id])
-
 
   const handlePickImage = async (e, item) => {
     let filterChecks = checkers.map(check => check)
@@ -74,13 +38,13 @@ const ImageGrid = ({albumId}) => {
       filterChecks.forEach(obj => {
         if(!obj.picked && obj.id === item.id) {
           obj.picked = true
-          setPickedImages(prevItems => [...prevItems, obj.image])
-          console.log(pickedImages, "added")
+          setuserSelectedImagesToKeep(prevItems => [...prevItems, obj.image])
+
         }
         else if(obj.picked && obj.id === item.id ) {
           obj.picked = false
-          setPickedImages(pickedImages.filter(obj => !pickedImages.includes(obj)))
-          console.log(pickedImages, "popped")
+          setuserSelectedImagesToKeep(userSelectedImagesToKeep.filter(obj => !userSelectedImagesToKeep.includes(obj)))
+
         }
       })
     }
@@ -89,48 +53,51 @@ const ImageGrid = ({albumId}) => {
 
 
   
-  const handleDiscardimage = async (e, item) => {
+  const handleDiscardimage = async (item) => {
     let filterChecks = checkers.map(check => check)
     if(filterChecks.includes(item)){
       filterChecks.forEach(obj => {
         if(!obj.discarded && obj.id === item.id) {
           obj.discarded = true
-          setDiscardedImages(prevItems => [...prevItems, item])
-          console.log(pickedImages, "added")
+          setuserSelectedImagesToDelete(prevItems => [...prevItems, item])
         }
         else if(obj.discarded && obj.id === item.id ) {
           obj.discarded = false
-          setDiscardedImages(discardedImages.filter(obj => !discardedImages.includes(obj)))
-          console.log(discardedImages, "popped")
+          setuserSelectedImagesToDelete(userSelectedImagesToDelete.filter(obj => !userSelectedImagesToDelete.includes(obj)))
+
         }
       })
     }
     setCheckers(filterChecks)
   }
-
-
+  
   const handleNewAlbum = async () => {
     onOpen()
   }
 
-  const handleShareAlbum = (album) => {
-    handleReviewLink()
-    setAlbumToShare(album)
-    if(pickedImages.length){
-      setSharedImages(pickedImages)
-    }
-    navigate(`${sharedUrl}`)
-  }
-  
   return (
     <>
-      <Flex key={uuidv4()} justify="flex-end" align="center" width="100%" mt="2rem" mb="1rem">
-        <Flex key={uuidv4()} justify="space-between" w="400px">
-        <Text key={uuidv4()} >Add images to new album</Text>
-        <Button key={uuidv4()}  mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
-          <AddIcon key={uuidv4()} h={6} w={6} colorScheme="teal" />
-        </Button>
+      <Grid 
+        key={uuidv4()}
+        mr="1rem"
+        ml="1rem" 
+        templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
+        templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
+        mt="2rem" 
+        gap={8}
+        overflowX="hidden"
+        h="100%"
+        w="100%"
+      >
+      {
+
+          images !== undefined 
+        && images.length 
+        && checkers.map((item, i) => (
           <>
+            <Button key={uuidv4()}  mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
+              <AddIcon key={uuidv4()} h={6} w={6} colorScheme="teal" />
+            </Button>
             <Modal
               key={uuidv4()}
               closeOnOverlayClick={false}
@@ -144,7 +111,7 @@ const ImageGrid = ({albumId}) => {
               <ModalCloseButton />
               <ModalBody pb={6}>
                 <Flex justify="center" align="center">
-                  <CreateNewAlbumFromPickedImages pictures={pickedImages}/>
+                  <CreateNewAlbumFromPickedImages pictures={userSelectedImagesToKeep}/>
                </Flex>
               </ModalBody>
 
@@ -154,32 +121,7 @@ const ImageGrid = ({albumId}) => {
             </Flex>
             </ModalContent>
           </Modal>
-        </>
-      </Flex>
-      <Flex justify="center" align="center" w="400px">
-          <Button mr="1rem" w="80px" h="30px" colorScheme="teal" onClick={() => handleShareAlbum(currentAlbum)}>
-            share
-          </Button>     
-      </Flex>
-    </Flex>
-    <Grid 
-      key={uuidv4()}
-      mr="1rem"
-      ml="1rem" 
-      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
-      templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
-      mt="2rem" 
-      gap={8}
-      overflowX="hidden"
-      h="100%"
-      w="100%"
-    >
-      {
-        !imageDeleted && 
-        imagesInCurrentAlbum !== undefined 
-        && imagesInCurrentAlbum.length 
-        && checkers.map((item, i) => (
-          <>
+        
             <GridItem 
               key={uuidv4()}
               colSpan={1} 
@@ -192,14 +134,6 @@ const ImageGrid = ({albumId}) => {
               align="center" 
               flexBasis="0" 
             >
-            { currentAlbum !== albumToShare &&
-            <CloseButton 
-              key={uuidv4()} 
-              id={item.image.albums[albumId]}  
-              size="sm" 
-              onClick={() => handleDeleteImage(item.image)} 
-            /> 
-            }
             <Text
               key={uuidv4()}
               isTruncated
