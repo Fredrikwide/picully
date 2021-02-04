@@ -1,3 +1,5 @@
+
+/* eslint-disable no-unused-vars */
 import { Flex, Input, InputGroup, InputRightAddon } from '@chakra-ui/react';
 import React from 'react'
 import { useForm } from "react-hook-form";
@@ -7,7 +9,6 @@ const NewUpload = () => {
   const {storage} = useFire()
   const onSubmit = (data) => {
     const storageRef = storage.ref()
- 
   }
 
   return (

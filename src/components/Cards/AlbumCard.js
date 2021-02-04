@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // Sample card from Airbnb
-import { StarIcon } from '@chakra-ui/icons'
-import { Badge, Box, Flex, Image, Input } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Button } from 'react-scroll'
-import {useFire} from '../../contexts/FirebaseContext'
+import { Box, Image } from '@chakra-ui/react'
+
+
 
 
 const AlbumCard = ({id, title, description,thumbNail}) => {

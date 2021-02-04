@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import SharedImageGrid from '../pictureItems/SharedImageGrid'
 import { Flex, Heading, Spinner, Text } from '@chakra-ui/react'
 import { useFire } from '../../contexts/FirebaseContext'
-
+/* eslint-disable no-unused-vars */
 
 
 

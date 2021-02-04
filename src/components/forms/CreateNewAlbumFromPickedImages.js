@@ -6,15 +6,13 @@ import {
   FormErrorMessage,
   Button,
   Box,
-  Flex,
-  Heading, 
+  Flex, 
 } from "@chakra-ui/react"
 import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
 import {  useFire } from '../../contexts/FirebaseContext';
-import { useState } from 'react';
-import firebase from'firebase/app'
+
 import { useUpdate } from '../../contexts/UpdateContext';
 
 //Yup Validation schema for signing in
@@ -35,10 +33,8 @@ const CreateAlbumSchema = Yup.object().shape({
 const CreateAlbumForm = ({pictures}) => {
   const navigate= useNavigate()
   const { currentUser } = useAuth()
-  const {pickedImages, currentAlbum} = useUpdate()
-  const {firebaseFunctions, isLoading} = useFire()
-  const {timestamp,db} = useFire()
-  const [error, setError] = useState("")
+  const {pickedImages} = useUpdate()
+  const {firebaseFunctions} = useFire()
 
 
 

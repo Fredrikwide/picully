@@ -1,3 +1,5 @@
+
+/* eslint-disable no-unused-vars */
 import { Box, Flex, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading, Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
@@ -83,13 +85,6 @@ const UploadImage = ({albumId}) => {
      })
   
       // add uid as id to pic
-      
-      
-    
-
-
-      
-
 
 
       // await db.collection("albums").doc(albumId).get().then(snapshot => {
@@ -124,6 +119,7 @@ const UploadImage = ({albumId}) => {
    else if(error) {
      console.log(error)
    }
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, error, uploadProgress, isSubmitting])
 
 //TODO fix the previews
@@ -172,3 +168,4 @@ const UploadImage = ({albumId}) => {
 }
 
 export default UploadImage
+/* eslint-disable no-unused-vars */

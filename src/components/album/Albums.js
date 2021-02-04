@@ -1,14 +1,8 @@
-import {Flex, Heading, Spinner, Link, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import {Link as ReactLink} from 'react-router-dom'
-
+import {Flex, Heading, Spinner, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure } from '@chakra-ui/react'
+import React, { useEffect,  } from 'react'
 import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages'
-
-import { useAuth } from '../../contexts/AuthContext'
 import { useFire } from '../../contexts/FirebaseContext'
 import { useUpdate } from '../../contexts/UpdateContext'
-import useAlbums from '../../hooks/useAlbums'
-import ImageGrid from '../pictureItems/ImageGrid'
 import AlbumGrid from './AlbumGrid'
 
 const Albums = () => {

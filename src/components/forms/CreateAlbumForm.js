@@ -13,7 +13,7 @@ import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
 import {  useFire } from '../../contexts/FirebaseContext';
-import { useState } from 'react';
+
 import firebase from'firebase/app'
 
 //Yup Validation schema for signing in
@@ -34,9 +34,9 @@ const CreateAlbumSchema = Yup.object().shape({
 const CreateAlbumForm = (pickedImages) => {
   const navigate= useNavigate()
   const { currentUser } = useAuth()
-  const {firebaseFunctions, isLoading} = useFire()
-  const {timestamp,db} = useFire()
-  const [error, setError] = useState("")
+  const {firebaseFunctions} = useFire()
+  const {db} = useFire()
+
 
   return (
   <>

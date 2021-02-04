@@ -4,7 +4,7 @@ import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
 
 const AlbumGrid = () => {
-  const {currentUserAlbums, imagesInCurrentAlbum, setCurrentAlbum, setCurrentAlbumId} = useUpdate()
+  const {currentUserAlbums, setCurrentAlbum} = useUpdate()
 
 
   const setAlbumClicked = (album) => {

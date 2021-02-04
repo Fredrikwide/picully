@@ -1,14 +1,14 @@
-import { Box, Container, Flex, Heading, Text } from '@chakra-ui/react'
+import { Box, Flex  } from '@chakra-ui/react'
 import React, { useContext } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+
 import { UpdateContext } from '../contexts/UpdateContext'
-import Console from './console/Console'
+
 import SignIn from './forms/SignIn'
 import SignUp from './forms/SignUp'
 import WelcomeBanner from './Hero/WelcomeBanner'
 
 const Welcome = () => {
-  const {currentUser} = useAuth()
+
   const {signUpIsClicked} = useContext(UpdateContext)
   return (
   
