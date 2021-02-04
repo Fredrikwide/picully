@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import UploadImage from '../forms/UploadImage'
-import { useAuth } from '../../contexts/AuthContext'
+
 import { Flex, Heading, Input, Spinner, Text } from '@chakra-ui/react'
 
 import ImageGrid from '../pictureItems/ImageGrid'
@@ -13,8 +13,8 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 const Album = () => {
-  const  {slug} = useParams()
-  const navigate = useNavigate()
+  const {slug} = useParams()
+
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
   const { 
@@ -26,7 +26,7 @@ const Album = () => {
           setImagesInCurrentAlbum} = useUpdate()
   const [editAlbumName, setEditAlbumName] = useState(false)
   const [editActive, setEditActive] = useState(false)
-  const {currentUser} = useAuth()
+
 
   useEffect(() => {
   (async () => {
@@ -40,7 +40,7 @@ const Album = () => {
       })
     } 
   })()
- 
+ // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
   const fetchImages = async (id) => {
@@ -78,7 +78,7 @@ const Album = () => {
       }
 
     })()
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageDeleted, isUploaded, currentAlbum])
 
 

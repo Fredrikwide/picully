@@ -20,7 +20,7 @@ const ImageGrid = ({images}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   useEffect(() => {
-    images.map((img, i) => {
+    images.forEach((img, i) => {
       let imageItem = {
         id: i,
         image: img,
@@ -29,6 +29,7 @@ const ImageGrid = ({images}) => {
       }
       setCheckers(prevChecks => [...prevChecks, imageItem])
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 

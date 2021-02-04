@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import SharedImageGrid from '../pictureItems/SharedImageGrid'
 import { Flex, Heading, Spinner, Text } from '@chakra-ui/react'
-
-import ImageGrid from '../pictureItems/ImageGrid'
 import { useFire } from '../../contexts/FirebaseContext'
 
 
@@ -11,11 +9,11 @@ import { useFire } from '../../contexts/FirebaseContext'
 
 const SharedAlbum = ({album, images}) => {
 
-  const  {shared} = useParams()
+  const  {albumId} = useParams()
 
   const [isLoading, setIsLoading] = useState(false)
   const {db} = useFire()
-
+  const [pics, setPics] = useState([])
 
   const fetchImages = async (id) => {
     try {
@@ -25,6 +23,7 @@ const SharedAlbum = ({album, images}) => {
       snapshot.forEach(doc => {
         imgArr.push(doc.data())
       })
+      setPics(prevPics => [...prevPics, imgArr])
       setIsLoading(false)
     })
   }
@@ -48,7 +47,7 @@ const SharedAlbum = ({album, images}) => {
         console.error("no id found")
       }
     })()
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [album])
 
 
@@ -81,7 +80,7 @@ const SharedAlbum = ({album, images}) => {
           : 
           (images !== undefined && images.length 
           ? 
-          <SharedImageGrid images={images} albumId={album.id} />
+          <SharedImageGrid images={pics} albumId={album.id} />
           :
 
           <Flex justify="center" align="center">

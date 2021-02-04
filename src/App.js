@@ -24,7 +24,7 @@ const App = () => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/" element={<Home />} />
           { sharedUrl && albumToShare &&
-          <Route path={`/picully/:shared`} element={<SharedAlbum album={albumToShare} images={sharedIamges} />} />
+          <Route path={`/picully/:albumId`} element={<SharedAlbum album={albumToShare} images={sharedIamges} />} />
           }
           <AuthRoute path="/console">
             <Console />

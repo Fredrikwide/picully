@@ -1,6 +1,6 @@
 
 import { AddIcon } from '@chakra-ui/icons';
-import { Grid, GridItem, Image, Text, Button, CloseButton, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody } from '@chakra-ui/react'
+import { Grid, GridItem, Image, Text, Button, CloseButton, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react';
 
 import { useFire } from '../../contexts/FirebaseContext';
@@ -50,7 +50,7 @@ const ImageGrid = ({albumId}) => {
   }
   
   useEffect(() => {
-    imagesInCurrentAlbum.map((img, i) => {
+    imagesInCurrentAlbum.forEach((img, i) => {
       let imageItem = {
         id: i,
         image: img,
@@ -59,6 +59,7 @@ const ImageGrid = ({albumId}) => {
       }
       setCheckers(prevChecks => [...prevChecks, imageItem])
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
