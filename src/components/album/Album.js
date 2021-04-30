@@ -61,6 +61,13 @@ const Album = () => {
   
   }
 
+  const [currentUrl, setCurrentUrl] = useState("")
+
+  useEffect(() => {
+    let url = window.location.href;
+    setCurrentUrl(url)
+    console.log("current url is", currentUrl)
+  }, [])
 
   useEffect(() => {
    

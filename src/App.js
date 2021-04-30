@@ -1,4 +1,4 @@
-
+import React, {useState, useEffect} from 'react';
 import Home from './views/Home';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import AuthRoute from './components/AuthRoute';
@@ -13,19 +13,28 @@ import SharedAlbum from './components/album/SharedAlbum';
 import { useUpdate } from './contexts/UpdateContext';
 
 const App = () => {
+  const { sharedUrl } = useUpdate()
 
-  const {sharedIamges,albumToShare, sharedUrl} = useUpdate()
+  const [renderShared, setRenderShared] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState(window.location.href)
+  useEffect(() => {
+    if(currentUrl === sharedUrl) {
+      setRenderShared(true);
+    }
+    else {
+      setRenderShared(false);
+    }
+  }, [sharedUrl])
 
   return (
     <>
       <Router>
         <NavIndex />      
         <Routes>
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/" element={<Home />} />
-          { sharedUrl && albumToShare &&
-          <Route path={`/picully/:albumId`} element={<SharedAlbum album={albumToShare} images={sharedIamges} />} />
-          }
+          <Route path="/sign-up" element={<SignUp />} /> 
+
+          <Route path="/" element={ !renderShared ? <SharedAlbum url={sharedUrl}/> : <Home /> } />
+    
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">

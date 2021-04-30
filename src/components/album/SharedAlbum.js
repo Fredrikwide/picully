@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import SharedImageGrid from '../pictureItems/SharedImageGrid'
 import { Flex, Heading, Spinner, Text } from '@chakra-ui/react'
 import { useFire } from '../../contexts/FirebaseContext'
+import { useUpdate } from '../../contexts/UpdateContext'
 /* eslint-disable no-unused-vars */
 
 
 
-const SharedAlbum = ({album, images}) => {
+const SharedAlbum = ({album, images, url}) => {
 
-  const  {albumId} = useParams()
-
+  console.log(url)
+  const {sharedIamges,albumToShare, sharedUrl} = useUpdate()
   const [isLoading, setIsLoading] = useState(false)
   const {db} = useFire()
   const [pics, setPics] = useState([])
@@ -23,7 +24,7 @@ const SharedAlbum = ({album, images}) => {
       snapshot.forEach(doc => {
         imgArr.push(doc.data())
       })
-      setPics(prevPics => [...prevPics, imgArr])
+      setPics(imgArr)
       setIsLoading(false)
     })
   }

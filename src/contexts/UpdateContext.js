@@ -1,5 +1,6 @@
 import React, { useState, createContext, useContext, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
+import SharedAlbum from '../components/album/SharedAlbum';
 import { useAuth } from './AuthContext';
 import { useFire } from './FirebaseContext';
 
@@ -62,16 +63,20 @@ export const UpdateProvider = props => {
 
     useEffect(() => {
         (async () => {
-            if(albumToShare){
+            if(albumToShare !== undefined){
                 await db.collection("images").where("albums", "array-contains", albumToShare.id).get().then(snapshot => {
                     snapshot.forEach(doc => {
-                        console.log(doc.data())
+                        console.log(doc.data(), "HELLO")
                     })
                 })
             }
         })()
        
     }, [albumToShare])
+
+    useEffect(() => {
+        
+    }, [sharedUrl, albumToShare])
 
     const updateContextValue = {
         

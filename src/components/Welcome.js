@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Box, Flex  } from '@chakra-ui/react'
 import React, { useContext } from 'react'
 

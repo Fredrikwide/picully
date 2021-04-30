@@ -90,6 +90,7 @@ export const FirebaseProvider = ({ children }) => {
         description: desc,
         owner_id: id,
         images: [],
+        sharedUrl: "",
         slug: name.replace(/\s+/g, '-').toLowerCase() + `-${num}`,
         createdAt: timestamp(),
         id
@@ -116,6 +117,7 @@ export const FirebaseProvider = ({ children }) => {
         description: desc,
         owner_id: owner,
         images: [],
+        sharedUrl: "",
         slug: title.replace(/\s+/g, '-').toLowerCase()+ `-${num}`,
         createdAt: timestamp(),
         id
@@ -137,7 +139,6 @@ export const FirebaseProvider = ({ children }) => {
       }).catch(
         err => console.error("error", err)   
        )
-      
 
       setIsLoading(false)
       setCreated(true)

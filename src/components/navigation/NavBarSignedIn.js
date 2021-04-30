@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Flex, Heading, ListItem,Link, Spacer, UnorderedList, Avatar, Wrap, WrapItem, Tag, TagLabel, Box, Spinner} from '@chakra-ui/react'
 import {useCallback, useContext, useEffect, useState} from 'react'
 import {Link as ReactLink, useNavigate} from 'react-router-dom'
@@ -26,6 +27,7 @@ useEffect(() => {
     }
   }
   getUserInfoOnMount()
+   // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
 

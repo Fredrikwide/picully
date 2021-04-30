@@ -13,7 +13,20 @@ const ImageGrid = ({albumId}) => {
   const {db, storage} = useFire()
  
   const {isUploaded} = useUpdate()
-  const {imagesInCurrentAlbum, imageDeleted, setImageDeleted,currentAlbum, setPickedImages, pickedImages, albumToShare , setAlbumToShare, setSharedUrl, sharedUrl, discardedImages, setDiscardedImages,setSharedImages} = useUpdate()
+  const {
+      imagesInCurrentAlbum,
+      imageDeleted, 
+      setImageDeleted,
+      currentAlbum, 
+      setPickedImages, 
+      pickedImages, 
+      albumToShare, 
+      setAlbumToShare, 
+      setSharedUrl, 
+      sharedUrl, 
+      discardedImages, 
+      setDiscardedImages,
+      setSharedImages} = useUpdate()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [checkers, setCheckers] = useState([])
@@ -21,19 +34,6 @@ const ImageGrid = ({albumId}) => {
   const navigate = useNavigate()
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
-
-
-
-
-
-
-
-  const handleReviewLink = () => {
-    let uniqNum = uuidv4()
-    let url = `/picully/${uniqNum}`;
-    setSharedUrl(url)
-  };
-
 
 	const handleDeleteImage = async (img) => {
     console.log(img)
@@ -115,12 +115,10 @@ const ImageGrid = ({albumId}) => {
   }
 
   const handleShareAlbum = (album) => {
-    handleReviewLink()
-    setAlbumToShare(album)
-    if(pickedImages.length){
-      setSharedImages(pickedImages)
-    }
-    navigate(`${sharedUrl}`)
+    let url = window.location.href
+    setAlbumToShare(album);
+    setSharedUrl(`${url}?shared=true`);
+    alert("shared", sharedUrl);
   }
   
   return (
