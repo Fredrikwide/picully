@@ -110,8 +110,7 @@ const ImageGrid = ({albumId}) => {
   const handleShareAlbum = (album) => {
     let url = window.location.href
     setAlbumToShare(album);
-    setSharedUrl(`${url}?shared=true`);
-    alert("shared", sharedUrl);
+    setSharedUrl(`${url}`);
   }
   
   return (
