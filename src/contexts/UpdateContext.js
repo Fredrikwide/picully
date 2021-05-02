@@ -34,6 +34,7 @@ export const UpdateProvider = props => {
     const [userSelectedImagesToDelete, setuserSelectedImagesToDelete] = useState([])
 
     useEffect(() => {
+        console.log("testRUN");
         ( async () => {
             if(currentUser !== null) {
                 setCurrentUserAlbums("")
@@ -47,18 +48,14 @@ export const UpdateProvider = props => {
                     snapshot.forEach(doc => {
                         console.log(doc.data())
                         userImages.push(doc.data())
-                        setImagesOwnedByCurrentUser(userImages)
+                        setImagesOwnedByCurrentUser(prevUserImages => [...prevUserImages, userImages])
                     })
                 })
             }
-            else return;
         }
 
         )()
-        if(imageDeleted){
-        setImageDeleted(false)
-        }
-        
+        console.log("IMAGES IN CURR ABLUM", imagesInCurrentAlbum);
     }, [userLoggedIn,isUploaded, imageDeleted, created])
 
     useEffect(() => {

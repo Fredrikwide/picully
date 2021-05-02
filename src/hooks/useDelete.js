@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useFire } from '../contexts/FirebaseContext';
 
 
-const useDelete = image => {
+const DeleteImg = (image) => {
   const {db, storage} = useFire()
 	useEffect(() => {
 		if (!image) {
@@ -18,4 +18,4 @@ const useDelete = image => {
 	return {}
 }
 
-export default useDelete
+export default DeleteImg

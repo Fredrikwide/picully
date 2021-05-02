@@ -191,7 +191,7 @@ const SignUp = () => {
             )}
           </Field>
           <Box m="10px" p="5px">
-            <Checkbox isRequired colorScheme="green" color="white">   
+            <Checkbox isRequired colorscheme="green" color="white">   
               by signing up you <Text as="em">agree</Text> to our <Link as="button" color="white" onClick={onOpen}>Terms and Conditons</Link>
                 <Modal isOpen={isOpen} onClose={onClose}>
                   <ModalOverlay />
@@ -209,7 +209,7 @@ const SignUp = () => {
                       </ModalBody>
                       <Center>
                         <ModalFooter>
-                        <Button colorScheme="teal" onClick={onClose}>
+                        <Button colorscheme="teal" onClick={onClose}>
                             Close
                         </Button>
                       </ModalFooter>

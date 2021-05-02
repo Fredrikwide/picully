@@ -96,8 +96,8 @@ const ImageGrid = ({images}) => {
         && images.length 
         && checkers.map((item, i) => (
           <>
-            <Button key={uuidv4()}  mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
-              <AddIcon key={uuidv4()} h={6} w={6} colorScheme="teal" />
+            <Button key={uuidv4()}  mr="2rem" w="80px" h="30px" colorscheme="teal" onClick={handleNewAlbum}>
+              <AddIcon key={uuidv4()} h={6} w={6} colorscheme="teal" />
             </Button>
             <Modal
               key={uuidv4()}
@@ -163,7 +163,7 @@ const ImageGrid = ({images}) => {
                 ml="5px"
                 size="md"
                 id={item.image.id}
-                colorScheme="green"
+                colorscheme="green"
                 onChange={(e) => handlePickImage(e, item)}
               >
                 pick
@@ -175,7 +175,7 @@ const ImageGrid = ({images}) => {
                 ml="5px"
                 size="md"
                 id={item.image.id}
-                colorScheme="red"
+                colorscheme="red"
                 onChange={(e) => handleDiscardimage(e, item)}
               >
                 Discard

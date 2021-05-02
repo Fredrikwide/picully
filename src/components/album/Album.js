@@ -55,14 +55,14 @@ const Album = () => {
       setIsLoading(false)
     })
   }
-  catch {
-    console.log("error")
+  catch (err) {
+    console.log("error", err);
   }
   
   }
 
   useEffect(() => {
-   
+   console.log("i ran");
     (async () => {
       setImagesInCurrentAlbum("")
       setIsLoading(true)
@@ -77,7 +77,6 @@ const Album = () => {
       }
 
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageDeleted, isUploaded, currentAlbum])
 
 
@@ -103,6 +102,7 @@ const Album = () => {
 
  }, [updatedAlbumTitle])
 
+ 
 	return (
 		<>
 

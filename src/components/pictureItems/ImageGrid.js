@@ -10,7 +10,7 @@ import {v4 as uuidv4} from 'uuid'
 import { useNavigate } from 'react-router-dom';
 
 const ImageGrid = ({albumId}) => {
-  const {db, storage} = useFire()
+  const {db, storage, firebaseFunctions} = useFire()
  
   const {isUploaded} = useUpdate()
   const {
@@ -35,18 +35,14 @@ const ImageGrid = ({albumId}) => {
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
 
+
 	const handleDeleteImage = async (img) => {
     console.log(img)
     // eslint-disable-next-line no-restricted-globals
-    let ref = db.collection('images').where("albums", "array-contains", currentAlbum.id)
-    ref.get().then(function(querySnapshot) {
-      querySnapshot.forEach(function(doc) {
-        doc.ref.delete()
-      });
-    });
-    await ref.delete();
+    await db.collection('images').doc(img.id).delete();
     await storage.ref(img.path).delete();
-     setImageDeleted(true)
+    console.log("deleted")
+    setImageDeleted(!imageDeleted);
   }
   
   useEffect(() => {
@@ -60,9 +56,6 @@ const ImageGrid = ({albumId}) => {
       setCheckers(prevChecks => [...prevChecks, imageItem])
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
   }, [imageDeleted])
 
   useEffect(() => {
@@ -174,33 +167,30 @@ const ImageGrid = ({albumId}) => {
       w="100%"
     >
       {
-        !imageDeleted && 
         imagesInCurrentAlbum !== undefined 
-        && imagesInCurrentAlbum.length 
+        && imagesInCurrentAlbum.length > 0
         && checkers.map((item, i) => (
           <>
             <GridItem 
-              key={uuidv4()}
+              key={i}
               colSpan={1} 
               rowSpan={2} 
               overflow="hidden"
             >
             <Flex 
-              key={uuidv4()} 
               justify="space-between" 
               align="center" 
               flexBasis="0" 
             >
             { currentAlbum !== albumToShare &&
             <CloseButton 
-              key={uuidv4()} 
               id={item.image.albums[albumId]}  
               size="sm" 
               onClick={() => handleDeleteImage(item.image)} 
             /> 
             }
             <Text
-              key={uuidv4()}
+
               isTruncated
               w="100%"
               fontSize="sm" 
@@ -208,9 +198,8 @@ const ImageGrid = ({albumId}) => {
               p="5px">{item.image.title}
             </Text>
             </Flex>
-            <Box key={uuidv4()}>
+            <Box>
               <Image
-                key={uuidv4()}
                 src={item.image.url} 
                 alt={item.image.title} 
                 h="100%" 
@@ -219,7 +208,7 @@ const ImageGrid = ({albumId}) => {
                 p="5px" 
               />
             </Box>
-            <Flex border="3px" justify="space-between" borderColor="red" key={uuidv4()}>
+            <Flex border="3px" justify="space-between" borderColor="red">
               <Checkbox
                 ref={checkBoxPickedRef}
                 isDisabled={checkers[i].discarded}

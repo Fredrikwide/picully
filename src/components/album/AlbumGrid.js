@@ -2,13 +2,18 @@ import {Flex, Link, Grid, GridItem, Text, Image } from '@chakra-ui/react'
 import tempImage from '../../images/dog.jpg'
 import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
+import { useEffect } from 'react'
 
 const AlbumGrid = () => {
   const {currentUserAlbums, setCurrentAlbum} = useUpdate()
 
+  useEffect(() => {
+    console.log(currentUserAlbums);
+  }, [])
 
   const setAlbumClicked = (album) => {
-    setCurrentAlbum(album)
+    console.log("CLICK", currentUserAlbums);
+    setCurrentAlbum(album);
   }
 
   return (

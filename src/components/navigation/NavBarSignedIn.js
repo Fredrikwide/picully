@@ -120,7 +120,7 @@ const handleGoHome = () => navigate('/console')
           <Box>
               <Tag 
                 size="lg" 
-                colorScheme="teal" 
+                colorscheme="teal" 
                 borderRadius="full" 
                 ml="3rem"
                 mt="2px" 

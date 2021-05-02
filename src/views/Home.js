@@ -14,6 +14,7 @@ const Home = () => {
   const {isLoading} = useContext(FirebaseContext)
 
   const navigate= useNavigate()
+
   const handleSignOut = () => {
     logout()
     navigate('/sign-in')
@@ -34,8 +35,7 @@ const Home = () => {
           size="xl"
         /> 
         : 
-        <Console />}
-        { !currentUser && <About />}
+        <Albums signOut={handleSignOut} />}
       </>
   )
 }

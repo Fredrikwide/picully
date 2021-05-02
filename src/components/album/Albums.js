@@ -1,5 +1,5 @@
 import {Flex, Heading, Spinner, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure } from '@chakra-ui/react'
-import React, { useEffect,  } from 'react'
+import React, { useEffect } from 'react'
 import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages'
 import { useFire } from '../../contexts/FirebaseContext'
 import { useUpdate } from '../../contexts/UpdateContext'
@@ -23,7 +23,7 @@ const Albums = () => {
           {currentUserAlbums.length ? "Your Albums" : "Create new albums"}
         </Heading>
         <>
-          <Button mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={onOpen}>
+          <Button mr="2rem" w="80px" h="30px" colorscheme="teal" onClick={onOpen}>
            +
           </Button>
           <Modal

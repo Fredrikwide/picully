@@ -162,7 +162,7 @@ const UploadImage = ({albumId}) => {
           </InputGroup> 
         </Flex>
       </form>
-      {uploadProgress !== null && <Progress colorScheme="teal" size="md" value={uploadProgress}/>}
+      {uploadProgress !== null && <Progress colorscheme="teal" size="md" value={uploadProgress}/>}
     </>
   )
 }
