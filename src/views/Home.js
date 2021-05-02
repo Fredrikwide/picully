@@ -1,5 +1,5 @@
 import { Box, Button, Center, Flex, Heading, Spinner } from "@chakra-ui/react"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Albums from "../components/album/AlbumGrid"
 import Console from "../components/console/Console"
