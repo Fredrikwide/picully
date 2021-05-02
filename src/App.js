@@ -27,6 +27,15 @@ const App = () => {
     }
   }, [sharedUrl])
 
+  useEffect(() => {
+    if(currentUrl === sharedUrl) {
+      setRenderShared(true);
+    }
+    else {
+      setRenderShared(false);
+    }
+  })
+
   return (
     <>
       <Router>
