@@ -17,7 +17,7 @@ const App = () => {
 
   const [renderShared, setRenderShared] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(window.location.href)
-
+  
   useEffect(() => {
     if(currentUrl === sharedUrl) {
       setRenderShared(true);
@@ -34,8 +34,8 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} /> 
 
-          <Route path="/" element={ <Home /> } />
-          <Route path={!renderShared ? `${sharedUrl}` : '*' } element={<SharedAlbum url={sharedUrl}/>} />
+          <Route path="/" element={ !renderShared ? <SharedAlbum url={sharedUrl}/> : <Home /> } />
+    
           <AuthRoute path="/console">
             <Console />
                   <AuthRoute path="albums">
