@@ -34,7 +34,7 @@ const App = () => {
         <Routes>
           <Route path="/sign-up" element={<SignUp />} /> 
 
-          <Route path="/" element={ !renderShared ? <SharedAlbum url={sharedUrl}/> : <Home /> } />
+          <Route path="/" element={ renderShared ? <SharedAlbum url={sharedUrl}/> : <Home /> } />
     
           <AuthRoute path="/console">
             <Console />
