@@ -14,6 +14,19 @@ const Home = () => {
   const {isLoading} = useContext(FirebaseContext)
 
   const navigate= useNavigate()
+  const { sharedUrl } = useUpdate()
+
+  const [renderShared, setRenderShared] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState(window.location.href)
+  
+  useEffect(() => {
+    if(currentUrl === sharedUrl) {
+      setRenderShared(true);
+    }
+    else {
+      setRenderShared(false);
+    }
+  }, [sharedUrl])
 
   const handleSignOut = () => {
     logout()
@@ -23,7 +36,7 @@ const Home = () => {
   return (
       <>
         { 
-        !currentUser ? 
+        !currentUser && !renderShared ? 
         <Welcome /> 
         : 
         isLoading ? 
