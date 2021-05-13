@@ -32,7 +32,7 @@ useEffect(() => {
 
 
 
-const handleGoHome = () => navigate('/console')
+const handleGoHome = () => navigate('/home')
 
  const handleSignOut = async () => { 
    try { 
@@ -85,7 +85,7 @@ const handleGoHome = () => navigate('/console')
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="console/albums">Albums</Link>
+            <Link as={ReactLink} to="home/albums">Albums</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
@@ -95,7 +95,7 @@ const handleGoHome = () => navigate('/console')
                 color: "white"
               }}
           >
-            <Link as={ReactLink} to="/console">Home</Link>
+            <Link as={ReactLink} to="/home">Home</Link>
           </ListItem>
 
           <ListItem  
@@ -127,7 +127,6 @@ const handleGoHome = () => navigate('/console')
                 p="5px"
               >
                 <Avatar
-                  src="https://bit.ly/broken-link"
                   size="md"
                   name={user.firstName}
                   ml={1}

@@ -4,53 +4,65 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import AuthRoute from './components/AuthRoute';
 import SignUp from './components/forms/SignUp';
 import NavIndex from './components/navigation/NavIndex';
-import Console from './components/console/Console';
 import CreateAlbum from './components/album/CreateAlbum';
 import Albums from './components/album/Albums';
 import NotFound from './components/error/NotFound';
 import Album from './components/album/Album';
 import SharedAlbum from './components/album/SharedAlbum';
 import { useUpdate } from './contexts/UpdateContext';
+import { useFire } from './contexts/FirebaseContext';
 
 const App = () => {
-  const { sharedUrl } = useUpdate()
+  const { albumToShare, setAlbumToShare, renderShared, setRenderShared, currentUrl, setCurrentUrl } = useUpdate();
+  const { firebaseFunctions, sharedAlbum, setSharedAlbum, sharedUrl, setSharedUrl } = useFire();
+  const { getAlbumsByUrl, getSharedAlbumUrls, getImagesByAlbumId } = firebaseFunctions;
 
-  const [renderShared, setRenderShared] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(window.location.href)
-  
+
+  const [sharedImages, setSharedImages] = useState([]);
+
+
   useEffect(() => {
-    if(currentUrl === sharedUrl) {
-      setRenderShared(true);
-    }
-    else {
-      setRenderShared(false);
-    }
-  }, [sharedUrl])
+    (async () => {
+      const albums = await getSharedAlbumUrls();
+      albums.forEach( async (url) => {
+        if(currentUrl === url) {
+          console.log("TRUE", url);
+          setSharedUrl(url);
+          getAlbumsByUrl(url);
+          setRenderShared(true);
+        }
+      })
+    })()
+  }, [currentUrl, sharedUrl])
+
 
 
   return (
     <>
       <Router>
-        <NavIndex />      
+     
+        <NavIndex />  
         <Routes>
           <Route path="/sign-up" element={<SignUp />} /> 
 
-          <Route path="/" element={ renderShared ? <SharedAlbum url={sharedUrl}/> : <Home /> } />
-    
-          <AuthRoute path="/console">
-            <Console />
-                  <AuthRoute path="albums">
-                    <Albums />
-                    <AuthRoute path="/:slug">
-                      <Album />
+          <Route path="/" element={ <Home /> } />
+
+          <Route path={`${sharedUrl}`} element={<SharedAlbum album={sharedAlbum} images={sharedImages} />} />
+
+          <AuthRoute path="/home">
+                    <AuthRoute path="albums">
+                      <Albums />
+                      <AuthRoute path="/:slug">
+                        <Album />
+                      </AuthRoute>
+                      <AuthRoute path="/create">
+                        <CreateAlbum />
+                      </AuthRoute>
                     </AuthRoute>
-                    <AuthRoute path="/create">
-                      <CreateAlbum />
-                    </AuthRoute>
-                  </AuthRoute>
-          </AuthRoute>
+            </AuthRoute>
+
           <Route path="*" element={<NotFound />} />
-        </Routes> 
+        </Routes>
       </Router>
     </>
   );

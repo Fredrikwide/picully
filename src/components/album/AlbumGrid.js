@@ -31,7 +31,7 @@ const AlbumGrid = () => {
         currentUserAlbums.map((album, index) => (
           <Link 
           as={ReactLink} 
-          to={`/console/albums/${album.slug}`} 
+          to={`/home/albums/${album.slug}`} 
           key={index}
           onClick={() => setAlbumClicked(album)}
           textDecoration="none" 

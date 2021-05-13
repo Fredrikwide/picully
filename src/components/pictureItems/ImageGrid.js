@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ImageGrid = ({albumId}) => {
   const {db, storage, firebaseFunctions} = useFire()
- 
+  const { updateAlbumSharedUrl } = firebaseFunctions;
   const {isUploaded} = useUpdate()
   const {
       imagesInCurrentAlbum,
@@ -37,7 +37,6 @@ const ImageGrid = ({albumId}) => {
 
 
 	const handleDeleteImage = async (img) => {
-    console.log(img)
     // eslint-disable-next-line no-restricted-globals
     await db.collection('images').doc(img.id).delete();
     await storage.ref(img.path).delete();
@@ -107,10 +106,12 @@ const ImageGrid = ({albumId}) => {
     onOpen()
   }
 
-  const handleShareAlbum = (album) => {
+  const handleShareAlbum = async (album) => {
     let url = window.location.href
+    console.log(url, "URL");
+    updateAlbumSharedUrl(album.id, url);
     setAlbumToShare(album);
-    setSharedUrl(`${url}`);
+    alert("share this url", url);
   }
   
   return (

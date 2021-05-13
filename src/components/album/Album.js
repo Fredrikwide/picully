@@ -12,9 +12,9 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 
-const Album = () => {
+const Album = ({album}) => {
   const {slug} = useParams()
-
+  
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
   const { 

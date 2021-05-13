@@ -1,20 +1,48 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import UploadImage from '../forms/UploadImage'
+
+import { Flex, Heading, Input, Spinner, Text } from '@chakra-ui/react'
+
 import SharedImageGrid from '../pictureItems/SharedImageGrid'
-import { Flex, Heading, Spinner, Text } from '@chakra-ui/react'
 import { useFire } from '../../contexts/FirebaseContext'
+import {GrEdit} from 'react-icons/gr'
+import {CheckIcon} from '@chakra-ui/icons'
 import { useUpdate } from '../../contexts/UpdateContext'
-/* eslint-disable no-unused-vars */
 
 
 
-const SharedAlbum = ({album, images, url}) => {
-
-  console.log(url)
-  const {sharedIamges,albumToShare, sharedUrl} = useUpdate()
+const SharedAlbum = ({album}) => {
+  const {sharedUrl} = useParams()
+  
   const [isLoading, setIsLoading] = useState(false)
-  const {db} = useFire()
-  const [pics, setPics] = useState([])
+  const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
+  const { 
+          imageDeleted,
+          isUploaded, 
+          currentAlbum,
+          imagesInCurrentAlbum,
+          setCurrentAlbum,
+          setImagesInCurrentAlbum} = useUpdate()
+  const [editAlbumName, setEditAlbumName] = useState(false)
+  const [editActive, setEditActive] = useState(false)
+
+
+  useEffect(() => {
+    console.log("SHAAAAAARED", album);
+  (async () => {
+    if(currentAlbum === undefined || !currentAlbum){
+      await db.collection("albums").where("sharedUrl", "==", album.sharedUrl).get().then(querySnapshot => {
+        let currAlb = "";
+        querySnapshot.forEach(doc => {
+          currAlb = doc.data()
+        })
+        setCurrentAlbum(currAlb)
+      })
+    } 
+  })()
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
 
   const fetchImages = async (id) => {
     try {
@@ -24,46 +52,121 @@ const SharedAlbum = ({album, images, url}) => {
       snapshot.forEach(doc => {
         imgArr.push(doc.data())
       })
-      setPics(imgArr)
+      setImagesInCurrentAlbum([...imgArr])
       setIsLoading(false)
     })
   }
-  catch (error) {
-    console.log(error)
+  catch (err) {
+    console.log("error", err);
   }
   
   }
 
   useEffect(() => {
-   
+   console.log("i ran");
     (async () => {
-
+      setImagesInCurrentAlbum("")
       setIsLoading(true)
 
-      if(album) {
-          fetchImages(album.id)
+      if(currentAlbum) {
+          setCurrentAlbum(currentAlbum)
+          fetchImages(currentAlbum.id)
           setIsLoading(false)
       }
       else {
         console.error("no id found")
       }
+
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [album])
+  }, [imageDeleted, isUploaded, currentAlbum])
 
 
+
+  const handleEdit = () => {
+    setEditActive(true) 
+  }
+
+
+  const handleChangeAlbumName = (e) => {
+      setEditAlbumName(e.target.value)
+  }
+
+  const handleFinishedEdit = async ()=> {
+    if(!editAlbumName) {
+      return 
+    }
+   await firebaseFunctions.updateAlbumName(currentAlbum.id, editAlbumName)
+    setEditActive(false)
+  }
+
+ useEffect(() => {
+
+ }, [updatedAlbumTitle])
+
+ 
 	return (
+		<>
+
+     { currentAlbum !== undefined &&
+
       <Flex 
         direction="column" 
         mt="3rem">
-        { 
-
-        album !== undefined && !isLoading 
-        ?
-          <Flex justify="center" align="center" >
-            <Heading >{album.title }</Heading>
-          </Flex>   
-          :
+        { currentAlbum !== undefined && !isLoading &&
+        <UploadImage 
+          albumId={currentAlbum.id !== undefined && currentAlbum.id } 
+        /> }
+        <Flex 
+          justify="center" 
+          align="center" 
+          direction="column"
+        >     
+          <Text>Edit album name</Text>
+            <Flex 
+              justify="space-around" 
+              align="center" 
+            >
+              {editActive &&
+                  <Flex 
+                    justify="center" 
+                    align="center"
+                  >
+                    <Input 
+                      type="text" 
+                      placeholder={editAlbumName} 
+                      onChange={handleChangeAlbumName}
+                      />
+                  </Flex> }
+              { !editActive ? 
+              <Flex 
+                justify="center" 
+                cursor="pointer" 
+                align="center" 
+                _hover={{backgroundColor: "teal.300"}} 
+                >
+                <GrEdit 
+                  color="white" 
+                  size={"1.2rem"} 
+                  onClick={handleEdit}  />
+              </Flex>
+              : 
+              <Flex 
+              ml="1rem" 
+              justify="center" 
+              cursor="pointer" 
+              align="center">
+                <CheckIcon  
+                  _hover={{color: "teal.300"}}
+                  w={6} 
+                  h={6} 
+                  color="teal.500" 
+                  onClick={handleFinishedEdit} 
+                /> 
+              </Flex>}
+            </Flex>
+                <Heading >{editAlbumName ? editAlbumName : currentAlbum.title }</Heading>        
+          </Flex>
+          {
           isLoading 
           ?
           <Flex 
@@ -79,17 +182,19 @@ const SharedAlbum = ({album, images, url}) => {
           />
           </Flex>
           : 
-          (images !== undefined && images.length 
+          (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length 
           ? 
-          <SharedImageGrid images={pics} albumId={album.id} />
+          <SharedImageGrid images={imagesInCurrentAlbum} albumId={currentAlbum.id} />
           :
 
           <Flex justify="center" align="center">
             <Text as="i" mt="2rem">here be dragons</Text>
           </Flex>)
         }
-      </Flex>
 
+      </Flex>
+      }
+		</>
 	)
 }
 

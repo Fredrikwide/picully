@@ -18,7 +18,7 @@ import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
 import { useContext, useState } from 'react';
-import { UpdateContext } from '../../contexts/UpdateContext';
+import { UpdateContext, useUpdate } from '../../contexts/UpdateContext';
 
 
 //Yup Validation schema for signing in
@@ -36,7 +36,7 @@ const SignInSchema = Yup.object().shape({
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const {signupIsClicked, setSignUpIsClicked, setUserLoggedIn} = useContext(UpdateContext)
+  const {signupIsClicked, setSignUpIsClicked, setUserLoggedIn} = useUpdate();
   const { logout, login, currentUser } = useAuth()
   const handleSignOut = () => logout();
   const handleSignUp = () => setSignUpIsClicked(!signupIsClicked)

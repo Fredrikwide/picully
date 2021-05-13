@@ -1,33 +1,38 @@
-import { Box, Button, Center, Flex, Heading, Spinner } from "@chakra-ui/react"
+import { Spinner } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Albums from "../components/album/AlbumGrid"
-import Console from "../components/console/Console"
-import SignIn from "../components/forms/SignIn"
 import Welcome from "../components/Welcome"
 import { useAuth } from "../contexts/AuthContext"
-import { FirebaseContext } from "../contexts/FirebaseContext"
-import About from "./About"
+import { FirebaseContext, useFire } from "../contexts/FirebaseContext"
+import { useUpdate } from "../contexts/UpdateContext"
+import SharedAlbum from '../components/album/SharedAlbum'
 
 const Home = () => {
   const {currentUser, logout} = useAuth()
-  const {isLoading} = useContext(FirebaseContext)
 
+  const { albumToShare, setAlbumToShare,renderShared, setRenderShared, currentUrl, setCurrentUrl } = useUpdate();
+  const { firebaseFunctions, sharedAlbum, setSharedAlbum, sharedUrl, setSharedUrl , isLoading} = useFire();
+  const { getAlbumsByUrl, getSharedAlbumUrls, getImagesByAlbumId } = firebaseFunctions;
+  const [sharedImages, setSharedImages] = useState([]);
   const navigate= useNavigate()
-  const { sharedUrl } = useUpdate()
 
-  const [renderShared, setRenderShared] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(window.location.href)
-  
+
+
   useEffect(() => {
-    if(currentUrl === sharedUrl) {
-      setRenderShared(true);
-    }
-    else {
-      setRenderShared(false);
-    }
-  }, [sharedUrl])
+    (async () => {
+      const albums = await getSharedAlbumUrls();
+      albums.forEach( async (url) => {
+        if(currentUrl === url) {
+          console.log("TRUE", url);
+          setSharedUrl(url);
+          getAlbumsByUrl(url);
+          setRenderShared(true);
 
+        }
+      })
+    })()
+  }, [currentUrl, sharedUrl])
   const handleSignOut = () => {
     logout()
     navigate('/sign-in')
@@ -36,7 +41,8 @@ const Home = () => {
   return (
       <>
         { 
-        !currentUser && !renderShared ? 
+
+        !currentUser && !renderShared ?
         <Welcome /> 
         : 
         isLoading ? 
@@ -47,7 +53,9 @@ const Home = () => {
           color="blue.500"
           size="xl"
         /> 
-        : 
+        : renderShared ?
+        <SharedAlbum album={sharedAlbum} images={sharedImages} />
+        :
         <Albums signOut={handleSignOut} />}
       </>
   )

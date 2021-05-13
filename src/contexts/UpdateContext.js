@@ -11,7 +11,7 @@ export const useUpdate = () => useContext(UpdateContext)
   
 
 export const UpdateProvider = props => {
-    
+    const [currentUrl, setCurrentUrl] = useState(window.location.href);
     const [signUpIsClicked, setSignUpIsClicked] = useState(false)
     const [imageDeleted, setImageDeleted] = useState(false)
     const [currentAlbumID, setCurrentAlbumID] = useState(undefined)
@@ -29,7 +29,7 @@ export const UpdateProvider = props => {
     const {currentUser} = useAuth()
     const {created} = useFire()
     const [sharedUrl, setSharedUrl] = useState(false)
-
+    const [renderShared, setRenderShared] = useState(false);
     const [userSelectedImagesToKeep, setuserSelectedImagesToKeep] = useState([])
     const [userSelectedImagesToDelete, setuserSelectedImagesToDelete] = useState([])
 
@@ -42,7 +42,7 @@ export const UpdateProvider = props => {
                 let res = await firebaseFunctions.getUserAlbums(currentUser.uid)
                 console.log(res)
                 setCurrentUserAlbums(res)
-                let ref = db.collection("images").where("album", "==", currentUser.uid)
+                let ref = await db.collection("images").where("album", "==", currentUser.uid)
                 ref.get().then(snapshot => {
                     let userImages = []
                     snapshot.forEach(doc => {
@@ -73,7 +73,7 @@ export const UpdateProvider = props => {
 
     useEffect(() => {
         
-    }, [sharedUrl, albumToShare])
+    }, [sharedUrl, albumToShare, userLoggedIn])
 
     const updateContextValue = {
         
@@ -107,7 +107,11 @@ export const UpdateProvider = props => {
       userSelectedImagesToKeep, 
       setuserSelectedImagesToKeep,
       userSelectedImagesToDelete, 
-      setuserSelectedImagesToDelete   
+      setuserSelectedImagesToDelete,
+      renderShared, 
+      setRenderShared,
+      currentUrl, 
+      setCurrentUrl
     }
 
     return (

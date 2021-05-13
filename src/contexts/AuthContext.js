@@ -28,10 +28,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = (email, password) => { 
     try {
-      auth.signInWithEmailAndPassword(email, password) 
+      auth.signInWithEmailAndPassword(email, password);
     }
-    catch  {
-        console.log("failed to log in")
+    catch (err) {
+        console.log("failed to log in", err);
     }
   }
 

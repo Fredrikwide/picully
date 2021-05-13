@@ -65,14 +65,14 @@ const CreateAlbumForm = ({pictures}) => {
             if(pickedImages !== undefined && pickedImages.length) {
              await firebaseFunctions.createAlbumWithImages(values.name, values.description, values.owner, values.id, pickedImages)
               
-                navigate('/console/albums')
+                navigate('/home/albums')
                 resetForm({})
             }
             else {
               console.log("I ELSE RAN")
               await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
               setSubmitting(false)
-              navigate('/console/albums')
+              navigate('/home/albums')
               resetForm({})
               }      
             } catch (err) {

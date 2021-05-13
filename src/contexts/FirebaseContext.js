@@ -17,7 +17,7 @@ export const FirebaseProvider = ({ children }) => {
   const storage = firebase.storage()
 
   const timestamp = firebase.firestore.FieldValue.serverTimestamp;
-
+  const [sharedUrl, setSharedUrl] = useState(false);
   const [currentAlbum, setCurrentAlbum] = useState()
   const [collectionData, setCollectionData] = useState([])
   const [albumCollection, setAlbumCollection] = useState([])
@@ -26,9 +26,10 @@ export const FirebaseProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState({})
   const [images, setImages] = useState([])
+  const [albums, setAlbums] = useState([])
   const {currentUser} = useAuth()
   const [updatedAlbumTitle, setUpdatedAlbumTitle] = useState(false)
-
+  const [sharedAlbum, setSharedAlbum] = useState()
 
   const firebaseFunctions = {
     //get user collection
@@ -163,7 +164,17 @@ export const FirebaseProvider = ({ children }) => {
       ).catch(err => console.log("error", err))
  
     },
-      //get albums
+    updateAlbumSharedUrl: async (id, url) => {
+      let ref = db.collection("albums").doc(id)
+      setIsLoading(true)
+      await ref.update({
+        sharedUrl: `${url}`,
+      }).then(
+        setIsLoading(false),
+        
+      ).catch(err => console.log("error", err))
+    },
+    //get albums
     getUserAlbums: async (id) => await db.collection('albums').where("owner_id", "==", id).get().then((snapshot) => {
       setIsLoading(true)
       const albums = []
@@ -196,6 +207,20 @@ export const FirebaseProvider = ({ children }) => {
     }
     ,
     //get ablum by album id
+    getAlbumsByUrl: async (url) => await db.collection('albums').get().then((snapshot) => {
+      setIsLoading(true)
+      const albumArr = []
+      snapshot.forEach((doc) => {
+        if(doc.data().sharedUrl === url) {
+          albumArr.push(doc.data())
+        }
+      })
+      setSharedAlbum(albumArr)
+      setIsLoading(false)
+      return albumArr
+    }, err => {
+      console.log(err)
+    }),
     getAlbumById: async (albumId) => {
       // get ref
       const albumIdRef = db.collection('albums')
@@ -210,8 +235,21 @@ export const FirebaseProvider = ({ children }) => {
         return items
       })
       
-  }
-
+    },
+    getSharedAlbumUrls: async () => await db.collection('albums').get().then((snapshot) => {
+      setIsLoading(true)
+      const albumArr = []
+      snapshot.forEach((doc) => {
+        if(doc.data().sharedUrl) {
+          albumArr.push(doc.data().sharedUrl)
+        }
+      })
+      setAlbums(albumArr)
+      setIsLoading(false)
+      return albumArr
+    }, err => {
+      console.log(err)
+    })
     ,
     //get images from collection
     getImages: async (id) => await db.collection('images').get().then((snapshot) => {
@@ -280,7 +318,9 @@ export const FirebaseProvider = ({ children }) => {
     albumCollection,
     updated,
     currentAlbum,
-    storage
+    storage,
+    setSharedUrl,
+    sharedUrl
   }
 
 
