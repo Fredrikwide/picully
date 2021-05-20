@@ -17,10 +17,12 @@ const NavBarSignedIn = () => {
 //get user info on mount
 useEffect(() => {
   const getUserInfoOnMount = async () => {
-    let res = await firebaseFunctions.getUser(currentUser.uid)
-    if(res) {
-      setUser(res)
-      console.log(user)
+    if(currentUser !== null){
+      let res = await firebaseFunctions.getUser(currentUser.uid)
+      if(res) {
+        setUser(res)
+        console.log(user)
+      }
     }
     else {
       setError('')
@@ -32,7 +34,7 @@ useEffect(() => {
 
 
 
-const handleGoHome = () => navigate('/home')
+const handleGoHome = () => navigate('/home/albums')
 
  const handleSignOut = async () => { 
    try { 

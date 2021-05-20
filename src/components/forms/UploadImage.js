@@ -4,7 +4,7 @@ import { Box, Flex, Input, Button, InputGroup, InputRightElement, InputRightAddo
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
 import firebase from 'firebase'
-
+import {uploadImageToStorage, prog} from './NewUpload'
 import { useAuth } from '../../contexts/AuthContext'
 
 import { useUpdate } from '../../contexts/UpdateContext'
@@ -14,7 +14,6 @@ const UploadImage = ({albumId}) => {
   
   const [imageToUpload, setImageToUpload] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [imagesToUpload, setImagesToUpload] = useState([])
 	const [uploadProgress, setUploadProgress] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   
@@ -23,95 +22,139 @@ const UploadImage = ({albumId}) => {
 	const { currentUser } = useAuth()
   const { db, storage, timestamp, firestoreFunctions } = useFire()
   const {setIsUploaded} = useUpdate()
-  const [preview, setPreview] = useState()
 
-  const [previewArr, setPreviewArr] = useState()
+  
+const addImageToAlbumsArray = (img, id) => {
+  try {
+    db.collection('albums').doc(id).update({
+      images: firebase.firestore.FieldValue.arrayUnion(img)
+  });
+  } catch (error) {
+   console.log(error) 
+  }
+}
 
-  const onUpload = (e, id) => {
-    e.preventDefault()
-    const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg"]
-    let image = e.target.files[0]
 
-		if (!image || !types.includes(image.type)) {
-			setUploadProgress(null);
-      setUploadedImage(null);
-      setIsUploaded(false)
-			setError(null);
-			setIsSuccess(false);
 
-			return;
+const checkIfImageIsInAlbum = (imagePath, id) => {
+db.collection("albums").doc(id).get()
+.then(doc => {
+    for (let i = 0; i < doc.data().images.length; i++) {
+        if(doc.data().images[i].path === imagePath) {
+            console.error('This image is already in the album');
+            return
+        }
     }
+})
+}
+
+const uploadImageToStorage = (e, id) => {
+
+  e.preventDefault();
+  const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg", "image/webp"]
+  let image = e.target.files[0]
+
+  if (!image || !types.includes(image.type)) {
+    setUploadProgress(null);
+    setUploadedImage(null);
     setIsUploaded(false)
-		setError(null);
-		setIsSuccess(false);
-    const fileRef = storage.ref(`images/${currentUser.uid}/${image.name}`);
-		const uploadTask = fileRef.put(image);
+    setError(null);
+    setIsSuccess(false);
+    return;
+  }
+  setIsUploaded(false)
+  setError(null);
+  setIsSuccess(false);
 
-		uploadTask.on('state_changed', taskSnapshot => {
-			setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
-		});
 
-		uploadTask.then(async snapshot => {
+  let storageRef = storage.ref(`images/${currentUser.uid}/${albumId}/${image.name}`)
 
-      const url = await snapshot.ref.getDownloadURL();
-  
-			// add uploaded file to db
-			const img = {
-        title: image.name,
-				owner: currentUser.uid,
-				path: snapshot.ref.fullPath,
-				size: image.size,
-        type: image.type,
-        createdAt: timestamp(),
-        id,
-				url,
-			};
-						
-			if (albumId) {    
-        img.albums = []
-        img.albums.push( db.collection('albums').doc(id))
-      }
+  checkIfImageIsInAlbum(`images/${currentUser.uid}/${albumId}/${image.name}`, id)
 
-			// add image to collection
-      await db.collection('images').add(img).then(function(docRef) {
-      docRef.update({
-        id: docRef.id
+  // Check if the ref already exists
+  storageRef.getMetadata()
+  .then(() => {
+      // If the ref already exists:
+      storageRef.getMetadata().then((metadata) => {
+          const img = {
+              id,
+              title: metadata.name,
+              path: metadata.fullPath,
+              owner: currentUser.uid,
+              size: metadata.size,
+              type: metadata.type,
+              url: metadata.customMetadata.url,
+          };
+
+          addImageToAlbumsArray(img, id);
+          console.log('IMAGE ADDED', img)
+          e.target.value = ''
+          setIsSuccess(true);
+          setIsUploaded(true)
       })
-      console.log("Document written with ID: ", img);
+  })
+  .catch(() => {
+      // If the ref does not exist:
+      const uploadTask = storageRef.put(image);
+
+     uploadTask.on('state_changed', taskSnapshot => {
+        setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
+      });
+
       
-       })
-      .catch(function(error) {
-      console.error("Error adding document: ", error);
-     })
-  
-      // add uid as id to pic
+      uploadTask.then(async() => {
+          const url = await storageRef.getDownloadURL()
+          const newMetadata = {
+              customMetadata : {
+                  url
+              }
+          }
 
+          storageRef.updateMetadata(newMetadata).then(metadata => {
+              const img = {
+                  id,
+                  title: metadata.name,
+                  path: metadata.fullPath,
+                  size: metadata.size,
+                  type: metadata.type,
+                  owner: currentUser.uid,
+                  url: metadata.customMetadata.url,
+              };
 
-      // await db.collection("albums").doc(albumId).get().then(snapshot => {
-      //   snapshot.forEach(doc => {
-      //     doc.data().images.push(img.path)
-      //   })
-      // })
-			// let user know we're done
-			setIsSuccess(true);
-			setUploadProgress(null);
+              if (id) {    
+                img.albums = []
+                img.albums.push(db.collection('albums').doc(id))
+              }
 
-			// file has been added to db, refresh list of files
-			setUploadedImage(img);
-      setIsSuccess(true);
-      e.target.files[0] = "";
-		}).catch(error => {
-			console.error("File upload triggered an error!", error);
-			setError({
-				type: "warning",
-				msg: `Image could not be uploaded due to an error (${error.code})`
-			});
-    });
-	}
+              try {
+                db.collection('images').add(img).then((docRef) => {
+                  docRef.update({
+                    id: docRef.id,
+                    createdAt: timestamp(),
+                    path: docRef.path,
+                  })
+                  console.log("Document written with ID: ", img);
+                })
+              } catch (error) {
+                console.log('Error', error)
+              }
+              addImageToAlbumsArray(img, id);
+              setUploadProgress(null);
+              setUploadedImage(img);
+              setIsSuccess(true);
+              e.target.value = '';
+              
+          })
+          .catch(error => {
+              console.log(error)
+          })
+      })
+    // let user know we're done
 
-  
+  })
+}
+
   useEffect(() => {
-    console.log("i")
    if(isSuccess) {
      setImageToUpload({})
      setIsUploaded(true)
@@ -122,40 +165,12 @@ const UploadImage = ({albumId}) => {
    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, error, uploadProgress, isSubmitting])
 
-//TODO fix the previews
-
-
-//   useEffect(() => {
-//     if (!imageToUpload && !imagesToUpload) {
-//         setPreview(undefined)
-//         return
-//     }
-//     else if (imagesToUpload.length) {
-//       let itemWithUrlArr = imagesToUpload.map(itm => itm.url = URL.createObjectURL(itm))
-//       console.log("URLS", itemWithUrlArr)
-//       setPreviewArr(itemWithUrlArr)
-//     }
-//     else if(imageToUpload) {
-//       const objectUrl = URL.createObjectURL(imageToUpload)
-//       let tmpObj = {url: objectUrl}
-//       setPreview(tmpObj.url)
-//       console.log(preview, "single")
-//     }
-
-
-//     // free memory when ever this component is unmounted
-//     return () => URL.revokeObjectURL(preview)
-// }, [imageToUpload])
-
-
-
-
   return (
     <>
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" >
-            <Input  pt="5px"type="file" onChange={(e) => onUpload(e, albumId)} w="400px" textAlign="center" />
+            <Input  pt="5px"type="file" onChange={(e) => uploadImageToStorage(e, albumId)} w="400px" textAlign="center" />
             <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>

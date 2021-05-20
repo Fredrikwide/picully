@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import Home from './views/Home';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom'
 import AuthRoute from './components/AuthRoute';
 import SignUp from './components/forms/SignUp';
 import NavIndex from './components/navigation/NavIndex';
@@ -8,52 +7,46 @@ import CreateAlbum from './components/album/CreateAlbum';
 import Albums from './components/album/Albums';
 import NotFound from './components/error/NotFound';
 import Album from './components/album/Album';
-import SharedAlbum from './components/album/SharedAlbum';
+import Welcome from './components/Welcome';
+import SharedImageGrid from './components/pictureItems/SharedImageGrid';
 import { useUpdate } from './contexts/UpdateContext';
 import { useFire } from './contexts/FirebaseContext';
+import { useAuth } from './contexts/AuthContext';
 
 const App = () => {
-  const { albumToShare, setAlbumToShare, renderShared, setRenderShared, currentUrl, setCurrentUrl } = useUpdate();
-  const { firebaseFunctions, sharedAlbum, setSharedAlbum, sharedUrl, setSharedUrl } = useFire();
-  const { getAlbumsByUrl, getSharedAlbumUrls, getImagesByAlbumId } = firebaseFunctions;
-
-
-  const [sharedImages, setSharedImages] = useState([]);
+  const { albumToShare, setAlbumToShare, renderShared, setRenderShared, currentUrl, setCurrentUrl, userLoggedIn, currentAlbum} = useUpdate();
+  const { firebaseFunctions, sharedUrl, setSharedUrl, albums, db, } = useFire();
+  const { getAlbumsByUrl, getSharedAlbumUrls, getImagesByAlbumUrl, getImagesByAlbumId } = firebaseFunctions;
+  const { currentUser } = useAuth();
 
 
   useEffect(() => {
-    (async () => {
-      const albums = await getSharedAlbumUrls();
-      albums.forEach( async (url) => {
-        if(currentUrl === url) {
-          console.log("TRUE", url);
-          setSharedUrl(url);
-          getAlbumsByUrl(url);
-          setRenderShared(true);
-        }
-      })
-    })()
-  }, [currentUrl, sharedUrl])
+    const getUrls = async () => {
+      await getSharedAlbumUrls();
+    }
+    getUrls()
+  }, [currentUrl])
 
-
+  useEffect(() => {
+    console.log(currentAlbum, 'current album')
+  }, [currentAlbum])
 
   return (
     <>
       <Router>
      
-        <NavIndex />  
+        { <NavIndex /> }
         <Routes>
-          <Route path="/sign-up" element={<SignUp />} /> 
 
-          <Route path="/" element={ <Home /> } />
+          <Route path={"/"} element={!currentUser ? <Welcome /> : <Navigate to="/home/albums" /> } />
 
-          <Route path={`${sharedUrl}`} element={<SharedAlbum album={sharedAlbum} images={sharedImages} />} />
+          {<Route path={`/review/:id`} element={<SharedImageGrid ALBUM_ID={sharedUrl !== '' && sharedUrl} />} />}
 
-          <AuthRoute path="/home">
+            <AuthRoute path="/home">
                     <AuthRoute path="albums">
                       <Albums />
-                      <AuthRoute path="/:slug">
-                        <Album />
+                     <AuthRoute path="/:slug">
+                        <Album current={currentAlbum}  />
                       </AuthRoute>
                       <AuthRoute path="/create">
                         <CreateAlbum />

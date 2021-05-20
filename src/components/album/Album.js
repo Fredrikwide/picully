@@ -12,77 +12,52 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 
-const Album = ({album}) => {
+const Album = ({current}) => {
   const {slug} = useParams()
-  
+  const [id, setId] = useState(false);
+  const [thisAlbum, setThisAlbum] = useState(current);
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
   const { 
+          storage,
           imageDeleted,
-          isUploaded, 
+          isUploaded,
           currentAlbum,
           imagesInCurrentAlbum,
           setCurrentAlbum,
           setImagesInCurrentAlbum} = useUpdate()
   const [editAlbumName, setEditAlbumName] = useState(false)
   const [editActive, setEditActive] = useState(false)
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => {
+    console.log(thisAlbum, 'THIS')
+  }, [thisAlbum])
+
+
+  useEffect(() => {
+
   (async () => {
-    if(currentAlbum === undefined || !currentAlbum){
-      await db.collection("albums").where("slug", "==", slug).get().then(querySnapshot => {
-        let currAlb = "";
-        querySnapshot.forEach(doc => {
-          currAlb = doc.data()
+      setLoading(true)
+      setImagesInCurrentAlbum([]);
+      let ref = db.collection('albums');
+      let res = await ref.where('slug', '==', slug).get();
+      for(const doc of res.docs){
+        let docRef = doc.data();
+        setCurrentAlbum(docRef)
+        setId(docRef.id)
+        docRef.images.forEach(img=> {
+          setImagesInCurrentAlbum(prevImgs => [...prevImgs, img])
         })
-        setCurrentAlbum(currAlb)
-      })
-    } 
+        setLoading(false);
+      }
   })()
  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [])
-
-  const fetchImages = async (id) => {
-    try {
-    await db.collection("images").where("albums", "array-contains", db.collection("albums").doc(id)).get().then(snapshot => {
-      setIsLoading(true)
-      let imgArr = []
-      snapshot.forEach(doc => {
-        imgArr.push(doc.data())
-      })
-      setImagesInCurrentAlbum([...imgArr])
-      setIsLoading(false)
-    })
-  }
-  catch (err) {
-    console.log("error", err);
-  }
-  
-  }
-
-  useEffect(() => {
-   console.log("i ran");
-    (async () => {
-      setImagesInCurrentAlbum("")
-      setIsLoading(true)
-
-      if(currentAlbum) {
-          setCurrentAlbum(currentAlbum)
-          fetchImages(currentAlbum.id)
-          setIsLoading(false)
-      }
-      else {
-        console.error("no id found")
-      }
-
-    })()
-  }, [imageDeleted, isUploaded, currentAlbum])
-
-
+}, [imageDeleted, isUploaded])
 
   const handleEdit = () => {
-    setEditActive(true) 
+    setEditActive(true)
   }
 
 
@@ -97,23 +72,18 @@ const Album = ({album}) => {
    await firebaseFunctions.updateAlbumName(currentAlbum.id, editAlbumName)
     setEditActive(false)
   }
-
- useEffect(() => {
-
- }, [updatedAlbumTitle])
-
  
 	return (
 		<>
 
-     { currentAlbum !== undefined &&
+     { currentAlbum !== undefined && !isLoading ?
 
       <Flex 
         direction="column" 
         mt="3rem">
         { currentAlbum !== undefined && !isLoading &&
         <UploadImage 
-          albumId={currentAlbum.id !== undefined && currentAlbum.id } 
+          albumId={id !== null ? id : false} 
         /> }
         <Flex 
           justify="center" 
@@ -181,9 +151,9 @@ const Album = ({album}) => {
           />
           </Flex>
           : 
-          (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length 
+          (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length > 0 && currentAlbum
           ? 
-          <ImageGrid images={imagesInCurrentAlbum} albumId={currentAlbum.id} />
+          <ImageGrid albumId={currentAlbum.id} pictures={imagesInCurrentAlbum}  />
           :
 
           <Flex justify="center" align="center">
@@ -192,6 +162,23 @@ const Album = ({album}) => {
         }
 
       </Flex>
+       : loading &&
+       <>
+         <Flex
+           height="100vh"
+           justify="center" 
+           align="center"
+         >
+         <Spinner   
+           thickness="6px"
+           speed="0.65s"
+           emptyColor="gray.200"
+           color="teal.500"
+           size="xl"  
+           />
+           Loading
+         </Flex>
+       </>
       }
 		</>
 	)

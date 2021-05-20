@@ -13,7 +13,7 @@ import { useUpdate } from '../../contexts/UpdateContext'
 
 
 const SharedAlbum = ({album}) => {
-  const {sharedUrl} = useParams()
+  const {id} = useParams()
   
   const [isLoading, setIsLoading] = useState(false)
   const {firebaseFunctions, db, updatedAlbumTitle} = useFire()
@@ -27,22 +27,6 @@ const SharedAlbum = ({album}) => {
   const [editAlbumName, setEditAlbumName] = useState(false)
   const [editActive, setEditActive] = useState(false)
 
-
-  useEffect(() => {
-    console.log("SHAAAAAARED", album);
-  (async () => {
-    if(currentAlbum === undefined || !currentAlbum){
-      await db.collection("albums").where("sharedUrl", "==", album.sharedUrl).get().then(querySnapshot => {
-        let currAlb = "";
-        querySnapshot.forEach(doc => {
-          currAlb = doc.data()
-        })
-        setCurrentAlbum(currAlb)
-      })
-    } 
-  })()
- // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [])
 
   const fetchImages = async (id) => {
     try {
@@ -120,51 +104,7 @@ const SharedAlbum = ({album}) => {
           justify="center" 
           align="center" 
           direction="column"
-        >     
-          <Text>Edit album name</Text>
-            <Flex 
-              justify="space-around" 
-              align="center" 
-            >
-              {editActive &&
-                  <Flex 
-                    justify="center" 
-                    align="center"
-                  >
-                    <Input 
-                      type="text" 
-                      placeholder={editAlbumName} 
-                      onChange={handleChangeAlbumName}
-                      />
-                  </Flex> }
-              { !editActive ? 
-              <Flex 
-                justify="center" 
-                cursor="pointer" 
-                align="center" 
-                _hover={{backgroundColor: "teal.300"}} 
-                >
-                <GrEdit 
-                  color="white" 
-                  size={"1.2rem"} 
-                  onClick={handleEdit}  />
-              </Flex>
-              : 
-              <Flex 
-              ml="1rem" 
-              justify="center" 
-              cursor="pointer" 
-              align="center">
-                <CheckIcon  
-                  _hover={{color: "teal.300"}}
-                  w={6} 
-                  h={6} 
-                  color="teal.500" 
-                  onClick={handleFinishedEdit} 
-                /> 
-              </Flex>}
-            </Flex>
-                <Heading >{editAlbumName ? editAlbumName : currentAlbum.title }</Heading>        
+        > 
           </Flex>
           {
           isLoading 

@@ -7,9 +7,9 @@ import AlbumGrid from './AlbumGrid'
 
 const Albums = () => {
 
-  const { isLoading, images, updatedAlbumTitle} = useFire()
-  const {currentUserAlbums} = useUpdate()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isLoading, images, updatedAlbumTitle} = useFire();
+  const {currentUserAlbums} = useUpdate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
 
   useEffect(() => {

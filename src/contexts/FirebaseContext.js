@@ -12,12 +12,12 @@ export const useFire = () => useContext(FirebaseContext)
 
 export const FirebaseProvider = ({ children }) => {
   
-
+  
   const db = firebase.firestore()
   const storage = firebase.storage()
 
   const timestamp = firebase.firestore.FieldValue.serverTimestamp;
-  const [sharedUrl, setSharedUrl] = useState(false);
+  const [sharedUrl, setSharedUrl] = useState('');
   const [currentAlbum, setCurrentAlbum] = useState()
   const [collectionData, setCollectionData] = useState([])
   const [albumCollection, setAlbumCollection] = useState([])
@@ -109,12 +109,19 @@ export const FirebaseProvider = ({ children }) => {
     }
   ,
 
-    createAlbumWithImages: async (title, desc, owner, id, images) => {
+    createAlbumWithImages: async (title, desc, id, images) => {
       const num = uuidv4()
       setIsLoading(true)
       setCreated(false)
+      let owner = null
+      if(currentUser.uid === undefined || currentUser.uid === null || !currentUser.uid){
+        owner= null
+      }
+      else {
+        owner = currentUser.uid
+      }
       await db.collection("albums").add({
-        title: title,
+        title,
         description: desc,
         owner_id: owner,
         images: [],
@@ -127,7 +134,7 @@ export const FirebaseProvider = ({ children }) => {
           ref.update({
             id: ref.id        
       }).then(async () => {
-        if(images.length){
+        if(images.length > 0){
           await images.forEach(img => {
             db.collection("images").doc(img.id).update({
               albums: firebase.firestore.FieldValue.arrayUnion
@@ -135,7 +142,13 @@ export const FirebaseProvider = ({ children }) => {
                 db.collection("albums").doc(ref.id)
               )
             })
-          })    
+          })  
+          await db.collection("albums").doc(id).update({
+              images: firebase.firestore.FieldValue.arrayUnion
+              (
+                images
+              )
+          })
         }
       }).catch(
         err => console.error("error", err)   
@@ -214,10 +227,11 @@ export const FirebaseProvider = ({ children }) => {
         if(doc.data().sharedUrl === url) {
           albumArr.push(doc.data())
         }
+        setSharedAlbum(albumArr)
+        setIsLoading(false)
+        return albumArr
       })
-      setSharedAlbum(albumArr)
-      setIsLoading(false)
-      return albumArr
+      return false
     }, err => {
       console.log(err)
     }),
@@ -279,7 +293,7 @@ export const FirebaseProvider = ({ children }) => {
     })
     ,
     getImagesByAlbumId: async (id) => {
-       await db.collection("images").where("album", "==", id).get().then(querySnapshot => {
+       db.collection("images").where("albums", "array-contains", id).get().then(querySnapshot => {
         const imageArr = []
         querySnapshot.forEach(doc => {
           console.log(doc.data(), "DATA")
@@ -299,7 +313,8 @@ export const FirebaseProvider = ({ children }) => {
     .catch(function(error) {
         console.log("Error getting documents: ", error);
     });
-    }
+    },
+    
      
   }
 
@@ -319,6 +334,8 @@ export const FirebaseProvider = ({ children }) => {
     updated,
     currentAlbum,
     storage,
+    albums,
+    setAlbums,
     setSharedUrl,
     sharedUrl
   }

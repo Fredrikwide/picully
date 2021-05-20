@@ -80,7 +80,7 @@ const SignUp = () => {
       try { 
         await signup(values.email, values.password, values.firstname, values.lastname) // 
         setSubmitting(false)
-        navigate("/")
+        navigate("/home/albums")
 
     } catch (err) {
         setError(true)

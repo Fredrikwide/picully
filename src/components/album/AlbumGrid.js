@@ -7,17 +7,17 @@ import { useEffect } from 'react'
 const AlbumGrid = () => {
   const {currentUserAlbums, setCurrentAlbum} = useUpdate()
 
-  useEffect(() => {
-    console.log(currentUserAlbums);
-  }, [])
-
   const setAlbumClicked = (album) => {
     console.log("CLICK", currentUserAlbums);
+    console.log('CURRENT', album);
     setCurrentAlbum(album);
   }
 
   return (
     <>
+      {
+        (currentUserAlbums !== undefined && currentUserAlbums.length > 0 ) &&
+      
       <Grid 
         pr="10px" 
         pl="10px" 
@@ -27,7 +27,7 @@ const AlbumGrid = () => {
         gap={3} h="600px" 
       >
       {
-        currentUserAlbums !== undefined && currentUserAlbums.length && 
+
         currentUserAlbums.map((album, index) => (
           <Link 
           as={ReactLink} 
@@ -77,9 +77,10 @@ const AlbumGrid = () => {
               </Flex>
             </GridItem>
           </Link>
-        ))
-      }
+        )) 
+         }
       </Grid>
+      }
     </>
   )
 }

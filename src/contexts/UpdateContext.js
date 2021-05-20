@@ -25,55 +25,23 @@ export const UpdateProvider = props => {
     const [sharedIamges, setSharedImages] = useState([])
     const [imagesInCurrentAlbum, setImagesInCurrentAlbum] = useState([])
     const [imagesOwnedByCurrentUser, setImagesOwnedByCurrentUser] = useState()
-    const [albumToShare, setAlbumToShare] = useState(undefined)
+    const [albumToShare, setAlbumToShare] = useState('')
     const {currentUser} = useAuth()
     const {created} = useFire()
-    const [sharedUrl, setSharedUrl] = useState(false)
     const [renderShared, setRenderShared] = useState(false);
     const [userSelectedImagesToKeep, setuserSelectedImagesToKeep] = useState([])
     const [userSelectedImagesToDelete, setuserSelectedImagesToDelete] = useState([])
 
     useEffect(() => {
-        console.log("testRUN");
         ( async () => {
-            if(currentUser !== null) {
-                setCurrentUserAlbums("")
-                console.log("I RAN")
+            if(currentUser !== null && currentUser) {
+                setCurrentUserAlbums([])
                 let res = await firebaseFunctions.getUserAlbums(currentUser.uid)
-                console.log(res)
                 setCurrentUserAlbums(res)
-                let ref = await db.collection("images").where("album", "==", currentUser.uid)
-                ref.get().then(snapshot => {
-                    let userImages = []
-                    snapshot.forEach(doc => {
-                        console.log(doc.data())
-                        userImages.push(doc.data())
-                        setImagesOwnedByCurrentUser(prevUserImages => [...prevUserImages, userImages])
-                    })
-                })
             }
         }
-
         )()
-        console.log("IMAGES IN CURR ABLUM", imagesInCurrentAlbum);
-    }, [userLoggedIn,isUploaded, imageDeleted, created])
-
-    useEffect(() => {
-        (async () => {
-            if(albumToShare !== undefined){
-                await db.collection("images").where("albums", "array-contains", albumToShare.id).get().then(snapshot => {
-                    snapshot.forEach(doc => {
-                        console.log(doc.data(), "HELLO")
-                    })
-                })
-            }
-        })()
-       
-    }, [albumToShare])
-
-    useEffect(() => {
-        
-    }, [sharedUrl, albumToShare, userLoggedIn])
+    }, [userLoggedIn,isUploaded,created])
 
     const updateContextValue = {
         
@@ -84,7 +52,6 @@ export const UpdateProvider = props => {
       currentUserAlbums,
       setUserLoggedIn,
       userLoggedIn,
-      imagesOwnedByCurrentUser,
       setCurrentAlbumID,
       imageDeleted,
       imagesInCurrentAlbum,
@@ -98,8 +65,6 @@ export const UpdateProvider = props => {
       setImageDeleted,
       setAlbumToShare,
       albumToShare,
-      setSharedUrl,
-      sharedUrl,
       sharedIamges,
       setSharedImages,
       discardedImages,

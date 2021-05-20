@@ -7,120 +7,109 @@ import { useFire } from '../../contexts/FirebaseContext';
 import { useUpdate } from '../../contexts/UpdateContext';
 import CreateNewAlbumFromPickedImages from '../forms/CreateNewAlbumFromPickedImages';
 import {v4 as uuidv4} from 'uuid'
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-const SharedImageGrid = ({albumId}) => {
-  const {db, storage, firebaseFunctions} = useFire()
-  const { updateAlbumSharedUrl } = firebaseFunctions;
-  const {isUploaded} = useUpdate()
+
+const SharedImageGrid = (props) => {
+  const {id} = useParams();
+  const { firebaseFunctions, db } = useFire()
+  const { getImagesByAlbumId } = firebaseFunctions;
+  const [isLoading, setIsLoading] = useState(false);
   const {
       imagesInCurrentAlbum,
-      imageDeleted, 
-      setImageDeleted,
-      currentAlbum, 
       setPickedImages, 
       pickedImages, 
-      albumToShare, 
-      setAlbumToShare, 
-      setSharedUrl, 
-      sharedUrl, 
-      discardedImages, 
+      discardedImages,
+      albumToShare,
       setDiscardedImages,
-      setSharedImages} = useUpdate()
+    } = useUpdate()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [checkers, setCheckers] = useState([])
 
-  const navigate = useNavigate()
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
 
-
-	const handleDeleteImage = async (img) => {
-    console.log(img)
-    // eslint-disable-next-line no-restricted-globals
-    await db.collection('images').doc(img.id).delete();
-    await storage.ref(img.path).delete();
-    console.log("deleted")
-    setImageDeleted(!imageDeleted);
-  }
-  
   useEffect(() => {
-    imagesInCurrentAlbum.forEach((img, i) => {
-      let imageItem = {
+( async () => {
+    setIsLoading(true)
+    setPickedImages([])
+    setDiscardedImages([])
+    let ref = db.collection('albums').doc(id);
+    let res = await ref.get();
+    let imagesRef = res.data().images
+    let arr = []
+    await imagesRef.map((img, i) => {
+      let newImg = {
+        ...img,
+        docId: img.id,
         id: i,
-        image: img,
         picked: false,
         discarded: false,
       }
-      setCheckers(prevChecks => [...prevChecks, imageItem])
+      arr.push(newImg)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageDeleted])
-
-  useEffect(() => {
-  }, [isUploaded, currentAlbum.id])
-
+    setCheckers(arr)
+    setIsLoading(false)
+}
+  )()
+  }, []);
 
   const handlePickImage = async (e, item) => {
+    console.log('val', item)
     let filterChecks = checkers.map(check => check)
+    console.log(filterChecks, 'filter')
     if(filterChecks.includes(item)){
       filterChecks.forEach(obj => {
         if(!obj.picked && obj.id === item.id) {
           obj.picked = true
-          setPickedImages(prevItems => [...prevItems, obj.image])
-          console.log(pickedImages, "added")
+          setPickedImages(prevItems => [...prevItems, obj])
         }
         else if(obj.picked && obj.id === item.id ) {
           obj.picked = false
           setPickedImages(pickedImages.filter(obj => !pickedImages.includes(obj)))
-          console.log(pickedImages, "popped")
         }
       })
     }
     setCheckers(filterChecks)
   }
 
-
-  
   const handleDiscardimage = async (e, item) => {
     let filterChecks = checkers.map(check => check)
+    console.log(filterChecks, 'filter')
     if(filterChecks.includes(item)){
-      filterChecks.forEach(obj => {
+      filterChecks.map(obj => {
+        console.log(obj)
         if(!obj.discarded && obj.id === item.id) {
           obj.discarded = true
           setDiscardedImages(prevItems => [...prevItems, item])
-          console.log(pickedImages, "added")
         }
         else if(obj.discarded && obj.id === item.id ) {
           obj.discarded = false
           setDiscardedImages(discardedImages.filter(obj => !discardedImages.includes(obj)))
-          console.log(discardedImages, "popped")
         }
       })
     }
     setCheckers(filterChecks)
   }
 
+  useEffect(() => {
+    console.log({'picked': pickedImages,'discarded': discardedImages})
+  }, [discardedImages, pickedImages])
 
   const handleNewAlbum = async () => {
     onOpen()
   }
-
-  const handleShareAlbum = async (album) => {
-    let url = window.location.href
-    console.log(url, "URL");
-    updateAlbumSharedUrl(album.id, url);
-    setAlbumToShare(album);
-  }
   
+
   return (
     <>
-      <Flex key={uuidv4()} justify="flex-end" align="center" width="100%" mt="2rem" mb="1rem">
-        <Flex key={uuidv4()} justify="space-between" w="400px">
-        <Text key={uuidv4()} >Add images to new album</Text>
-        <Button key={uuidv4()}  mr="2rem" w="80px" h="30px" colorScheme="teal" onClick={handleNewAlbum}>
-          <AddIcon key={uuidv4()} h={6} w={6} colorScheme="teal" />
+    {
+      !isLoading ?
+      <>
+        <Flex key={uuidv4()} justify="center" w="400px" width="100vw" p="2rem">
+        <Button key={uuidv4()}  mr="2rem" colorScheme="teal" onClick={handleNewAlbum}>
+          Add images to new album
         </Button>
           <>
             <Modal
@@ -148,97 +137,86 @@ const SharedImageGrid = ({albumId}) => {
           </Modal>
         </>
       </Flex>
-      <Flex justify="center" align="center" w="400px">
-          <Button mr="1rem" w="80px" h="30px" colorScheme="teal" onClick={() => handleShareAlbum(currentAlbum)}>
-            share
-          </Button>     
-      </Flex>
-    </Flex>
-    <Grid 
-      key={uuidv4()}
-      mr="1rem"
-      ml="1rem" 
-      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
-      templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
-      mt="2rem" 
-      gap={8}
-      overflowX="hidden"
-      h="100%"
-      w="100%"
-    >
-      {
-        imagesInCurrentAlbum !== undefined 
-        && imagesInCurrentAlbum.length > 0
-        && checkers.map((item, i) => (
-          <>
-            <GridItem 
-              key={i}
-              colSpan={1} 
-              rowSpan={2} 
-              overflow="hidden"
-            >
-            <Flex 
-              justify="space-between" 
-              align="center" 
-              flexBasis="0" 
-            >
-            { currentAlbum !== albumToShare &&
-            <CloseButton 
-              id={item.image.albums[albumId]}  
-              size="sm" 
-              onClick={() => handleDeleteImage(item.image)} 
-            /> 
-            }
-            <Text
+      <Grid 
+        key={uuidv4()}
+        mr="1rem"
+        ml="1rem"
+        templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
+        templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
+        mt="2rem" 
+        gap={8}
+        overflowX="hidden"
+        h="100%"
+        w="100%"
+      >
+        {
+         checkers.length > 0 && checkers.map((item, i) => (
+            <>
+              <GridItem 
+                key={i}
+                colSpan={1} 
+                rowSpan={2} 
+                overflow="hidden"
+              >
+              <Flex 
+                justify="space-between" 
+                align="center" 
+                flexBasis="0" 
+              >
+              <Text
+                isTruncated
+                w="100%"
+                fontSize="sm" 
+                textAlign="center" 
+                p="5px">{item.title}
+              </Text>
+              </Flex>
+              <Box>
+                <Image
+                  src={item.url} 
+                  alt={item.title} 
+                  h="100%" 
+                  w="100%" 
+                  objectFit="contain"
+                  p="5px" 
+                />
+              </Box>
+              <Flex border="3px" justify="space-between" borderColor="red">
+                <Checkbox
+                  ref={checkBoxPickedRef}
+                  isDisabled={checkers[i].discarded}
+                  isChecked={checkers[i].picked}
+                  ml="5px"
+                  size="md"
+                  id={item.id}
+                  colorScheme="green"
+                  onChange={(e) => handlePickImage(e, item)}
+                >
+                  keep
+                </Checkbox>
+                <Checkbox
+                  ref={checkBoxDiscardRef}
+                  isDisabled={checkers[i].picked}
+                  isChecked={checkers[i].discarded}
+                  ml="5px"
+                  size="md"
+                  id={item.id}
+                  colorScheme="red"
+                  onChange={(e) => handleDiscardimage(e, item)}
+                >
+                  Discard
+                </Checkbox> 
+              </Flex>
+            </GridItem>
+            </>
+          ))
+        }
+      </Grid>
 
-              isTruncated
-              w="100%"
-              fontSize="sm" 
-              textAlign="center" 
-              p="5px">{item.image.title}
-            </Text>
-            </Flex>
-            <Box>
-              <Image
-                src={item.image.url} 
-                alt={item.image.title} 
-                h="100%" 
-                w="100%" 
-                objectFit="contain"
-                p="5px" 
-              />
-            </Box>
-            <Flex border="3px" justify="space-between" borderColor="red">
-              <Checkbox
-                ref={checkBoxPickedRef}
-                isDisabled={checkers[i].discarded}
-                isChecked={checkers[i].picked}
-                ml="5px"
-                size="md"
-                id={item.image.id}
-                colorScheme="green"
-                onChange={(e) => handlePickImage(e, item)}
-              >
-                pick
-              </Checkbox>
-              <Checkbox
-                ref={checkBoxDiscardRef}
-                isDisabled={checkers[i].picked}
-                isChecked={checkers[i].discarded}
-                ml="5px"
-                size="md"
-                id={item.image.id}
-                colorScheme="red"
-                onChange={(e) => handleDiscardimage(e, item)}
-              >
-                Discard
-              </Checkbox> 
-            </Flex>
-          </GridItem>
-          </>
-        ))
+      </>
+      :
+      <h1>LOADING</h1>
       }
-    </Grid>
     </>
   )
 }

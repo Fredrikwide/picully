@@ -61,7 +61,7 @@ const SignIn = () => {
             await login(values.email, values.password) // 
             setSubmitting(false)
             setUserLoggedIn(true)
-            navigate("/")
+            navigate("home/albums")
 
         } catch (err) {
             console.log('error', err)
