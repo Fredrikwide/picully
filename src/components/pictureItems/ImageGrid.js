@@ -256,6 +256,8 @@ const ImageGrid = ({albumId}) => {
       templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
       gap={3}
       placeItems="center"
+      maxW="100vw"
+      overflowX="hidden"
     >
       {
         images !== undefined 
