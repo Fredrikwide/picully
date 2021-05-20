@@ -162,14 +162,14 @@ const uploadImageToStorage = (e, id) => {
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" >
-            <Input  pt="5px"type="file" onChange={(e) => uploadImageToStorage(e, albumId)} w="400px" textAlign="center" />
+            <Input pt="5px"type="file" onChange={(e) => uploadImageToStorage(e, albumId)} w="400px" textAlign="center" />
             <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>
           </InputGroup> 
         </Flex>
       </form>
-      {uploadProgress !== null && <Progress mt="1rem" mb="1rem" colorscheme="teal" size="md" value={uploadProgress}/>}
+      {uploadProgress !== null && <Progress mt="1rem" mb="1rem" colorScheme="teal" size="md" value={uploadProgress}/>}
     </>
   )
 }

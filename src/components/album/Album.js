@@ -76,15 +76,16 @@ const Album = ({current}) => {
         direction="column" 
         mt="3rem">
         { currentAlbum !== undefined && !isLoading &&
-        <UploadImage 
+        <UploadImage
           albumId={id !== null ? id : false} 
         /> }
-        <Flex 
+        <Flex
+          mt="10px"
           justify="center" 
           align="center" 
           direction="column"
         >     
-          <Text>Edit album name</Text>
+          <Text>Edit Title</Text>
             <Flex 
               justify="space-around" 
               align="center" 
