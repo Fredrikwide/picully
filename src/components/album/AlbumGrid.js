@@ -3,10 +3,10 @@ import tempImage from '../../images/dog.jpg'
 import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
 import { useFire } from '../../contexts/FirebaseContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const AlbumGrid = () => {
-  const {currentUserAlbums, setCurrentAlbum, setAlbumDeleted} = useUpdate()
+  const {currentUserAlbums, setCurrentAlbum, albumDeleted, setAlbumDeleted} = useUpdate()
   const {db} = useFire();
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +29,6 @@ const AlbumGrid = () => {
         (currentUserAlbums !== undefined && currentUserAlbums.length > 0 && !loading) ?
       
       <Grid
-        
         pr="10px" 
         pl="20px" 
         pb="10px"
@@ -96,7 +95,7 @@ const AlbumGrid = () => {
               </Flex>
               <Box height="100%" pt="20px">
                 <Image
-                  src={album.images.length > 0 ? album.images[0].url : tempImage} 
+                  src={album.images.length > 0 && album.images[0] ? album.images[0].url : tempImage} 
                   alt={album.title}
                   />
               </Box>

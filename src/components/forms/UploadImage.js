@@ -169,7 +169,7 @@ const uploadImageToStorage = (e, id) => {
           </InputGroup> 
         </Flex>
       </form>
-      {uploadProgress !== null && <Progress colorscheme="teal" size="md" value={uploadProgress}/>}
+      {uploadProgress !== null && <Progress mt="1rem" mb="1rem" colorscheme="teal" size="md" value={uploadProgress}/>}
     </>
   )
 }

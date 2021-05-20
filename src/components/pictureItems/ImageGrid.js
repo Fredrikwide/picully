@@ -57,13 +57,15 @@ const ImageGrid = ({albumId}) => {
 	const handleDeleteImage = async (image) => {
     setLoading(true);
     let albumsRef = db.collection('albums').doc(albumId);
+    let storageRef = storage.ref().child(image.path);
+    await storageRef.delete();
+    console.log("deleted")
     let res = await albumsRef.get()
     let imageRefs = await res.data().images
     let newImageArr = imageRefs.filter(img => img.key !== image.key);
     await albumsRef.update({
       images: newImageArr
     })
-    await storage.ref(image.path).delete()
     setImages(newImageArr)
     setLoading(false);
   }
