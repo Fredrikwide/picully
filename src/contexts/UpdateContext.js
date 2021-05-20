@@ -14,6 +14,7 @@ export const UpdateProvider = props => {
     const [currentUrl, setCurrentUrl] = useState(window.location.href);
     const [signUpIsClicked, setSignUpIsClicked] = useState(false)
     const [imageDeleted, setImageDeleted] = useState(false)
+    const [albumDeleted, setAlbumDeleted] = useState(false)
     const [currentAlbumID, setCurrentAlbumID] = useState(undefined)
     const [currentAlbum, setCurrentAlbum] = useState(undefined)
     const [currentUserAlbums, setCurrentUserAlbums] = useState([])
@@ -41,7 +42,7 @@ export const UpdateProvider = props => {
             }
         }
         )()
-    }, [userLoggedIn,isUploaded,created])
+    }, [userLoggedIn,albumDeleted,isUploaded,created])
 
     const updateContextValue = {
         
@@ -71,7 +72,9 @@ export const UpdateProvider = props => {
       setDiscardedImages,
       userSelectedImagesToKeep, 
       setuserSelectedImagesToKeep,
-      userSelectedImagesToDelete, 
+      userSelectedImagesToDelete,
+      albumDeleted, 
+      setAlbumDeleted,
       setuserSelectedImagesToDelete,
       renderShared, 
       setRenderShared,

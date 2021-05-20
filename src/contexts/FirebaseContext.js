@@ -98,6 +98,7 @@ export const FirebaseProvider = ({ children }) => {
       }).then(ref => {
         ref.update({
           id: ref.id,
+          docId: ref.id,
           key: uuidv4()
       }).catch(
        err => console.error("error", err)   
@@ -126,6 +127,7 @@ export const FirebaseProvider = ({ children }) => {
       }).then(ref => {
           ref.update({
             id: ref.id,
+            docId: ref.id,
       })
       console.log('album created with images', images)
       setIsLoading(false)

@@ -56,52 +56,31 @@ const ImageGrid = ({albumId}) => {
 
 	const handleDeleteImage = async (image) => {
     setLoading(true);
-    let albumsRef = db.collection('albums').doc(image.docId);
+    let albumsRef = db.collection('albums').doc(albumId);
     let res = await albumsRef.get()
     let imageRefs = await res.data().images
     let newImageArr = imageRefs.filter(img => img.key !== image.key);
     await albumsRef.update({
       images: newImageArr
     })
+    await storage.ref(image.path).delete()
     setImages(newImageArr)
     setLoading(false);
   }
   useEffect(() => {
-    (async () => {
-      if(albumId !== undefined && albumId !== null && albumId !== '') {
-        setLoading(true)
-        setImages([]);
-        let ref = db.collection('albums');
-        let res = await ref.doc(albumId).get();
-        let docRef = await res.data();
-        setCurrentAlbum(docRef)
-        docRef.images.forEach((img, i)=> {
-          let newImg = {
-            ...img,
-            docId: img.id,
-            id: i,
-            picked: false,
-            discarded: false,
-          }
-          setImages(prevImgs => [...prevImgs, newImg])
-        })
-        setLoading(false);         
-      }
-      else {
-        setImages([]);
-        let url = window.location.href;
-        let slug = url.match(/\/([^\/]+)\/?$/)[1];
-        setLoading(true)  
-        let ref = db.collection('albums');
-        let res = await ref.where('slug', '==', slug).get();
-        for(const doc of res.docs){
-          let docRef = doc.data();
+    try {
+      (async () => {
+        if(albumId !== undefined && albumId !== null && albumId !== '') {
+          setLoading(true)
+          setImages([]);
+          let ref = db.collection('albums');
+          let res = await ref.doc(albumId).get();
+          let docRef = await res.data();
           setCurrentAlbum(docRef)
-          setId(docRef.id)
-          await docRef.images.forEach((img, i)=> {
+          docRef.images.forEach((img, i)=> {
             let newImg = {
               ...img,
-              docId: img,id,
+              docId: albumId,
               id: i,
               picked: false,
               discarded: false,
@@ -109,11 +88,39 @@ const ImageGrid = ({albumId}) => {
             setImages(prevImgs => [...prevImgs, newImg])
           })
           setLoading(false);
+          console.log(images)       
         }
-      }
-    })()
+        else {
+          setImages([]);
+          let url = window.location.href;
+          let slug = url.match(/\/([^\/]+)\/?$/)[1];
+          setLoading(true)  
+          let ref = db.collection('albums');
+          let res = await ref.where('slug', '==', slug).get();
+          for(const doc of res.docs){
+            let docRef = doc.data();
+            setCurrentAlbum(docRef)
+            setId(docRef.id)
+            await docRef.images.forEach((img, i)=> {
+              let newImg = {
+                ...img,
+                docId: img.id,
+                id: i,
+                picked: false,
+                discarded: false,
+              }
+              setImages(prevImgs => [...prevImgs, newImg])
+            })
+            setLoading(false);
+          }
+        }
+      })()
+    } catch (error) {
+      console.log(error)
+    }
+   
    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUploaded])
+  }, [isUploaded, imageDeleted])
 
   const handlePickImage = async (item) => {
     let filterChecks = images.map(check => check)

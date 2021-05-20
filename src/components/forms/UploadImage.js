@@ -24,10 +24,12 @@ const UploadImage = ({albumId}) => {
   const {setIsUploaded} = useUpdate()
 
   
-const addImageToAlbumsArray = (img, id) => {
+const addImageToAlbumsArray = async (img, id) => {
   try {
-    db.collection('albums').doc(id).update({
-      images: firebase.firestore.FieldValue.arrayUnion(img)
+    let ref = db.collection('albums').doc(id)
+   await ref.update({
+      images: firebase.firestore.FieldValue.arrayUnion(img),
+      docId: id
   });
   } catch (error) {
    console.log(error) 
@@ -36,16 +38,18 @@ const addImageToAlbumsArray = (img, id) => {
 
 
 
-const checkIfImageIsInAlbum = (imagePath, id) => {
-db.collection("albums").doc(id).get()
-.then(doc => {
-    for (let i = 0; i < doc.data().images.length; i++) {
-        if(doc.data().images[i].path === imagePath) {
+const checkIfImageIsInAlbum = async (imagePath, id) => {
+let ref = db.collection("albums").doc(id);
+let res = await ref.get()
+await ref.update({
+  docId: id
+})
+for (let i = 0; i < res.data().images.length; i++) {
+        if(res.data().images[i].path === imagePath) {
             console.error('This image is already in the album');
             return
         }
     }
-})
 }
 
 const uploadImageToStorage = (e, id) => {

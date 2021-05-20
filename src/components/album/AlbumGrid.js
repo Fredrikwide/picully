@@ -1,21 +1,32 @@
-import {Flex, Link, Box, Grid, GridItem, Text, Image } from '@chakra-ui/react'
+import {Flex, Link, Box, Grid, GridItem, Text, Image, CloseButton } from '@chakra-ui/react'
 import tempImage from '../../images/dog.jpg'
 import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
-import { useEffect } from 'react'
+import { useFire } from '../../contexts/FirebaseContext'
+import { useState } from 'react'
 
 const AlbumGrid = () => {
-  const {currentUserAlbums, setCurrentAlbum} = useUpdate()
+  const {currentUserAlbums, setCurrentAlbum, setAlbumDeleted} = useUpdate()
+  const {db} = useFire();
+  const [loading, setLoading] = useState(false);
+
 
   const setAlbumClicked = (album) => {
-
     setCurrentAlbum(album);
+  }
+
+  const handleDeleteAlbum = async (image) => {
+    setAlbumDeleted(false);
+    let albumsRef = db.collection('albums').doc(image.docId);
+    await albumsRef.delete()
+    setAlbumDeleted(true)
+    setLoading(false);
   }
 
   return (
     <>
       {
-        (currentUserAlbums !== undefined && currentUserAlbums.length > 0 ) &&
+        (currentUserAlbums !== undefined && currentUserAlbums.length > 0 && !loading) ?
       
       <Grid
         
@@ -29,7 +40,17 @@ const AlbumGrid = () => {
       >
       {
 
-        currentUserAlbums.map((album, index) => (
+      currentUserAlbums.map((album, index) => (
+        <Flex key={index} direction="column" position="relative">
+          <CloseButton
+          position="absolute"
+          top="10px"
+          right="10px"
+          key={index}
+          id={album.docId}  
+          size="sm" 
+          onClick={(e) => handleDeleteAlbum(album)} 
+          /> 
           <Link
           as={ReactLink} 
           to={`/home/albums/${album.slug}`} 
@@ -52,6 +73,7 @@ const AlbumGrid = () => {
               overflow="hidden" 
             >
             <Flex direction="column" w="100%">
+
             <Flex direction="column">
                 <Text
                 isTruncated
@@ -81,9 +103,11 @@ const AlbumGrid = () => {
               </Flex>
             </GridItem>        
           </Link>
+          </Flex>
         )) 
          }
       </Grid>
+      : <h1>loading</h1>
       }
     </>
   )
