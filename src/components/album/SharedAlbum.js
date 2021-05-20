@@ -64,24 +64,6 @@ const SharedAlbum = ({album}) => {
   }, [isUploaded, currentAlbum])
 
 
-
-  const handleEdit = () => {
-    setEditActive(true) 
-  }
-
-
-  const handleChangeAlbumName = (e) => {
-      setEditAlbumName(e.target.value)
-  }
-
-  const handleFinishedEdit = async ()=> {
-    if(!editAlbumName) {
-      return 
-    }
-   await firebaseFunctions.updateAlbumName(currentAlbum.id, editAlbumName)
-    setEditActive(false)
-  }
-
  useEffect(() => {
 
  }, [updatedAlbumTitle])

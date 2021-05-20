@@ -1,9 +1,8 @@
 import { useMediaQuery } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react'
+
 import { useAuth } from '../../contexts/AuthContext'
-import { useUpdate } from '../../contexts/UpdateContext'
-import SharedAlbum from '../album/SharedAlbum'
+
 import NavBar from './NavBar'
 import NavBarSignedIn from './NavBarSignedIn'
 import NavMobile from './NavMobile'
