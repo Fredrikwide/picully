@@ -256,7 +256,7 @@ const ImageGrid = ({albumId}) => {
       templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
       gap={3}
       placeItems="center"
-      maxW="100vw"
+      maxW="99vw"
       overflow="hidden"
     >
       {
@@ -298,8 +298,8 @@ const ImageGrid = ({albumId}) => {
               <Image
                 src={item.url } 
                 alt={item.title} 
-                maxH="100%"
-                maxW="100%"
+                maxH="90%"
+                maxW="90%"
                 objectFit="contain"
                 p="5px" 
               />
