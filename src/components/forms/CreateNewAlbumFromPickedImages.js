@@ -57,15 +57,21 @@ const CreateAlbumForm = ({docId, uid, pictures}) => {
           }}
           validationSchema={CreateAlbumSchema}
           onSubmit={async (values, { setSubmitting, resetForm }) => {
-            try { 
-              if(pictures !== undefined && pictures.length > 0) {
+          try { 
+            if(pictures !== undefined && pictures.length > 0) {
 
-              await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
+             await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
+             setSubmitting(false)
+             navigate('/home/albums')
+             resetForm({})
+             pictures = [];
+            }
+            else {
+              await firebaseFunctions.createAlbum(values.title,  values.description, values.ownerId, values.id) // 
               setSubmitting(false)
               navigate('/home/albums')
               resetForm({})
-              pictures = [];
-              }   
+              }    
             } catch (err) {
                 console.log('error', err)
             }
