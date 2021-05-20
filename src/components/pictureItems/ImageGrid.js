@@ -56,17 +56,14 @@ const ImageGrid = ({albumId}) => {
 
 	const handleDeleteImage = async (image) => {
     setLoading(true);
-    console.log(image, 'DELETE THIS')
     let albumsRef = db.collection('albums').doc(image.docId);
     let res = await albumsRef.get()
     let imageRefs = await res.data().images
-    console.log(imageRefs, 'UNFILTER')
     let newImageArr = imageRefs.filter(img => img.key !== image.key);
     await albumsRef.update({
       images: newImageArr
     })
     setImages(newImageArr)
-    console.log(newImageArr, 'FILTERED')
     setLoading(false);
   }
   useEffect(() => {
@@ -86,13 +83,11 @@ const ImageGrid = ({albumId}) => {
             picked: false,
             discarded: false,
           }
-          console.log(newImg, 'NEW')
           setImages(prevImgs => [...prevImgs, newImg])
         })
         setLoading(false);         
       }
       else {
-        console.log('error')
         setImages([]);
         let url = window.location.href;
         let slug = url.match(/\/([^\/]+)\/?$/)[1];
@@ -120,11 +115,6 @@ const ImageGrid = ({albumId}) => {
    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUploaded])
 
-  useEffect(() => {
-    console.log(images, 'images in album')
-  }, [images])
-
-
   const handlePickImage = async (item) => {
     let filterChecks = images.map(check => check)
     if(filterChecks.includes(item)){
@@ -142,26 +132,18 @@ const ImageGrid = ({albumId}) => {
     setImages(filterChecks)
   }
 
-  useEffect(() => {
-    console.log(pickedImages, 'PICKED')
-  }, [pickedImages])
-
-
-  
   const handleDiscardimage = async (item) => {
     let filterChecks = images.map(check => check)
-    console.log(filterChecks, 'CHEKS')
     if(filterChecks.includes(item)){
       filterChecks = filterChecks.map(obj => {
         if(!obj.discarded && obj.id === item.id) {
           obj.discarded = true
           setDiscardedImages(prevItems => [...prevItems, item])
-          console.log(pickedImages, "added")
+
         }
         else if(obj.discarded && obj.id === item.id ) {
           obj.discarded = false
           setDiscardedImages(discardedImages.filter(obj => !discardedImages.includes(obj)))
-          console.log(discardedImages, "popped")
         }
       })
     }
@@ -174,9 +156,7 @@ const ImageGrid = ({albumId}) => {
   }
 
   const handleShareAlbum = async (album) => {
-
     let url = `${window.location.origin}/review/${album.id}`;
-    console.log(url, "URL");
     updateAlbumSharedUrl(album.id, url);
     setAlbumToShare(album.id);
     setRenderShared(true);

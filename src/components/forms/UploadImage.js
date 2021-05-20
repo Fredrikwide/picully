@@ -88,7 +88,6 @@ const uploadImageToStorage = (e, id) => {
           };
 
           addImageToAlbumsArray(img, id);
-          console.log('IMAGE ADDED', img)
           e.target.value = ''
           setIsSuccess(true);
           setIsUploaded(true)

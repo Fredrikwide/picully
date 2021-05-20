@@ -43,7 +43,6 @@ export const FirebaseProvider = ({ children }) => {
           lastname: doc.data().lastname,
         })
       });
-      console.log("user info", userData)
       setCollectionData([...userData])
       setIsLoading(false)
       return userData
@@ -125,7 +124,6 @@ export const FirebaseProvider = ({ children }) => {
         docId: '',
         id
       }).then(ref => {
-        console.log(ref.id, 'REF ID')
           ref.update({
             id: ref.id,
       })
@@ -171,7 +169,6 @@ export const FirebaseProvider = ({ children }) => {
       snapshot.forEach((doc) => {
         albums.push(doc.data())
       });
-      console.log("album info", albums)
       setAlbumCollection([...albums])
       setIsLoading(false)
       return albums
@@ -183,7 +180,6 @@ export const FirebaseProvider = ({ children }) => {
         snapshot.forEach(doc => {
           const tempAlbums = []
           let tempObj = doc.id
-          console.log("albums")
           tempAlbums.push(doc.data())
           setAlbumCollection(tempAlbums)
           setCurrentAlbum(tempObj)
@@ -245,7 +241,6 @@ export const FirebaseProvider = ({ children }) => {
        db.collection("images").where("albums", "array-contains", id).get().then(querySnapshot => {
         const imageArr = []
         querySnapshot.forEach(doc => {
-          console.log(doc.data(), "DATA")
             imageArr.push({
               title: doc.data().title,
               album: doc.data().album,
@@ -263,10 +258,7 @@ export const FirebaseProvider = ({ children }) => {
         console.log("Error getting documents: ", error);
     });
     },
-    
-     
   }
-
 
   const firebaseContextValue = {
     firebaseFunctions,
@@ -288,8 +280,6 @@ export const FirebaseProvider = ({ children }) => {
     setSharedUrl,
     sharedUrl
   }
-
-
 
   return (
     <FirebaseContext.Provider

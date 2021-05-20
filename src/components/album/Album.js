@@ -30,12 +30,6 @@ const Album = ({current}) => {
   const [editActive, setEditActive] = useState(false)
   const [loading, setLoading] = useState(false);
 
-
-  useEffect(() => {
-    console.log(thisAlbum, 'THIS')
-  }, [thisAlbum])
-
-
   useEffect(() => {
 
   (async () => {

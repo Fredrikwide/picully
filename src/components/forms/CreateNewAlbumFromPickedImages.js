@@ -61,13 +61,11 @@ const CreateAlbumForm = ({uid, pictures}) => {
 
              await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
              setSubmitting(false)
-             console.log('POSTING')
              navigate('/home/albums')
              resetForm({})
              pictures = [];
             }
             else if (currentUser !== null ){
-              console.log("I ELSE RAN")
               await firebaseFunctions.createAlbum(values.title,  values.description, values.ownerId, values.id) // 
               setSubmitting(false)
               navigate('/home/albums')

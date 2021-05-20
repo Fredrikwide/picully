@@ -47,7 +47,6 @@ const SharedAlbum = ({album}) => {
   }
 
   useEffect(() => {
-   console.log("i ran");
     (async () => {
       setImagesInCurrentAlbum("")
       setIsLoading(true)

@@ -6,7 +6,6 @@ import { Box, Image } from '@chakra-ui/react'
 
 
 const AlbumCard = ({id, title, description,thumbNail}) => {
-console.log(thumbNail, "thumbnail")
   return (
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="none" mt="5rem">
         <Image 

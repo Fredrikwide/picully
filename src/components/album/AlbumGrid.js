@@ -8,8 +8,7 @@ const AlbumGrid = () => {
   const {currentUserAlbums, setCurrentAlbum} = useUpdate()
 
   const setAlbumClicked = (album) => {
-    console.log("CLICK", currentUserAlbums);
-    console.log('CURRENT', album);
+
     setCurrentAlbum(album);
   }
 

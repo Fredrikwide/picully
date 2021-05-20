@@ -27,9 +27,6 @@ const App = () => {
     getUrls()
   }, [currentUrl])
 
-  useEffect(() => {
-    console.log(currentAlbum, 'current album')
-  }, [currentAlbum])
 
   return (
     <>

@@ -14,12 +14,13 @@ const SharedImageGrid = (props) => {
   const {id} = useParams();
   const { firebaseFunctions, db } = useFire()
   const { getImagesByAlbumId } = firebaseFunctions;
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const {
       imagesInCurrentAlbum,
       setPickedImages, 
       pickedImages, 
       discardedImages,
+      isUploaded,
       albumToShare,
       setDiscardedImages,
     } = useUpdate()
@@ -31,34 +32,51 @@ const SharedImageGrid = (props) => {
   const checkBoxDiscardRef = useRef(null)
 
   useEffect(() => {
-( async () => {
-    setIsLoading(true)
-    setPickedImages([])
-    setDiscardedImages([])
-    let ref = db.collection('albums').doc(id);
-    let res = await ref.get();
-    let imagesRef = res.data().images
-    let arr = []
-    await imagesRef.map((img, i) => {
-      let newImg = {
-        ...img,
-        docId: img.id,
-        id: i,
-        picked: false,
-        discarded: false,
+    (async () => {
+      if(id !== undefined && id !== null && id !== '') {
+        setLoading(true)
+        setCheckers([]);
+        let ref = db.collection('albums');
+        let res = await ref.doc(id).get();
+        let docRef = await res.data();
+        docRef.images.forEach((img, i)=> {
+          let newImg = {
+            ...img,
+            docId: img.docId,
+            id: i,
+            picked: false,
+            discarded: false,
+          }
+          setCheckers(prevImgs => [...prevImgs, newImg])
+        })
+        setLoading(false);         
       }
-      arr.push(newImg)
-    })
-    setCheckers(arr)
-    setIsLoading(false)
-}
-  )()
-  }, []);
-
+      else {
+        console.log('error')
+        setCheckers([]);
+        let url = window.location.href;
+        let slug = url.match(/\/([^\/]+)\/?$/)[1];
+        setLoading(true)  
+        let ref = db.collection('albums').doc(id);
+        let res = ref.get();
+        let docRef = res.data();
+        await docRef.images.forEach((img, i)=> {
+            let newImg = {
+              ...img,
+              docId: img.docId,
+              id: i,
+              picked: false,
+              discarded: false,
+            }
+            setCheckers(prevImgs => [...prevImgs, newImg])
+          })
+          setLoading(false);
+        }
+    })()
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUploaded])
   const handlePickImage = async (e, item) => {
-    console.log('val', item)
     let filterChecks = checkers.map(check => check)
-    console.log(filterChecks, 'filter')
     if(filterChecks.includes(item)){
       filterChecks.forEach(obj => {
         if(!obj.picked && obj.id === item.id) {
@@ -76,10 +94,8 @@ const SharedImageGrid = (props) => {
 
   const handleDiscardimage = async (e, item) => {
     let filterChecks = checkers.map(check => check)
-    console.log(filterChecks, 'filter')
     if(filterChecks.includes(item)){
       filterChecks.map(obj => {
-        console.log(obj)
         if(!obj.discarded && obj.id === item.id) {
           obj.discarded = true
           setDiscardedImages(prevItems => [...prevItems, item])
@@ -93,10 +109,6 @@ const SharedImageGrid = (props) => {
     setCheckers(filterChecks)
   }
 
-  useEffect(() => {
-    console.log({'picked': pickedImages,'discarded': discardedImages})
-  }, [discardedImages, pickedImages])
-
   const handleNewAlbum = async () => {
 
     let ref = db.collection('albums').doc(id);
@@ -108,7 +120,7 @@ const SharedImageGrid = (props) => {
   return (
     <>
     {
-      !isLoading ?
+      !loading ?
       <>
         <Flex key={uuidv4()} justify="center" w="400px" width="100vw" p="2rem">
         <Button key={uuidv4()}  mr="2rem" colorScheme="teal" onClick={handleNewAlbum}>

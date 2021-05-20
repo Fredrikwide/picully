@@ -21,7 +21,6 @@ useEffect(() => {
       let res = await firebaseFunctions.getUser(currentUser.uid)
       if(res) {
         setUser(res)
-        console.log(user)
       }
     }
     else {
