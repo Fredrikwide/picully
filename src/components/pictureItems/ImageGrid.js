@@ -304,7 +304,7 @@ const ImageGrid = ({albumId}) => {
                 p="5px" 
               />
         
-            <Flex border="3px" justify="space-around" borderColor="red">
+            <Flex border="3px" justify="space-between" borderColor="red">
               <Checkbox
                 ref={checkBoxPickedRef}
                 isDisabled={images[i].discarded}
