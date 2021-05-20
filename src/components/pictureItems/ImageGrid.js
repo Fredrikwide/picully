@@ -257,7 +257,7 @@ const ImageGrid = ({albumId}) => {
       gap={3}
       placeItems="center"
       maxW="100vw"
-      overflowX="hidden"
+      overflow="hidden"
     >
       {
         images !== undefined 
