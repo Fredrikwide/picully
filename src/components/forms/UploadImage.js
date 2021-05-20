@@ -37,6 +37,9 @@ const addImageToAlbumsArray = async (img, id) => {
 }
 
 
+useEffect(() => {
+}, [uploadProgress])
+
 
 const checkIfImageIsInAlbum = async (imagePath, id) => {
 let ref = db.collection("albums").doc(id);
@@ -52,12 +55,14 @@ for (let i = 0; i < res.data().images.length; i++) {
     }
 }
 
-const uploadImageToStorage = (e, id) => {
+const uploadImageToStorage = async (e, id) => {
 
   e.preventDefault();
   const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg", "image/webp"]
-  let image = e.target.files[0]
+  let images = Array.from(e.target.files)
 
+  images.forEach(async image => {
+    
   if (!image || !types.includes(image.type)) {
     setUploadProgress(null);
     setUploadedImage(null);
@@ -144,6 +149,8 @@ const uploadImageToStorage = (e, id) => {
     // let user know we're done
 
   })
+  })
+
 }
 
   useEffect(() => {
@@ -162,7 +169,7 @@ const uploadImageToStorage = (e, id) => {
       <form>
         <Flex justify="center" align="center">
           <InputGroup display="flex" justifyContent="center" alignItems="center" >
-            <Input pt="5px"type="file" onChange={(e) => uploadImageToStorage(e, albumId)} w="400px" textAlign="center" />
+            <Input accept="image/*" multiple pt="5px"type="file" onChange={(e) => uploadImageToStorage(e, albumId)} w="400px" textAlign="center" />
             <InputRightAddon bg="teal.400" color="white" cursor="pointer" _hover={{backgroundColor: "teal.200", color: "white"}}>
                 Submit
             </InputRightAddon>

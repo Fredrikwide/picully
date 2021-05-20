@@ -27,16 +27,16 @@ const handleSignOut = async () => {
       h="80px"
       overflow="hidden"
       justify="space-between"
+      boxShadow="-12px 12px 17px -12px rgba(0,0,0,0.55)"
     >
       <Flex justify="center" align="center">
         <Heading color="teal.300" ml="60px" p="5px" cursor="pointer" _hover={{color: "teal.200"}}>Picully</Heading>
       </Flex>
 
-      <Flex 
+        <Flex
+        
           justify="center" 
           align="center"
-          borderLeft="4px"
-          borderColor="teal.500"
           pl="7rem"
           >
         <UnorderedList
@@ -55,21 +55,11 @@ const handleSignOut = async () => {
          >
           <ListItem  
             p={["4px", "6px", "8px", "16px"]}
-            _hover=
-              {{
-                background: "teal.500",
-                color: "white"
-              }}  
             >
             <Link as={ReactLink} to="/">Home</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
-            _hover=
-              {{
-                background: "teal.500",
-                color: "white"
-              }}
           >
             <Link as={ReactLink} to="/">About</Link>
           </ListItem>
@@ -98,11 +88,6 @@ const handleSignOut = async () => {
           <ListItem  
             p={["4px", "6px", "8px", "16px"]} 
             mr={["2px", "4px", "8px", "16px"]}
-            _hover=
-              {{
-                background: "teal.500",
-                color: "white"
-              }}
             >
             <Link as={ReactLink} to="/">Contact</Link>
           </ListItem>

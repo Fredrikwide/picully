@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 
 const AlbumGrid = () => {
   const {currentUserAlbums, setCurrentAlbum, albumDeleted, setAlbumDeleted} = useUpdate()
-  const {db} = useFire();
+  const {db, storage} = useFire();
   const [loading, setLoading] = useState(false);
 
 
@@ -15,13 +15,34 @@ const AlbumGrid = () => {
     setCurrentAlbum(album);
   }
 
-  const handleDeleteAlbum = async (image) => {
+
+  const handleDeleteAlbum = async (album) => {
     setAlbumDeleted(false);
-    let albumsRef = db.collection('albums').doc(image.docId);
+    let albumsRef = db.collection('albums').doc(album.docId);
+    let resp = await albumsRef.get()
+    let storageRefs = []
+    let imagesrefs = await resp.data().images;
+    console.log(imagesrefs)
+    imagesrefs.forEach(async img => {
+      let ref = storage.ref().child(img.path)
+      storageRefs.push(ref);
+    })
+    storageRefs.forEach(async ref => {
+      console.log(ref, 'ref')
+      await ref.delete()}
+    )
+    console.log('DELETED')
+    await albumsRef.update({
+      images: []
+    })
     await albumsRef.delete()
     setAlbumDeleted(true)
     setLoading(false);
   }
+
+  useEffect(() => {
+ 
+  }, [albumDeleted])
 
   return (
     <>
@@ -91,6 +112,15 @@ const AlbumGrid = () => {
                   textDecor="none"
                 >
                   Description: {album.description}
+                </Text>
+                <Text
+                  isTruncated
+                  as="i" 
+                  fontSize="sm" 
+                  p="5px" 
+                  textDecor="none"
+                >
+                  pictures: {album.images.length && album.images.length }
                 </Text>
               </Flex>
               <Box height="100%" pt="20px">

@@ -57,6 +57,7 @@ const handleGoHome = () => navigate('/home/albums')
       <Spacer />
       <Flex justify="center" align="center">
         <UnorderedList
+          cursor="pointer"
           display="flex" 
           justify="center" 
           align="stretch"
@@ -70,42 +71,23 @@ const handleGoHome = () => navigate('/home/albums')
          >
           <ListItem  
             p={["4px", "6px", "8px", "16px"]}
-            _hover=
-              {{
-                background: "teal.500",
-                color: "white"
-              }}  
             >
             <Link as={ReactLink} to="/explore">Explore</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
-            _hover=
-              {{
-                border: "2px solid teal.500",
-                color: "white"
-              }}
           >
             <Link as={ReactLink} to="home/albums">Albums</Link>
           </ListItem>
           <ListItem
             p={["4px", "6px", "8px", "16px"]}
-            _hover=
-              {{
-                border: "2px solid teal.500",
-                color: "white"
-              }}
           >
             <Link as={ReactLink} to="/home">Home</Link>
           </ListItem>
 
-          <ListItem  
+          <ListItem
+
           m={["4px", "6px", "8px", "16px"]}
-          _hover=
-              {{
-                border: "2px solid teal.500",
-                color: "white"
-              }}
           >            
             <Link as={ReactLink} to={"/"}>Profile</Link> 
           </ListItem>

@@ -69,6 +69,7 @@ const ImageGrid = ({albumId}) => {
     setImages(newImageArr)
     setLoading(false);
   }
+
   useEffect(() => {
     try {
       (async () => {
@@ -174,7 +175,7 @@ const ImageGrid = ({albumId}) => {
   return (
     <>
     {
-      !loading ?
+      !loading  && images.length > 0 ?
       <>
       <Flex justify="flex-end" align="center" width="100%" mt="2rem" mb="1rem">
         <Flex minW="100%">

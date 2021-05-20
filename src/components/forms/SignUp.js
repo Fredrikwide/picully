@@ -57,8 +57,7 @@ const SignUp = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const handleGoBack = () => setSignUpIsClicked(false)
   const [error, setError] = useState(false)
-  return (
-  
+  return ( 
     <Flex 
       justify="center" 
       align="center"
@@ -73,7 +72,6 @@ const SignUp = () => {
       email: '',
       password: '',
       confirmPassword: ''
-
     }}
     validationSchema={SignInSchema}
     onSubmit={async (values, { setSubmitting }) => {
