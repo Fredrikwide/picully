@@ -42,7 +42,7 @@ const SharedImageGrid = (props) => {
         docRef.images.forEach((img, i)=> {
           let newImg = {
             ...img,
-            docId: img.docId,
+            docId: id,
             id: i,
             picked: false,
             discarded: false,
@@ -54,8 +54,6 @@ const SharedImageGrid = (props) => {
       else {
         console.log('error')
         setCheckers([]);
-        let url = window.location.href;
-        let slug = url.match(/\/([^\/]+)\/?$/)[1];
         setLoading(true)  
         let ref = db.collection('albums').doc(id);
         let res = ref.get();
@@ -63,7 +61,7 @@ const SharedImageGrid = (props) => {
         await docRef.images.forEach((img, i)=> {
             let newImg = {
               ...img,
-              docId: img.docId,
+              docId: id,
               id: i,
               picked: false,
               discarded: false,
@@ -140,7 +138,7 @@ const SharedImageGrid = (props) => {
               <ModalCloseButton />
               <ModalBody pb={6}>
                 <Flex justify="center" align="center">
-                  <CreateNewAlbumFromPickedImages uid={uid} pictures={pickedImages}/>
+                  <CreateNewAlbumFromPickedImages docId={id} uid={uid} pictures={pickedImages}/>
                </Flex>
               </ModalBody>
 

@@ -31,7 +31,7 @@ const CreateAlbumSchema = Yup.object().shape({
 
 })
 
-const CreateAlbumForm = ({uid, pictures}) => {
+const CreateAlbumForm = ({docId, uid, pictures}) => {
   const navigate= useNavigate()
   const { currentUser } = useAuth();
   const { firebaseFunctions } = useFire();
@@ -52,25 +52,20 @@ const CreateAlbumForm = ({uid, pictures}) => {
             ownerId: currentUser !== null ? currentUser.uid : uid,
             images: (pictures !== undefined && pictures.length > 0) ? pictures : [],
             slug: '',
+            docId: docId !== undefined ? docId : '',
             id: ''
           }}
           validationSchema={CreateAlbumSchema}
           onSubmit={async (values, { setSubmitting, resetForm }) => {
-          try { 
-            if(pictures !== undefined && pictures.length > 0) {
+            try { 
+              if(pictures !== undefined && pictures.length > 0) {
 
-             await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
-             setSubmitting(false)
-             navigate('/home/albums')
-             resetForm({})
-             pictures = [];
-            }
-            else if (currentUser !== null ){
-              await firebaseFunctions.createAlbum(values.title,  values.description, values.ownerId, values.id) // 
+              await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
               setSubmitting(false)
               navigate('/home/albums')
               resetForm({})
-              }    
+              pictures = [];
+              }   
             } catch (err) {
                 console.log('error', err)
             }
