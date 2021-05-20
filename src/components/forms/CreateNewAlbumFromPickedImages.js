@@ -13,28 +13,29 @@ import { Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from "../../contexts/AuthContext";
 import {  useFire } from '../../contexts/FirebaseContext';
-
+import { v4 as uuidv4} from 'uuid'
 import { useUpdate } from '../../contexts/UpdateContext';
 
 //Yup Validation schema for signing in
 const CreateAlbumSchema = Yup.object().shape({
   //email validation rules
-  name: Yup.string()
+  title: Yup.string()
   .trim()
   .min(2, 'must be minimum och 2 characters')
   .max(140, 'max name length is 140 chars')
   .required('Please enter a valid album name'),
   //pw validation rules
   description: Yup.string()
-  .min(4, 'must be minimum och 2 characters')
+  .min(2, 'must be minimum och 2 characters')
   .required('enter a short description')
 
 })
 
-const CreateAlbumForm = ({pictures}) => {
+const CreateAlbumForm = ({uid, pictures}) => {
   const navigate= useNavigate()
-  const {pickedImages} = useUpdate()
-  const {firebaseFunctions} = useFire()
+  const { currentUser } = useAuth();
+  const { firebaseFunctions } = useFire();
+  let num = uuidv4()
   return (
   <>
     <Flex 
@@ -45,29 +46,33 @@ const CreateAlbumForm = ({pictures}) => {
     pb="10rem"
     >
         <Formik
-        initialValues={{
-          name: '',
-          description: '',
-          images: [],
-          slug: '',
-          id: '',
-        }}
-        validationSchema={CreateAlbumSchema}
-        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          initialValues={{
+            title: '',
+            description: '',
+            ownerId: currentUser !== null ? currentUser.uid : uid,
+            images: (pictures !== undefined && pictures.length > 0) ? pictures : [],
+            slug: '',
+            id: ''
+          }}
+          validationSchema={CreateAlbumSchema}
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
           try { 
-            if(pickedImages !== undefined && pickedImages.length > 0) {
+            if(pictures !== undefined && pictures.length > 0) {
 
-             await firebaseFunctions.createAlbumWithImages(values.name, values.description, values.id, pickedImages)
-                navigate('/home/albums')
-                resetForm({})
+             await firebaseFunctions.createAlbumWithImages(values.title, values.description, values.ownerId, values.id, values.images)
+             setSubmitting(false)
+             console.log('POSTING')
+             navigate('/home/albums')
+             resetForm({})
+             pictures = [];
             }
-            else {
+            else if (currentUser !== null ){
               console.log("I ELSE RAN")
-              await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
+              await firebaseFunctions.createAlbum(values.title,  values.description, values.ownerId, values.id) // 
               setSubmitting(false)
               navigate('/home/albums')
               resetForm({})
-              }      
+              }    
             } catch (err) {
                 console.log('error', err)
             }
@@ -76,23 +81,23 @@ const CreateAlbumForm = ({pictures}) => {
           {(props) => (
             
             <Form >
-              <Field name="name">
+              <Field name="title">
                 {({ field, form }) => (
                   <Box p={["sm", "md", "lg", "xl"]} mt={["sm", "md", "lg", "xl"]}>
-                    <FormControl isInvalid={form.errors.name && form.touched.name} isRequired>
-                      <FormLabel color="teal.500" htmlFor="name" p={["sm", "md", "lg", "xl"]}>name</FormLabel>
+                    <FormControl isInvalid={form.errors.title && form.touched.title} isRequired>
+                      <FormLabel color="teal.500" htmlFor="title" p={["sm", "md", "lg", "xl"]}>title</FormLabel>
                       <Input 
                         {...field}
                         focusBorderColor="teal.500"
-                        value={props.values.name}
-                        id="name"
+                        value={props.values.title}
+                        id="title"
                         color="teal.500"
-                        type="name"
-                        placeholder="name" 
+                        type="title"
+                        placeholder="title" 
                         onChange={props.handleChange} 
                         onBlur={props.handleBlur} 
                       />
-                      <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      <FormErrorMessage>{form.errors.title}</FormErrorMessage>
                     </FormControl>
                   </Box>
                 )}

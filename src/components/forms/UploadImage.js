@@ -8,7 +8,7 @@ import {uploadImageToStorage, prog} from './NewUpload'
 import { useAuth } from '../../contexts/AuthContext'
 
 import { useUpdate } from '../../contexts/UpdateContext'
-
+import {v4 as uuidv4} from 'uuid'
 
 const UploadImage = ({albumId}) => {
   
@@ -78,6 +78,7 @@ const uploadImageToStorage = (e, id) => {
       storageRef.getMetadata().then((metadata) => {
           const img = {
               id,
+              key: uuidv4(),
               title: metadata.name,
               path: metadata.fullPath,
               owner: currentUser.uid,
@@ -113,6 +114,7 @@ const uploadImageToStorage = (e, id) => {
           storageRef.updateMetadata(newMetadata).then(metadata => {
               const img = {
                   id,
+                  key: uuidv4(),
                   title: metadata.name,
                   path: metadata.fullPath,
                   size: metadata.size,
@@ -124,19 +126,6 @@ const uploadImageToStorage = (e, id) => {
               if (id) {    
                 img.albums = []
                 img.albums.push(db.collection('albums').doc(id))
-              }
-
-              try {
-                db.collection('images').add(img).then((docRef) => {
-                  docRef.update({
-                    id: docRef.id,
-                    createdAt: timestamp(),
-                    path: docRef.path,
-                  })
-                  console.log("Document written with ID: ", img);
-                })
-              } catch (error) {
-                console.log('Error', error)
               }
               addImageToAlbumsArray(img, id);
               setUploadProgress(null);

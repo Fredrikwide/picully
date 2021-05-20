@@ -62,7 +62,7 @@ const SharedAlbum = ({album}) => {
       }
 
     })()
-  }, [imageDeleted, isUploaded, currentAlbum])
+  }, [isUploaded, currentAlbum])
 
 
 

@@ -54,7 +54,7 @@ const Album = ({current}) => {
       }
   })()
  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [imageDeleted, isUploaded])
+}, [isUploaded])
 
   const handleEdit = () => {
     setEditActive(true)

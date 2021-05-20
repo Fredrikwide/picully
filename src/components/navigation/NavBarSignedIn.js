@@ -135,7 +135,7 @@ const handleGoHome = () => navigate('/home/albums')
                   mr={2}
                  
                 />
-                <TagLabel pt="10px" pb="10px" pr="12px" pl="5px">{user ? `${user.firstName} ${user.lastName}` : 'error'}</TagLabel>
+                <TagLabel pt="10px" pb="10px" pr="12px" pl="5px">{user ? `${user.firstName} ${user.lastName}` : 'loading...'}</TagLabel>
               </Tag>
             </Box>
         </UnorderedList>

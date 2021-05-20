@@ -1,6 +1,6 @@
 
 import { AddIcon } from '@chakra-ui/icons';
-import { Grid, GridItem, Image, Text, Button, CloseButton, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter } from '@chakra-ui/react'
+import { Grid, GridItem, Image, Text, Button, CloseButton, Checkbox, Flex, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, useDisclosure, ModalFooter, Spinner } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react';
 
 import { useFire } from '../../contexts/FirebaseContext';
@@ -26,7 +26,7 @@ const SharedImageGrid = (props) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [checkers, setCheckers] = useState([])
-
+  const [uid, setUid] = useState('')
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
 
@@ -98,9 +98,12 @@ const SharedImageGrid = (props) => {
   }, [discardedImages, pickedImages])
 
   const handleNewAlbum = async () => {
+
+    let ref = db.collection('albums').doc(id);
+    let res = await ref.get();
+    setUid(res.data().owner_id)
     onOpen()
   }
-  
 
   return (
     <>
@@ -125,7 +128,7 @@ const SharedImageGrid = (props) => {
               <ModalCloseButton />
               <ModalBody pb={6}>
                 <Flex justify="center" align="center">
-                  <CreateNewAlbumFromPickedImages pictures={pickedImages}/>
+                  <CreateNewAlbumFromPickedImages uid={uid} pictures={pickedImages}/>
                </Flex>
               </ModalBody>
 
@@ -214,8 +217,23 @@ const SharedImageGrid = (props) => {
       </Grid>
 
       </>
-      :
-      <h1>LOADING</h1>
+       :
+       <>
+         <Flex
+           height="100vh"
+           justify="center" 
+           align="center"
+         >
+         <Spinner   
+           thickness="6px"
+           speed="0.65s"
+           emptyColor="gray.200"
+           color="teal.500"
+           size="xl"  
+           />
+           Loading
+         </Flex>
+       </>
       }
     </>
   )

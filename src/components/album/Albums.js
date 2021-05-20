@@ -18,13 +18,21 @@ const Albums = () => {
 
 	return (
 		<>
-			<Flex justify="center" align="center" w="100%" mt="2rem" direction="column">
-        <Heading pt="1rem" >
-          {currentUserAlbums.length ? "Your Albums" : "Create new albums"}
+			<Flex justify="center" align="center" w="100%" mt="2rem" direction="column" mb="4rem">
+        <Heading pt="1rem" pb="1rem"  >
+          {currentUserAlbums.length > 0 ? "Your Albums" : "Create new albums"}
         </Heading>
         <>
-          <Button mr="2rem" w="80px" h="30px" colorscheme="teal" onClick={onOpen}>
-           +
+          <Button 
+          backgroundColor="teal.400" 
+          color="white" 
+          onClick={onOpen} 
+          border="2px" 
+          borderColor="teal.500" 
+          boxShadow="0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0)"
+          _hover={{"backgroundColor": "teal.300", "borderColor": "teal.200", "textColor": "#eee"}}
+          >
+           new Album
           </Button>
           <Modal
             closeOnOverlayClick={false}
@@ -52,7 +60,7 @@ const Albums = () => {
       </Flex>
 
 			{
-				isLoading && currentUserAlbums.length 
+				isLoading && currentUserAlbums.length > 0
 					? (
           <Flex justify="center" align="center" mt="1rem" key={214124}>
             <Spinner   
@@ -62,7 +70,7 @@ const Albums = () => {
             color="teal.500"
             size="xl"  />
           </Flex>)
-					: currentUserAlbums.length && (<AlbumGrid albums={currentUserAlbums} images={images} />)
+					: currentUserAlbums.length > 0 && (<AlbumGrid albums={currentUserAlbums} images={images} />)
 			}
 
 		</>

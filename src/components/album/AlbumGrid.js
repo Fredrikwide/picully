@@ -1,4 +1,4 @@
-import {Flex, Link, Grid, GridItem, Text, Image } from '@chakra-ui/react'
+import {Flex, Link, Box, Grid, GridItem, Text, Image } from '@chakra-ui/react'
 import tempImage from '../../images/dog.jpg'
 import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
@@ -18,64 +18,69 @@ const AlbumGrid = () => {
       {
         (currentUserAlbums !== undefined && currentUserAlbums.length > 0 ) &&
       
-      <Grid 
+      <Grid
+        
         pr="10px" 
-        pl="10px" 
-        pb="10px" 
-        templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
-        templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(2, 1fr)",]} 
-        gap={3} h="600px" 
+        pl="20px" 
+        pb="10px"
+        templateColumns={["repeat(1, minmax(0, 1fr)", "repeat(2, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
+        templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(1, minmax(0, 1fr))","repeat(1, minmax(0, 1fr))",]} 
+        gap={3}
+        placeItems="center"
       >
       {
 
         currentUserAlbums.map((album, index) => (
-          <Link 
+          <Link
           as={ReactLink} 
           to={`/home/albums/${album.slug}`} 
           key={index}
           onClick={() => setAlbumClicked(album)}
           textDecoration="none" 
-          _hover={{backgroundColor: "lightgrey"}}
+          _hover={{backgroundColor: "lightgrey"}
+          
+          }
           > 
-            <GridItem 
-            p="2rem" 
-            colSpan={1} 
-            overflow="hidden" >
-              <Flex 
-              justify="center" 
-              align="center" 
-              direction="column"
-              >
-              <Text
-              isTruncated
-              as="i" 
-              fontSize="sm" 
-              textAlign="center" 
-              p="5px" mt="1rem" 
-              textDecor="none"
-              >
-                name: {album.title}
-              </Text>
-              <Text
-               isTruncated
-              as="i" 
-              fontSize="sm" 
-              textAlign="center" 
-              p="5px" 
-              mt="1rem" 
-              textDecor="none"
-              >
-                description: {album.description}
-              </Text>
-              <Image 
-                src={tempImage} 
-                alt={album.name} 
-                h="400px" 
-                w="300px" 
-                objectFit="contain"
-                />
+            <GridItem
+              p="1rem"
+              as={Flex}
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              minW="100%"
+              minH="100%"
+              boxShadow="0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0)"
+              overflow="hidden" 
+            >
+            <Flex direction="column" w="100%">
+            <Flex direction="column">
+                <Text
+                isTruncated
+                as="i"
+                fontSize="sm"
+                p="5px"
+                textDecor="none"
+                >
+                  Title: {album.title}
+                </Text>
+                <Text
+                  isTruncated
+                  as="i" 
+                  fontSize="sm" 
+                  p="5px" 
+                  textDecor="none"
+                >
+                  Description: {album.description}
+                </Text>
               </Flex>
-            </GridItem>
+              <Box height="100%" pt="20px">
+                <Image
+                  src={album.images.length > 0 ? album.images[0].url : tempImage} 
+                  alt={album.title}
+                  />
+              </Box>
+              </Flex>
+            </GridItem>        
           </Link>
         )) 
          }

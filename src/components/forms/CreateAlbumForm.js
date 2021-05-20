@@ -62,7 +62,7 @@ const CreateAlbumForm = (pickedImages) => {
         onSubmit={async (values, { setSubmitting }) => {
           try { 
             if(!pickedImages.length || pickedImages === undefined) {
-              await firebaseFunctions.createAlbum(values.name, values.description, values.owner, values.id) // 
+              await firebaseFunctions.createAlbum(values.title, values.description, values.owner, values.id) // 
               setSubmitting(false)
               navigate('/home/albums')
             }

@@ -61,9 +61,8 @@ export const FirebaseProvider = ({ children }) => {
       }
       user.firstName = doc.data().firstName
       user.lastName = doc.data().lastName
-      user.id = doc.data().id
-      setUserData({...user})
-      console.log(user)
+      user.id = currentUser !== null ? currentUser.uid : ''
+      setUserData(user)
       setIsLoading(false)
       return user
     }, err => {
@@ -78,27 +77,29 @@ export const FirebaseProvider = ({ children }) => {
     }).then(docRef => {
       const dataRef = db.collection("users").doc(docRef.id);
       return dataRef.update({
-        id: dataRef.id
+        id: currentUser !== null ? currentUser.uid : ''
      })
     }),
     //create album
-    createAlbum: async (name, desc, id) => {
+    createAlbum: async (title, desc, ownerId, id) => {
       setIsLoading(true)
       setCreated(false)
       const num = uuidv4()
        await db.collection("albums").add({
-        title: name,
+        title,
         description: desc,
-        owner_id: id,
+        owner_id: ownerId,
         images: [],
         sharedUrl: "",
-        slug: name.replace(/\s+/g, '-').toLowerCase() + `-${num}`,
+        slug: title.replace(/\s+/g, '-').toLowerCase().trim() + `-${num}`,
         createdAt: timestamp(),
+        key: num,
+        docId: '',
         id
-        
       }).then(ref => {
         ref.update({
-          id: ref.id
+          id: ref.id,
+          key: uuidv4()
       }).catch(
        err => console.error("error", err)   
       )
@@ -108,59 +109,32 @@ export const FirebaseProvider = ({ children }) => {
       })    
     }
   ,
-
-    createAlbumWithImages: async (title, desc, id, images) => {
+    createAlbumWithImages: async (title, desc, ownerId, id, images) => {
       const num = uuidv4()
       setIsLoading(true)
       setCreated(false)
-      let owner = null
-      if(currentUser.uid === undefined || currentUser.uid === null || !currentUser.uid){
-        owner= null
-      }
-      else {
-        owner = currentUser.uid
-      }
       await db.collection("albums").add({
         title,
         description: desc,
-        owner_id: owner,
-        images: [],
+        owner_id: ownerId,
+        images,
         sharedUrl: "",
-        slug: title.replace(/\s+/g, '-').toLowerCase()+ `-${num}`,
+        slug: title.replace(/\s+/g, '-').toLowerCase().trim()+ `-${num}`,
         createdAt: timestamp(),
+        key: num,
+        docId: '',
         id
-        
-      }).then(ref => {   
+      }).then(ref => {
+        console.log(ref.id, 'REF ID')
           ref.update({
-            id: ref.id        
-      }).then(async () => {
-        if(images.length > 0){
-          await images.forEach(img => {
-            db.collection("images").doc(img.id).update({
-              albums: firebase.firestore.FieldValue.arrayUnion
-              (
-                db.collection("albums").doc(ref.id)
-              )
-            })
-          })  
-          await db.collection("albums").doc(id).update({
-              images: firebase.firestore.FieldValue.arrayUnion
-              (
-                images
-              )
-          })
-        }
-      }).catch(
-        err => console.error("error", err)   
-       )
-
+            id: ref.id,
+      })
+      console.log('album created with images', images)
       setIsLoading(false)
       setCreated(true)
       
       })    
     }
-    
-    
     ,
     updateAlbumName: async (id, newName) => {
       let ref = db.collection("albums").doc(id)
@@ -176,7 +150,8 @@ export const FirebaseProvider = ({ children }) => {
         
       ).catch(err => console.log("error", err))
  
-    },
+    }
+    ,
     updateAlbumSharedUrl: async (id, url) => {
       let ref = db.collection("albums").doc(id)
       setIsLoading(true)
@@ -186,7 +161,8 @@ export const FirebaseProvider = ({ children }) => {
         setIsLoading(false),
         
       ).catch(err => console.log("error", err))
-    },
+    }
+    ,
     //get albums
     getUserAlbums: async (id) => await db.collection('albums').where("owner_id", "==", id).get().then((snapshot) => {
       setIsLoading(true)
@@ -261,33 +237,6 @@ export const FirebaseProvider = ({ children }) => {
       setAlbums(albumArr)
       setIsLoading(false)
       return albumArr
-    }, err => {
-      console.log(err)
-    })
-    ,
-    //get images from collection
-    getImages: async (id) => await db.collection('images').get().then((snapshot) => {
-      setIsLoading(true)
-      const imageArr = []
-      const userImgs = []
-      snapshot.forEach((doc) => {
-        imageArr.push({
-          title: doc.data().title,
-          path: doc.data().path,
-          size: doc.data().size,
-          ownderId: doc.data().owner_id,
-          url: doc.data().url
-        })
-      })
-      imageArr.forEach(item => {
-        if(item.ownerId === currentUser.uid) {
-          console.log("item has owner", item)
-          userImgs.push(item)
-        }
-      })
-      setImages([...imageArr])
-      setIsLoading(false)
-      return imageArr
     }, err => {
       console.log(err)
     })

@@ -54,16 +54,19 @@ const ImageGrid = ({albumId}) => {
   const [loading, setLoading] = useState(false)
   const [id, setId] = useState(albumId !== undefined ? albumId : undefined );
 
-	const handleDeleteImage = async (item) => {
-    setImageDeleted(false);
+	const handleDeleteImage = async (image) => {
     setLoading(true);
-    console.log(item, 'DELETE THIS')
-    let albumsRef = db.collection('albums').doc(albumId);
-    await db.collection('images').doc(item.docId).delete();
+    console.log(image, 'DELETE THIS')
+    let albumsRef = db.collection('albums').doc(image.docId);
+    let res = await albumsRef.get()
+    let imageRefs = await res.data().images
+    console.log(imageRefs, 'UNFILTER')
+    let newImageArr = imageRefs.filter(img => img.key !== image.key);
     await albumsRef.update({
-        images: firebase.firestore.FieldValue.arrayRemove(item)
-    });
-    setImageDeleted(true);
+      images: newImageArr
+    })
+    setImages(newImageArr)
+    console.log(newImageArr, 'FILTERED')
     setLoading(false);
   }
   useEffect(() => {
@@ -75,8 +78,16 @@ const ImageGrid = ({albumId}) => {
         let res = await ref.doc(albumId).get();
         let docRef = await res.data();
         setCurrentAlbum(docRef)
-        docRef.images.forEach(img=> {
-            setImages(prevImgs => [...prevImgs, img])
+        docRef.images.forEach((img, i)=> {
+          let newImg = {
+            ...img,
+            docId: img.id,
+            id: i,
+            picked: false,
+            discarded: false,
+          }
+          console.log(newImg, 'NEW')
+          setImages(prevImgs => [...prevImgs, newImg])
         })
         setLoading(false);         
       }
@@ -92,29 +103,32 @@ const ImageGrid = ({albumId}) => {
           let docRef = doc.data();
           setCurrentAlbum(docRef)
           setId(docRef.id)
-          docRef.images.forEach(img=> {
-            setImages(prevImgs => [...prevImgs, img])
+          await docRef.images.forEach((img, i)=> {
+            let newImg = {
+              ...img,
+              docId: img,id,
+              id: i,
+              picked: false,
+              discarded: false,
+            }
+            setImages(prevImgs => [...prevImgs, newImg])
           })
           setLoading(false);
         }
       }
     })()
    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageDeleted, isUploaded])
+  }, [isUploaded])
 
   useEffect(() => {
-    console.log(images)
+    console.log(images, 'images in album')
   }, [images])
 
 
   const handlePickImage = async (item) => {
-    console.log(item, 'ITEM')
     let filterChecks = images.map(check => check)
-    console.log(filterChecks)
     if(filterChecks.includes(item)){
-      console.log('INCLUDES')
       filterChecks.forEach(obj => {
-        console.log(obj, 'obj')
         if(!obj.picked && obj.id === item.id) {
           obj.picked = true
           setPickedImages(prevItems => [...prevItems, obj])
@@ -125,18 +139,18 @@ const ImageGrid = ({albumId}) => {
         }
       })
     }
-    setPickedImages(filterChecks)
+    setImages(filterChecks)
   }
 
   useEffect(() => {
-    console.log(pickedImages)
+    console.log(pickedImages, 'PICKED')
   }, [pickedImages])
 
 
   
   const handleDiscardimage = async (item) => {
     let filterChecks = images.map(check => check)
-    console.log(filterChecks)
+    console.log(filterChecks, 'CHEKS')
     if(filterChecks.includes(item)){
       filterChecks = filterChecks.map(obj => {
         if(!obj.discarded && obj.id === item.id) {
@@ -151,7 +165,7 @@ const ImageGrid = ({albumId}) => {
         }
       })
     }
-    setPickedImages(filterChecks)
+    setImages(filterChecks)
   }
 
 
@@ -211,7 +225,6 @@ const ImageGrid = ({albumId}) => {
                   </PopoverContent>
                 </Portal>
               </Popover>
-
             </Box>
           </Flex>
           <>
@@ -246,27 +259,24 @@ const ImageGrid = ({albumId}) => {
     </Flex>
     <Grid 
       key={uuidv4()}
-      mr="1rem"
-      ml="1rem" 
-      templateColumns={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(5, 1fr)",]} 
-      templateRows={["repeat(1, 1fr)", "repeat(2, 1fr)","repeat(3, 1fr)","repeat(3, 1fr)",]} 
-      mt="2rem" 
-      gap={8}
-      overflowX="hidden"
-      h="100%"
-      w="100%"
+      pr="10px" 
+      pl="20px" 
+      pb="10px"
+      templateColumns={["repeat(1, minmax(0, 1fr)", "repeat(2, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
+      templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
+      gap={3}
+      placeItems="center"
     >
       {
         images !== undefined 
         && images.length > 0 && !loading
         && images.map((item, i) => (
-         
           <>
            {item !== undefined &&
-            <GridItem 
+            <GridItem
               key={i}
               colSpan={1} 
-              rowSpan={2} 
+              rowSpan={1} 
               overflow="hidden"
             >
             <Flex 
@@ -280,7 +290,7 @@ const ImageGrid = ({albumId}) => {
               key={i}
               id={item.id}  
               size="sm" 
-              onClick={() => handleDeleteImage(item)} 
+              onClick={(e) => handleDeleteImage(item)} 
             /> 
             }
             <Text
@@ -292,16 +302,16 @@ const ImageGrid = ({albumId}) => {
               p="5px">{item.title}
             </Text>
             </Flex>
-            <Box>
+           
               <Image
                 src={item.url } 
                 alt={item.title} 
-                h="100%" 
-                w="100%" 
+                maxH="100%"
+                maxW="100%"
                 objectFit="contain"
                 p="5px" 
               />
-            </Box>
+        
             <Flex border="3px" justify="space-between" borderColor="red">
               <Checkbox
                 ref={checkBoxPickedRef}
@@ -309,9 +319,9 @@ const ImageGrid = ({albumId}) => {
                 isChecked={images[i].picked}
                 ml="5px"
                 size="md"
-                id={item.index !== undefined && item.index}
+                id={item.id}
                 colorScheme="green"
-                onChange={(e) => handlePickImage(e, item)}
+                onChange={() => handlePickImage(item)}
               >
                 pick
               </Checkbox>
@@ -321,9 +331,9 @@ const ImageGrid = ({albumId}) => {
                 isChecked={images[i].discarded}
                 ml="5px"
                 size="md"
-                id={item.index !== undefined && item.index}
+                id={item.id}
                 colorScheme="red"
-                onChange={(e) => handlePickImage(e, item)}
+                onChange={() => handleDiscardimage(item)}
               >
                 Discard
               </Checkbox> 
