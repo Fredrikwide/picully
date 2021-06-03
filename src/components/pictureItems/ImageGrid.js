@@ -51,7 +51,7 @@ const ImageGrid = ({albumId}) => {
   const navigate = useNavigate()
   const checkBoxPickedRef = useRef(null)
   const checkBoxDiscardRef = useRef(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [id, setId] = useState(albumId !== undefined ? albumId : undefined );
 
 	const handleDeleteImage = async (image) => {
@@ -66,15 +66,14 @@ const ImageGrid = ({albumId}) => {
     await albumsRef.update({
       images: newImageArr
     })
-    setImages(newImageArr)
     setLoading(false);
+    setImages(newImageArr)
   }
 
   useEffect(() => {
     try {
       (async () => {
         if(albumId !== undefined && albumId !== null && albumId !== '') {
-          setLoading(true)
           setImages([]);
           let ref = db.collection('albums');
           let res = await ref.doc(albumId).get();
@@ -253,7 +252,7 @@ const ImageGrid = ({albumId}) => {
       pl="20px" 
       pb="10px"
       templateColumns={["repeat(1, minmax(0, 1fr)", "repeat(2, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
-      templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(3, minmax(0, 1fr))","repeat(5, minmax(0, 1fr))",]} 
+      templateRows={["repeat(1, minmax(0, 1fr))", "repeat(1, minmax(0, 1fr))","repeat(1, minmax(0, 1fr))","repeat(1, minmax(0, 1fr))",]} 
       gap={3}
       placeItems="center"
       maxW="99vw"
@@ -262,31 +261,34 @@ const ImageGrid = ({albumId}) => {
       {
         images !== undefined 
         && images.length > 0 && !loading
-        && images.map((item, i) => (
+        && images.map((item, i, keys = uuidv4()) => (
           <>
            {item !== undefined &&
             <GridItem
-              key={i}
+              placeItems="center"
+              _first={{'marginLeft': '12px'}}
+              _last={{'marginRight': '12px'}}
+              key={keys}
               colSpan={1} 
               rowSpan={1} 
               overflow="hidden"
             >
             <Flex 
-              key={i}
+              key={keys}
               justify="space-between" 
               align="center" 
               flexBasis="0" 
             >
             { currentAlbum !== albumToShare &&
             <CloseButton
-              key={i}
+              key={keys}
               id={item.id}  
               size="sm" 
               onClick={(e) => handleDeleteImage(item)} 
             /> 
             }
             <Text
-
+              key={keys}
               isTruncated
               w="100%"
               fontSize="sm" 
@@ -294,18 +296,19 @@ const ImageGrid = ({albumId}) => {
               p="5px">{item.title}
             </Text>
             </Flex>
-           
+            {   
               <Image
-                src={item.url } 
+                src={item.url} 
                 alt={item.title} 
                 maxH="90%"
                 maxW="90%"
                 objectFit="contain"
                 p="5px" 
               />
-        
-            <Flex border="3px" justify="space-between" borderColor="red">
+            }
+            <Flex key={keys} border="3px" justify="space-between" borderColor="red">
               <Checkbox
+                key={keys}
                 ref={checkBoxPickedRef}
                 isDisabled={images[i].discarded}
                 isChecked={images[i].picked}
@@ -315,9 +318,10 @@ const ImageGrid = ({albumId}) => {
                 colorScheme="green"
                 onChange={() => handlePickImage(item)}
               >
-                pick
+                keep
               </Checkbox>
               <Checkbox
+                key={keys}
                 ref={checkBoxDiscardRef}
                 isDisabled={images[i].picked}
                 isChecked={images[i].discarded}
@@ -327,7 +331,7 @@ const ImageGrid = ({albumId}) => {
                 colorScheme="red"
                 onChange={() => handleDiscardimage(item)}
               >
-                Discard
+                Throw
               </Checkbox> 
             </Flex>
           </GridItem>
@@ -340,7 +344,7 @@ const ImageGrid = ({albumId}) => {
     : loading &&
       <>
         <Flex
-          height="100vh"
+          position="absolute"
           justify="center" 
           align="center"
         >

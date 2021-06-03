@@ -1,6 +1,6 @@
 
 /* eslint-disable no-unused-vars */
-import { Box, Flex, Input, Button, InputGroup, InputRightElement, InputRightAddon, Progress, Heading, Image } from '@chakra-ui/react'
+import { Box, Progress, Flex, Input, Button, InputGroup, InputRightElement, InputRightAddon, Heading, Image } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useFire } from '../../contexts/FirebaseContext'
 import firebase from 'firebase'
@@ -14,9 +14,9 @@ const UploadImage = ({albumId}) => {
   
   const [imageToUpload, setImageToUpload] = useState()
   const [isSubmitting, setIsSubmitting] = useState(false)
-	const [uploadProgress, setUploadProgress] = useState(null);
+	const [uploadProgress, setUploadProgress] = useState([]);
   const [uploadedImage, setUploadedImage] = useState(null);
-  
+  const [currentUpload, setCurrentUpload] = useState(null)
 	const [error, setError] = useState(null);
   const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth()
@@ -37,9 +37,6 @@ const addImageToAlbumsArray = async (img, id) => {
 }
 
 
-useEffect(() => {
-}, [uploadProgress])
-
 
 const checkIfImageIsInAlbum = async (imagePath, id) => {
 let ref = db.collection("albums").doc(id);
@@ -50,23 +47,26 @@ await ref.update({
 for (let i = 0; i < res.data().images.length; i++) {
         if(res.data().images[i].path === imagePath) {
             console.error('This image is already in the album');
-            return
+            return false
         }
     }
 }
 
-const uploadImageToStorage = async (e, id) => {
+useEffect(() => {
+  console.log(currentUpload)
+}, [currentUpload])
 
+const uploadImageToStorage = async (e, id) => {
   e.preventDefault();
   const types = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/svg", "image/webp"]
   let images = Array.from(e.target.files)
 
-  images.forEach(async image => {
+  images.forEach(async (image, index) => {
     
   if (!image || !types.includes(image.type)) {
-    setUploadProgress(null);
     setUploadedImage(null);
     setIsUploaded(false)
+    setCurrentUpload(null)
     setError(null);
     setIsSuccess(false);
     return;
@@ -75,42 +75,52 @@ const uploadImageToStorage = async (e, id) => {
   setError(null);
   setIsSuccess(false);
 
+  image.uploadIndex = uuidv4();
 
-  let storageRef = storage.ref(`images/${currentUser.uid}/${albumId}/${image.name}`)
 
-  checkIfImageIsInAlbum(`images/${currentUser.uid}/${albumId}/${image.name}`, id)
+  let storageRef = storage.ref(`images/${currentUser.uid}/${albumId}/${image.uploadIndex}`)
 
-  // Check if the ref already exists
-  storageRef.getMetadata()
-  .then(() => {
-      // If the ref already exists:
-      storageRef.getMetadata().then((metadata) => {
-          const img = {
-              id,
-              key: uuidv4(),
-              title: metadata.name,
-              path: metadata.fullPath,
-              owner: currentUser.uid,
-              size: metadata.size,
-              type: metadata.type,
-              url: metadata.customMetadata.url,
-          };
-
-          addImageToAlbumsArray(img, id);
-          e.target.value = ''
-          setIsSuccess(true);
-          setIsUploaded(true)
-      })
-  })
-  .catch(() => {
-      // If the ref does not exist:
+  if(!checkIfImageIsInAlbum(`images/${currentUser.uid}/${albumId}/${image.uploadIndex}`, id)){
+    storageRef.getMetadata()
+    .then(() => {
+        // If the ref already exists:
+        storageRef.getMetadata().then((metadata) => {
+            const img = {
+                id,
+                key: uuidv4(),
+                title: metadata.name,
+                path: metadata.fullPath,
+                owner: currentUser.uid,
+                size: metadata.size,
+                type: metadata.type,
+                url: metadata.customMetadata.url,
+            };
+  
+            addImageToAlbumsArray(img, id);
+            e.target.value = ''
+            setIsSuccess(true);
+            setIsUploaded(true)
+            setUploadProgress([])
+        })
+    })
+    return
+  }
+  (async () => {
       const uploadTask = storageRef.put(image);
 
-     uploadTask.on('state_changed', taskSnapshot => {
-        setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
-      });
 
-      
+      uploadTask.on('state_changed', taskSnapshot => {
+       let percentage = (Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100))
+       setUploadProgress([
+         {
+          percentage, 
+          id: index, 
+          file: image,
+          total: taskSnapshot.totalBytes, 
+          transfered: taskSnapshot.bytesTransferred
+        }
+        ])
+      })
       uploadTask.then(async() => {
           const url = await storageRef.getDownloadURL()
           const newMetadata = {
@@ -136,9 +146,7 @@ const uploadImageToStorage = async (e, id) => {
                 img.albums.push(db.collection('albums').doc(id))
               }
               addImageToAlbumsArray(img, id);
-              setUploadProgress(null);
               setUploadedImage(img);
-              setIsSuccess(true);
               e.target.value = '';
               
           })
@@ -147,10 +155,11 @@ const uploadImageToStorage = async (e, id) => {
           })
       })
     // let user know we're done
-
+    e.target.value = '';
+  })()
   })
-  })
-
+  setUploadProgress([]);
+  setIsSuccess(true);
 }
 
   useEffect(() => {
@@ -176,7 +185,14 @@ const uploadImageToStorage = async (e, id) => {
           </InputGroup> 
         </Flex>
       </form>
-      {uploadProgress !== null && <Progress mt="1rem" mb="1rem" colorScheme="teal" size="md" value={uploadProgress}/>}
+     { uploadProgress.length > 0 && 
+      <Flex direction="column">
+        {  
+          uploadProgress.length > 0 && uploadProgress.percentage !== undefined && uploadProgress.map(({percentage}, index) => {
+            <Progress key={index} mt="1rem" mb="1rem" colorScheme="teal" size="md" value={percentage}/>
+          })
+        }
+      </Flex>}
     </>
   )
 }

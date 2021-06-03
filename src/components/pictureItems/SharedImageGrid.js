@@ -15,6 +15,7 @@ const SharedImageGrid = (props) => {
   const { firebaseFunctions, db } = useFire()
   const { getImagesByAlbumId } = firebaseFunctions;
   const [loading, setLoading] = useState(false);
+  const [allowCreateNewAlbum, setAllowCreateNewAlbum] = useState(null);
   const {
       imagesInCurrentAlbum,
       setPickedImages, 
@@ -107,8 +108,18 @@ const SharedImageGrid = (props) => {
     setCheckers(filterChecks)
   }
 
-  const handleNewAlbum = async () => {
+  useEffect(() => {
+    let totalLength = pickedImages.length + discardedImages.length;
+    if(totalLength === checkers.length){
+      setAllowCreateNewAlbum(true);
+    }
+    else {
+      setAllowCreateNewAlbum(false);
+    }
+    
+  }, [discardedImages, pickedImages, checkers])
 
+  const handleNewAlbum = async () => {
     let ref = db.collection('albums').doc(id);
     let res = await ref.get();
     setUid(res.data().owner_id)
@@ -121,9 +132,18 @@ const SharedImageGrid = (props) => {
       !loading ?
       <>
         <Flex key={uuidv4()} justify="center" w="400px" width="100vw" p="2rem">
-        <Button key={uuidv4()}  mr="2rem" colorScheme="teal" onClick={handleNewAlbum}>
-          Add images to new album
-        </Button>
+        {
+          allowCreateNewAlbum !== undefined && allowCreateNewAlbum !== null && allowCreateNewAlbum === true ? (
+          <Button key={uuidv4()}  mr="2rem" colorScheme="teal" onClick={handleNewAlbum}>
+              Add images to new album
+          </Button>
+          )
+          : (
+          <Button disabled="true">
+            you must choose to pick or discard every image in the album
+          </Button>
+          )
+        }
           <>
             <Modal
               key={uuidv4()}

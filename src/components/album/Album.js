@@ -31,22 +31,22 @@ const Album = ({current}) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-
-  (async () => {
+    (async () => {
       setLoading(true)
-      setImagesInCurrentAlbum([]);
-      let ref = db.collection('albums');
-      let res = await ref.where('slug', '==', slug).get();
-      for(const doc of res.docs){
-        let docRef = doc.data();
-        setCurrentAlbum(docRef)
-        setId(docRef.id)
-        docRef.images.forEach(img=> {
-          setImagesInCurrentAlbum(prevImgs => [...prevImgs, img])
-        })
-        setLoading(false);
-      }
-  })()
+        setImagesInCurrentAlbum([]);
+        let ref = db.collection('albums');
+        let res = await ref.where('slug', '==', slug).get();
+        for(const doc of res.docs){
+          let docRef = doc.data();
+          setCurrentAlbum(docRef)
+          setId(docRef.id)
+          docRef.images.forEach(img=> {
+            setImagesInCurrentAlbum(prevImgs => [...prevImgs, img])
+          })
+          setLoading(false);
+        }
+    })()
+  setLoading(false);
  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isUploaded])
 
@@ -70,12 +70,12 @@ const Album = ({current}) => {
 	return (
 		<>
 
-     { currentAlbum !== undefined && !isLoading ?
+     { currentAlbum !== undefined && !loading ?
 
       <Flex 
         direction="column" 
         mt="3rem">
-        { currentAlbum !== undefined && !isLoading &&
+        { currentAlbum !== undefined && !loading &&
         <UploadImage
           albumId={id !== null ? id : false} 
         /> }
@@ -149,8 +149,7 @@ const Album = ({current}) => {
           (imagesInCurrentAlbum !== undefined && imagesInCurrentAlbum.length > 0 && currentAlbum
           ? 
           <ImageGrid albumId={currentAlbum.id} pictures={imagesInCurrentAlbum}  />
-          :
-
+          : !imagesInCurrentAlbum.length > 0 && !isLoading &&
           <Flex justify="center" align="center">
             <Text as="i" mt="2rem">here be dragons</Text>
           </Flex>)
@@ -160,7 +159,6 @@ const Album = ({current}) => {
        : loading &&
        <>
          <Flex
-           height="100vh"
            justify="center" 
            align="center"
          >

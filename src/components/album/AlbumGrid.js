@@ -1,10 +1,10 @@
-import {Flex, Link, Box, Grid, GridItem, Text, Image, CloseButton } from '@chakra-ui/react'
+import {Flex, Link, Box, Grid, GridItem, Text, Image, CloseButton, Spinner } from '@chakra-ui/react'
 import tempImage from '../../images/dog.jpg'
 import {Link as ReactLink} from 'react-router-dom'
 import { useUpdate } from '../../contexts/UpdateContext'
 import { useFire } from '../../contexts/FirebaseContext'
 import { useEffect, useState } from 'react'
-
+import { v4 as uuidv4 } from 'uuid'
 const AlbumGrid = () => {
   const {currentUserAlbums, setCurrentAlbum, albumDeleted, setAlbumDeleted} = useUpdate()
   const {db, storage} = useFire();
@@ -17,21 +17,20 @@ const AlbumGrid = () => {
 
 
   const handleDeleteAlbum = async (album) => {
+    setLoading(true)
     setAlbumDeleted(false);
     let albumsRef = db.collection('albums').doc(album.docId);
     let resp = await albumsRef.get()
     let storageRefs = []
     let imagesrefs = await resp.data().images;
-    console.log(imagesrefs)
+
     imagesrefs.forEach(async img => {
       let ref = storage.ref().child(img.path)
       storageRefs.push(ref);
     })
     storageRefs.forEach(async ref => {
-      console.log(ref, 'ref')
       await ref.delete()}
     )
-    console.log('DELETED')
     await albumsRef.update({
       images: []
     })
@@ -41,7 +40,7 @@ const AlbumGrid = () => {
   }
 
   useEffect(() => {
- 
+    
   }, [albumDeleted])
 
   return (
@@ -61,12 +60,12 @@ const AlbumGrid = () => {
       {
 
       currentUserAlbums.map((album, index) => (
-        <Flex key={index} direction="column" position="relative">
+        <Flex key={uuidv4()} direction="column" position="relative">
           <CloseButton
           position="absolute"
           top="10px"
           right="10px"
-          key={index}
+          key={uuidv4()}
           id={album.docId}  
           size="sm" 
           onClick={(e) => handleDeleteAlbum(album)} 
@@ -74,7 +73,7 @@ const AlbumGrid = () => {
           <Link
           as={ReactLink} 
           to={`/home/albums/${album.slug}`} 
-          key={index}
+          key={uuidv4()}
           onClick={() => setAlbumClicked(album)}
           textDecoration="none" 
           _hover={{backgroundColor: "lightgrey"}
@@ -82,6 +81,7 @@ const AlbumGrid = () => {
           }
           > 
             <GridItem
+              key={uuidv4()}
               p="1rem"
               as={Flex}
               flexDirection="column"
@@ -92,10 +92,11 @@ const AlbumGrid = () => {
               boxShadow="0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0)"
               overflow="hidden" 
             >
-            <Flex direction="column" w="100%">
+            <Flex direction="column" w="100%" key={uuidv4()}>
 
-            <Flex direction="column">
+            <Flex direction="column" key={uuidv4()}>
                 <Text
+                key={uuidv4()}
                 isTruncated
                 as="i"
                 fontSize="sm"
@@ -105,6 +106,7 @@ const AlbumGrid = () => {
                   Title: {album.title}
                 </Text>
                 <Text
+                  key={uuidv4()}
                   isTruncated
                   as="i" 
                   fontSize="sm" 
@@ -114,6 +116,7 @@ const AlbumGrid = () => {
                   Description: {album.description}
                 </Text>
                 <Text
+                  key={uuidv4()}
                   isTruncated
                   as="i" 
                   fontSize="sm" 
@@ -125,7 +128,7 @@ const AlbumGrid = () => {
               </Flex>
               <Box height="100%" pt="20px">
                 <Image
-                  src={album.images.length > 0 && album.images[0] ? album.images[0].url : tempImage} 
+                  src={album.images.length > 0 && album.images[0] && album.images !== undefined ? album.images[0].url : tempImage !== undefined && tempImage  } 
                   alt={album.title}
                   />
               </Box>
@@ -136,7 +139,24 @@ const AlbumGrid = () => {
         )) 
          }
       </Grid>
-      : <h1>loading</h1>
+      :  
+      <>
+        <Flex
+          direction="column"
+          height="100vh"
+          justify="center" 
+          align="center"
+        >
+        <Spinner   
+          thickness="6px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="teal.500"
+          size="xl"  
+        />
+        <Text>Loading</Text>
+        </Flex>
+      </>
       }
     </>
   )
